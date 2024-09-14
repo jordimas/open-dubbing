@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  check-code-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dev tools
+        run: |
+          pip install --no-cache -e .[dev]
+
+      - name: Check code format with Black
+        run: |
+          black --check open_dubbing/ tests/
+
+      - name: Check code style with Flake8
+        if: ${{ always() }}
+        run: |
+          flake8 open_dubbing/ tests/
+
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        sudo apt install ffmpeg espeak-ng 
+        pip install .
+        pip install pytest
+    - name: Run Unit tests
+      run: |
+        pytest
+
+
+
+  build-and-push-package:
+    runs-on: ubuntu-latest
+    needs: [check-code-format, run-tests]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10.15
+
+      - name: Install dependencies
+        run: |
+          pip install wheel
+
+      - name: Build package
+        run: |
+          python3 setup.py sdist bdist_wheel
+
+      - name: Push package on PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}

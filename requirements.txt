@@ -1,0 +1,10 @@
+numpy >= 1.17.3
+moviepy == 1.0.3
+demucs == 4.0.1
+torch >= 2.0.0,< 2.5
+pyannote.audio == 3.3.0
+pydub == 0.25.1
+faster-whisper == 1.0.2
+transformers == 4.40
+coqui-tts == 0.24.1
+iso639-lang == 2.3.0
