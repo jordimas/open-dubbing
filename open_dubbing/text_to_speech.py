@@ -48,7 +48,7 @@ class TextToSpeech(ABC):
         return voice_assignment
 
     def _convert_to_mp3(self, input_file, output_mp3):
-        cmd = f"ffmpeg -y -i {input_file} {output_mp3} > nul 2>&1"
+        cmd = f"ffmpeg -y -i {input_file} {output_mp3} > /dev/null 2>&1"
         logging.debug(cmd)
         os.system(cmd)
         os.remove(input_file)
