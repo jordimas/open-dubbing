@@ -3,12 +3,9 @@ name: CI
 on:
   push:
     branches:
-      - dev
+      - "*"
     tags:
       - v*
-  pull_request:
-    branches:
-      - dev
 
 jobs:
   check-code-format:
