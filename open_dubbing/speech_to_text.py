@@ -20,9 +20,10 @@ from iso639 import Lang
 
 class SpeechToText:
 
-    def __init__(self, device="cpu"):
+    def __init__(self, device="cpu", cpu_threads=0):
         self.model = None
         self.device = device
+        self.cpu_threads = cpu_threads
         logging.getLogger("faster_whisper").setLevel(logging.ERROR)
 
     @property
@@ -37,6 +38,7 @@ class SpeechToText:
         self._model = WhisperModel(
             model_size_or_path="large-v3",
             device=self.device,
+            cpu_threads=self.cpu_threads,
             compute_type="float16" if self.device == "cuda" else "int8",
         )
 

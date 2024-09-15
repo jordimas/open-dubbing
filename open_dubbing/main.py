@@ -172,6 +172,12 @@ def main():
         choices=["cpu", "cuda"],
         help=("Device to use"),
     )
+    parser.add_argument(
+        "--cpu_threads",
+        type=int,
+        default=0,
+        help="number of threads used for CPU inference (if not specified uses defaults for each framework)",
+    )
 
     args = parser.parse_args()
 
@@ -197,6 +203,7 @@ def main():
         hugging_face_token=hugging_face_token,
         tts=tts,
         device=args.device,
+        cpu_threads=args.cpu_threads,
     )
     logging.info(
         f"Processing '{args.input_file}' file with tts '{args.tts}' and device '{args.device}'"

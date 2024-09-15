@@ -20,6 +20,7 @@ import re
 import shutil
 import tempfile
 import time
+import torch
 from typing import Final
 from open_dubbing import audio_processing
 from open_dubbing.speech_to_text import SpeechToText
@@ -111,6 +112,7 @@ class Dubber:
         hugging_face_token: str | None = None,
         tts: TextToSpeech,
         device: str,
+        cpu_threads: int = 0,
         pyannote_model: str = _DEFAULT_PYANNOTE_MODEL,
         number_of_steps: int = _NUMBER_OF_STEPS,
     ) -> None:
@@ -124,6 +126,10 @@ class Dubber:
         self._number_of_steps = number_of_steps
         self.tts = tts
         self.device = device
+        self.cpu_threads = cpu_threads
+
+        if cpu_threads > 0:
+            torch.set_num_threads(cpu_threads)
 
     @functools.cached_property
     def input_file(self):
@@ -221,7 +227,7 @@ class Dubber:
             Updated utterance metadata with speaker information and transcriptions.
         """
 
-        spt = SpeechToText(self.device)
+        spt = SpeechToText(self.device, self.cpu_threads)
         spt.load_model()
 
         media_file = (
