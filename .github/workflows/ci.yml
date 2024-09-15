@@ -27,6 +27,7 @@ jobs:
           flake8 open_dubbing/ tests/
 
   run-tests:
+    environment: CI/CD
     runs-on: ubuntu-latest
 
     steps:
@@ -36,11 +37,16 @@ jobs:
         sudo apt install ffmpeg espeak-ng 
         pip install .
         pip install pytest
+        pip cache purge
+        sudo apt-get clean
     - name: Run Unit tests
       run: |
-        pytest
-
-
+        make run-tests
+    - name: Run end-to-end test
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}  
+      run: |
+        make run-e2e-tests
 
   build-and-push-package:
     runs-on: ubuntu-latest
