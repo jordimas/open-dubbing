@@ -51,14 +51,14 @@ class TextToSpeechCoqui(TextToSpeech):
     ) -> str:
 
         wav_file = output_filename.replace(".mp3", ".wav")
-        logging.info(
+        logging.debug(
             f"text_to_speech.client.synthesize_speech: pre synthesize_speech: '{text}', '{target_language}', {wav_file}, speed speed: {speed}"
         )
         iso_639_1 = self._get_iso_639_1(target_language)
         self.coqui.synthesize_speech(text, iso_639_1, file_path=wav_file)
 
         self._convert_to_mp3(wav_file, output_filename)
-        logging.info(
+        logging.debug(
             f"text_to_speech.client.synthesize_speech: output_filename: '{output_filename}'"
         )
         return output_filename
