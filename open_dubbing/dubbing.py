@@ -167,7 +167,7 @@ class Dubber:
 
     def _verify_api_access(self) -> None:
         """Verifies access to all the required APIs."""
-        logging.info("Verifying access to PyAnnote from HuggingFace.")
+        logging.debug("Verifying access to PyAnnote from HuggingFace.")
         if not self.pyannote_pipeline:
             raise PyAnnoteAccessError(
                 "No access to HuggingFace. Make sure you passed the correct API token"
@@ -178,7 +178,7 @@ class Dubber:
                 " diarization model"
                 " (https://huggingface.co/pyannote/speaker-diarization-3.1)."
             )
-        logging.info("Access to PyAnnote from HuggingFace verified.")
+        logging.debug("Access to PyAnnote from HuggingFace verified.")
 
     def run_preprocessing(self) -> None:
         """Splits audio/video, applies DEMUCS, and segments audio into utterances with PyAnnote.
@@ -361,7 +361,7 @@ class Dubber:
                 os.fsync(temporary_file.fileno())
             shutil.copy(temporary_file.name, utterance_metadata_file)
             os.remove(temporary_file.name)
-            logging.info(
+            logging.debug(
                 "Utterance metadata saved successfully to"
                 f" '{utterance_metadata_file}'"
             )
@@ -374,7 +374,10 @@ class Dubber:
         self._verify_api_access()
         logging.info("Dubbing process starting...")
         start_time = time.time()
+
+        task_start_time = time.time()
         self.run_preprocessing()
+        self.log_debug_task("Preprocessing completed", task_start_time)
 
         logging.info("Speech to text...")
         task_start_time = time.time()

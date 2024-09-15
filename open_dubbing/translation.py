@@ -34,7 +34,7 @@ class Translation:
         trimmed_lines = [
             item[key].strip() if item[key] else "" for item in utterance_metadata
         ]
-        logging.info(f"translation.generate_script. Input: {trimmed_lines}")
+        logging.debug(f"translation.generate_script. Input: {trimmed_lines}")
         r = _BREAK_MARKER + _BREAK_MARKER.join(trimmed_lines) + _BREAK_MARKER
         logging.debug(f"translation.generate_script. Returns: {r}")
         return r

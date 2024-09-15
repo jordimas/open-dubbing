@@ -44,7 +44,7 @@ class TextToSpeech(ABC):
     ) -> Mapping[str, str | None]:
 
         voice_assignment = {"speaker_01": "ona"}
-        logging.info(f"TextToSpeech.assign_voices. Returns: {voice_assignment}")
+        logging.debug(f"TextToSpeech.assign_voices. Returns: {voice_assignment}")
         return voice_assignment
 
     def _convert_to_mp3(self, input_file, output_mp3):
@@ -164,12 +164,12 @@ class TextToSpeech(ABC):
         crossfade = max(1, chunk_size // 2)
         MAX_SPEED = 1.3
         if speed > MAX_SPEED:
-            logging.info(
+            logging.debug(
                 f"TextToSpeech.adjust_audio_speed: Reduced speed from {speed} to {MAX_SPEED}"
             )
             speed = MAX_SPEED
 
-        logging.info(
+        logging.debug(
             f"TextToSpeech.adjust_audio_speed: dubbed_audio: {dubbed_file}, speed: {speed}, chunk_size: {chunk_size}, crossfade: {crossfade}"
         )
         output_audio = speedup(

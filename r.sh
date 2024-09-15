@@ -21,6 +21,7 @@ for tts in "${tts_list[@]}"; do
           --target_language="$language" \
           --tts="$tts" \
           --device=cpu
+        echo ""
       done
     done
 done

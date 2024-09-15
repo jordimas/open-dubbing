@@ -113,7 +113,7 @@ class SpeechToText:
             _tuple = ("speaker_01", "Male")
             r.append(_tuple)
 
-        logging.info(f"text_to_speech.diarize_speakers. Returns: {r}")
+        logging.debug(f"text_to_speech.diarize_speakers. Returns: {r}")
         return r
 
     def add_speaker_info(
