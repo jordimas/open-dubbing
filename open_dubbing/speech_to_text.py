@@ -36,7 +36,7 @@ class SpeechToText:
 
     def load_model(self):
         self._model = WhisperModel(
-            model_size_or_path="large-v3",
+            model_size_or_path="medium",
             device=self.device,
             cpu_threads=self.cpu_threads,
             compute_type="float16" if self.device == "cuda" else "int8",

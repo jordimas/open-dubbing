@@ -26,7 +26,7 @@ _BREAK_MARKER: Final[str] = "<BREAK>"
 class Translation:
 
     def __init__(self, device="cpu"):
-        self.model_name = "facebook/nllb-200-3.3B"
+        self.model_name = "facebook/nllb-200-1.3B"
         self.device = device
 
     def generate_script(self, *, utterance_metadata, key: str = "text") -> str:
