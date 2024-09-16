@@ -111,6 +111,7 @@ class Dubber:
         target_language: str,
         hugging_face_token: str | None = None,
         tts: TextToSpeech,
+        stt: SpeechToText,
         device: str,
         cpu_threads: int = 0,
         pyannote_model: str = _DEFAULT_PYANNOTE_MODEL,
@@ -125,6 +126,7 @@ class Dubber:
         self.utterance_metadata = None
         self._number_of_steps = number_of_steps
         self.tts = tts
+        self.stt = stt
         self.device = device
         self.cpu_threads = cpu_threads
 
@@ -227,25 +229,22 @@ class Dubber:
             Updated utterance metadata with speaker information and transcriptions.
         """
 
-        spt = SpeechToText(self.device, self.cpu_threads)
-        spt.load_model()
-
         media_file = (
             self.preprocesing_output.video_file
             if self.preprocesing_output.video_file
             else self.preprocesing_output.audio_file
         )
-        utterance_metadata = spt.transcribe_audio_chunks(
+        utterance_metadata = self.stt.transcribe_audio_chunks(
             utterance_metadata=self.utterance_metadata,
             source_language=self.source_language,
             no_dubbing_phrases=[],
         )
-        speaker_info = spt.diarize_speakers(
+        speaker_info = self.stt.diarize_speakers(
             file=media_file,
             utterance_metadata=utterance_metadata,
             number_of_speakers=1,
         )
-        self.utterance_metadata = spt.add_speaker_info(
+        self.utterance_metadata = self.stt.add_speaker_info(
             utterance_metadata=utterance_metadata, speaker_info=speaker_info
         )
         logging.info("Completed transcription.")

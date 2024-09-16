@@ -14,11 +14,14 @@
 
 import argparse
 
-# import shutil
+import sys
 import os
 from open_dubbing.dubbing import Dubber
 import logging
-from open_dubbing.speech_to_text import SpeechToText
+from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
+from open_dubbing.speech_to_text_whisper_transformers import (
+    SpeechToTextWhisperTransfomers,
+)
 from open_dubbing.translation import Translation
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
@@ -51,10 +54,8 @@ def _init_logging():
     logger.addHandler(console_handler)
 
 
-def check_languages(source_language, target_language, _tts, device):
-    s = SpeechToText(device=device)
-    s.load_model()
-    spt = s.get_languages()
+def check_languages(source_language, target_language, _tts, _sst):
+    spt = _sst.get_languages()
     trans = Translation().get_languages()
     tts = _tts.get_languages()
 
@@ -113,7 +114,7 @@ def _get_language_names(languages_iso_639_3):
 
 
 def list_supported_languages(_tts, device):  # TODO: Not used
-    s = SpeechToText(device=device)
+    s = SpeechToTextFasterWhisper(device=device)
     s.load_model()
     spt = s.get_languages()
     trans = Translation().get_languages()
@@ -167,6 +168,19 @@ def main():
         ),
     )
     parser.add_argument(
+        "--stt",
+        type=str,
+        default="auto",
+        choices=["auto", "faster-whisper", "transformers"],
+        help=(
+            "Speech to text. Choices are:"
+            "'auto': Autoselect best implementation."
+            "'faster-whisper': Faster-whisper's OpenAI whisper implementation."
+            "'transformers': Transformers OpenAI whisper implementation."
+        ),
+    )
+
+    parser.add_argument(
         "--device",
         type=str,
         default="cpu",
@@ -197,7 +211,18 @@ def main():
     else:
         raise ValueError(f"Invalid tts value {args.tts}")
 
-    check_languages(args.source_language, args.target_language, tts, args.device)
+    if args.stt == "auto":
+        if sys.platform == "darwin":
+            stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
+        else:
+            stt = SpeechToTextFasterWhisper(args.device, args.cpu_threads)
+    elif args.stt == "faster-whisper":
+        stt = SpeechToTextFasterWhisper(args.device, args.cpu_threads)
+    else:
+        stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
+
+    stt.load_model()
+    check_languages(args.source_language, args.target_language, tts, stt)
 
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
@@ -209,11 +234,12 @@ def main():
         target_language=args.target_language,
         hugging_face_token=hugging_face_token,
         tts=tts,
+        stt=stt,
         device=args.device,
         cpu_threads=args.cpu_threads,
     )
     logging.info(
-        f"Processing '{args.input_file}' file with tts '{args.tts}' and device '{args.device}'"
+        f"Processing '{args.input_file}' file with tts '{args.tts}', sst {args.stt} and device '{args.device}'"
     )
     dubber.dub()
 

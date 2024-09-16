@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for utility functions in SpeechToText().py."""
-
 from collections import namedtuple
 import tempfile
 from unittest.mock import MagicMock
 from faster_whisper import WhisperModel
 from moviepy.audio.AudioClip import AudioArrayClip
 import numpy as np
-from open_dubbing.speech_to_text import SpeechToText
+from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
 import pytest
 import os
 
@@ -45,7 +43,7 @@ class TestTranscribe:
         mock_model = MagicMock(spec=WhisperModel)
         Segment = namedtuple("Segment", ["text"])
         mock_model.transcribe.return_value = [Segment(text="Test.")], None
-        spt = SpeechToText()
+        spt = SpeechToTextFasterWhisper()
         spt.model = mock_model
         transcribed_text = spt._transcribe(
             vocals_filepath=self.silence_audio,
@@ -68,7 +66,7 @@ class TestTranscribe:
         ], None
         utterance_metadata = [dict(path=self.silence_audio, start=0.0, end=5.0)]
         source_language = "en"
-        spt = SpeechToText()
+        spt = SpeechToTextFasterWhisper()
         spt.model = mock_model
         transcribed_audio_chunks = spt.transcribe_audio_chunks(
             utterance_metadata=utterance_metadata,
@@ -123,7 +121,9 @@ class TestAddSpeakerInfo:
                 "path": "path/to/file.mp3",
             },
         ]
-        result = SpeechToText().add_speaker_info(utterance_metadata, speaker_info)
+        result = SpeechToTextFasterWhisper().add_speaker_info(
+            utterance_metadata, speaker_info
+        )
         assert result == expected_result
 
     def test_add_speaker_info_unequal_lengths(self):
@@ -136,4 +136,6 @@ class TestAddSpeakerInfo:
             Exception,
             match="The length of 'utterance_metadata' and 'speaker_info' must be the same.",
         ):
-            SpeechToText().add_speaker_info(utterance_metadata, speaker_info)
+            SpeechToTextFasterWhisper().add_speaker_info(
+                utterance_metadata, speaker_info
+            )

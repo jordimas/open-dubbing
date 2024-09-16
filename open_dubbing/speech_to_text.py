@@ -13,18 +13,17 @@
 # limitations under the License.
 
 from typing import Mapping, Sequence
-from faster_whisper import WhisperModel
 import logging
 from iso639 import Lang
+from abc import ABC, abstractmethod
 
 
-class SpeechToText:
+class SpeechToText(ABC):
 
     def __init__(self, device="cpu", cpu_threads=0):
         self.model = None
         self.device = device
         self.cpu_threads = cpu_threads
-        logging.getLogger("faster_whisper").setLevel(logging.ERROR)
 
     @property
     def model(self):
@@ -34,41 +33,27 @@ class SpeechToText:
     def model(self, value):
         self._model = value
 
+    @abstractmethod
     def load_model(self):
-        self._model = WhisperModel(
-            model_size_or_path="medium",
-            device=self.device,
-            cpu_threads=self.cpu_threads,
-            compute_type="float16" if self.device == "cuda" else "int8",
-        )
+        pass
 
+    @abstractmethod
     def get_languages(self):
-        iso_639_3 = []
-        for language in self.model.supported_languages:
-            if language == "jw":
-                language = "jv"
-
-            o = Lang(language)
-            pt3 = o.pt3
-            iso_639_3.append(pt3)
-        return iso_639_3
+        pass
 
     def _get_iso_639_1(self, iso_639_3: str):
         o = Lang(iso_639_3)
         iso_639_1 = o.pt1
         return iso_639_1
 
+    @abstractmethod
     def _transcribe(
         self,
         *,
         vocals_filepath: str,
         source_language_iso_639_1: str,
     ) -> str:
-        segments, _ = self.model.transcribe(
-            vocals_filepath,
-            source_language_iso_639_1,
-        )
-        return " ".join(segment.text for segment in segments)
+        pass
 
     def transcribe_audio_chunks(
         self,
