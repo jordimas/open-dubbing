@@ -23,6 +23,7 @@ from open_dubbing.translation import Translation
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from iso639 import Lang
+from open_dubbing.coqui import Coqui
 
 
 def _init_logging():
@@ -187,8 +188,14 @@ def main():
 
     if args.tts == "mms":
         tts = TextToSpeechMMS(args.device)
-    else:
+    elif args.tts == "coqui":
         tts = TextToSpeechCoqui(args.device)
+        if not Coqui.is_espeak_ng_installed():
+            raise ValueError(
+                "To use Coqui-tts you have to have espeak or espeak-ng installed"
+            )
+    else:
+        raise ValueError(f"Invalid tts value {args.tts}")
 
     check_languages(args.source_language, args.target_language, tts, args.device)
 

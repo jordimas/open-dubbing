@@ -2,7 +2,7 @@
 
 Open dubbing is an automatic video dubbing system that uses open source AI models.
 
-At the moment, it is pure *experiemental* and excuse to help me to understand better SST, TTS and translation systems combined together.
+At the moment, it is pure *experimental* and excuse to help me to understand better STT, TTS and translation systems combined together.
 
 # Features
 
@@ -51,6 +51,17 @@ Mac OS
 ```shell
 brew install ffmpeg
 ```
+
+If you are going to use Coqui-tts you also need to install espeak-ng:
+
+```shell
+sudo apt install espeak-ng
+```
+Mac OS
+```shell
+brew install espeak-ng
+```
+
 Install package:
 
 ```shell

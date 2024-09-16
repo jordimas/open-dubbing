@@ -15,6 +15,7 @@
 from TTS.api import TTS
 import re
 import logging
+import subprocess
 
 
 class Coqui:
@@ -100,3 +101,18 @@ class Coqui:
         tts.tts_to_file(
             text=input_text, speaker=speaker, split_sentences=False, file_path=file_path
         )
+
+    @staticmethod
+    def is_espeak_ng_installed():
+        for cmd in [["espeak-ng", "--version"], ["espeak", "--version"]]:
+            try:
+                if (
+                    subprocess.run(
+                        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    ).returncode
+                    == 0
+                ):
+                    return True
+            except FileNotFoundError:
+                continue
+        return False
