@@ -10,7 +10,6 @@ At the moment, it is pure *experimental* and excuse to help me to understand bet
 # Features
 
 * Build on top of open source models and able to run it locally
-* Better control of voice used for dubbing
 * Dubs automatically a video from a source to a target language
 * Supports multiple Tech To Speech engines
 
@@ -20,6 +19,7 @@ Areas what we will like to explore:
 
 * Automatic detection of the source language of the video (using Whisper)
 * Gender voice detection to allow to assign properly synthetic voice later
+* Better control of voice used for dubbing
 * Support for TTS systems
 
 # Demo
