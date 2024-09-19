@@ -8,7 +8,7 @@ run-tests:
 	python -m pytest tests/
 
 run-e2e-tests:
-	CT2_USE_MKL="False" CT2_FORCE_CPU_ISA='GENERIC' KMP_DUPLICATE_LIB_OK="TRUE" TOKENIZERS_PARALLELISM="false" python -m pytest e2e-tests/
+	CT2_USE_MKL="False" CT2_FORCE_CPU_ISA='GENERIC' KMP_DUPLICATE_LIB_OK="TRUE" python -m pytest e2e-tests/
 
 publish-release:
 	rm dist/ -r -f

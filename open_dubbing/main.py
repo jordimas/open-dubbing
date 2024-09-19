@@ -211,6 +211,9 @@ def main():
     else:
         raise ValueError(f"Invalid tts value {args.tts}")
 
+    if sys.platform == "darwin":
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
     if args.stt == "auto":
         if sys.platform == "darwin":
             stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
