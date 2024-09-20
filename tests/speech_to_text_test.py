@@ -139,3 +139,30 @@ class TestAddSpeakerInfo:
             SpeechToTextFasterWhisper().add_speaker_info(
                 utterance_metadata, speaker_info
             )
+
+    def test__get_unique_speakers_largest_audio(self):
+        test_data = [
+            {
+                "start": 110.73471875000001,
+                "end": 111.74721875,
+                "speaker_id": "SPEAKER_01",
+                "path": "chunk_111.mp3",
+            },
+            {
+                "start": 113.73471875000001,
+                "end": 114.74721875,
+                "speaker_id": "SPEAKER_01",
+                "path": "chunk_120.mp3",
+            },
+            {
+                "start": 113.73471875000001,
+                "end": 120,
+                "speaker_id": "SPEAKER_01",
+                "path": "chunk_114.mp3",
+            },
+        ]
+        result = SpeechToTextFasterWhisper()._get_unique_speakers_largest_audio(
+            test_data
+        )
+
+        assert [("SPEAKER_01", "chunk_114.mp3")] == result

@@ -30,7 +30,6 @@ _TIMESTAMP_THRESHOLD: Final[float] = 0.001
 def create_pyannote_timestamps(
     *,
     audio_file: str,
-    number_of_speakers: int,
     pipeline: Pipeline,
     device: str = "cpu",
 ) -> Sequence[Mapping[str, float]]:
@@ -47,10 +46,10 @@ def create_pyannote_timestamps(
         )
     if device == "cuda":
         pipeline.to(torch.device("cuda"))
-    diarization = pipeline(audio_file, num_speakers=number_of_speakers)
+    diarization = pipeline(audio_file)
     utterance_metadata = [
-        {"start": segment.start, "end": segment.end}
-        for segment, _, _ in diarization.itertracks(yield_label=True)
+        {"start": segment.start, "end": segment.end, "speaker_id": speaker}
+        for segment, _, speaker in diarization.itertracks(yield_label=True)
     ]
     return utterance_metadata
 

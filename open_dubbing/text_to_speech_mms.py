@@ -18,6 +18,7 @@ from transformers import VitsModel, AutoTokenizer
 import torch
 import numpy as np
 import scipy.io.wavfile
+from typing import Mapping
 
 
 class TextToSpeechMMS(TextToSpeech):
@@ -27,10 +28,13 @@ class TextToSpeechMMS(TextToSpeech):
         self.device = device
         logging.getLogger("transformers").setLevel(logging.ERROR)
 
+    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
+        return {}
+
     def _convert_text_to_speech(
         self,
         *,
-        assigned_google_voice: str,
+        assigned_voice: str,
         target_language: str,
         output_filename: str,
         text: str,

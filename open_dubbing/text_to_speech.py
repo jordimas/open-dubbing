@@ -30,9 +30,9 @@ class TextToSpeech(ABC):
         self._DEFAULT_SPEED: Final[float] = 1.0
         self._DEFAULT_VOLUME_GAIN_DB: Final[float] = 16.0
 
-    # TODO
-    def list_available_voices(language_code: str) -> Mapping[str, str]:
-        raise Exception("Not implemnented")
+    @abstractmethod
+    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
+        pass
 
     # TODO
     def assign_voices(
@@ -43,8 +43,21 @@ class TextToSpeech(ABC):
         preferred_voices: Sequence[str] = "",
     ) -> Mapping[str, str | None]:
 
-        voice_assignment = {"speaker_01": "ona"}
-        logging.debug(f"TextToSpeech.assign_voices. Returns: {voice_assignment}")
+        voices = self.get_available_voices(target_language)
+        voice_assignment = {}
+        if len(voices) == 0:
+            voice_assignment["speaker_01"] = "ona"
+        else:
+            for chunk in utterance_metadata:
+                speaker_id = chunk["speaker_id"]
+                if speaker_id in voice_assignment:
+                    continue
+
+                gender = chunk["ssml_gender"]
+                voice = voices[gender]
+                voice_assignment[speaker_id] = voice
+
+        logging.debug(f"text_to_speech.assign_voices. Returns: {voice_assignment}")
         return voice_assignment
 
     def _convert_to_mp3(self, input_file, output_mp3):
@@ -94,7 +107,7 @@ class TextToSpeech(ABC):
     def _convert_text_to_speech(
         self,
         *,
-        assigned_google_voice: str,
+        assigned_voice: str,
         target_language: str,
         output_filename: str,
         text: str,
@@ -211,7 +224,7 @@ class TextToSpeech(ABC):
                         f"dubbed_chunk_{utterance['start']}_{utterance['end']}.mp3",
                     )
                 dubbed_path = self._convert_text_to_speech(
-                    assigned_google_voice=assigned_voice,
+                    assigned_voice=assigned_voice,
                     target_language=target_language,
                     output_filename=output_filename,
                     text=text,
@@ -239,7 +252,7 @@ class TextToSpeech(ABC):
                 if speed != 1.0 and not False and not condition_two:
                     utterance_copy["speed"] = speed
                     dubbed_path = self._convert_text_to_speech(
-                        assigned_google_voice=assigned_voice,
+                        assigned_voice=assigned_voice,
                         target_language=target_language,
                         output_filename=output_filename,
                         text=text,

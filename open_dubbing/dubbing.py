@@ -204,7 +204,6 @@ class Dubber:
 
         utterance_metadata = audio_processing.create_pyannote_timestamps(
             audio_file=audio_file,
-            number_of_speakers=1,
             pipeline=self.pyannote_pipeline,
             device=self.device,
         )

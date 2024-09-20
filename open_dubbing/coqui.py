@@ -93,13 +93,9 @@ class Coqui:
         self, input_text, language, file_path, voice=None, audio_config=None
     ):
         model = self.language_model[language]
-        speaker = None
-        if language == "ca":
-            speaker = "ona"
-
         tts = TTS(model).to(self.device)
         tts.tts_to_file(
-            text=input_text, speaker=speaker, split_sentences=False, file_path=file_path
+            text=input_text, speaker=voice, split_sentences=False, file_path=file_path
         )
 
     @staticmethod

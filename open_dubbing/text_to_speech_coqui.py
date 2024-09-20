@@ -16,6 +16,7 @@ import logging
 from open_dubbing.text_to_speech import TextToSpeech
 from open_dubbing.coqui import Coqui
 from iso639 import Lang
+from typing import Mapping
 
 
 class TextToSpeechCoqui(TextToSpeech):
@@ -38,10 +39,22 @@ class TextToSpeechCoqui(TextToSpeech):
         iso_639_1 = o.pt1
         return iso_639_1
 
+    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
+        voices = {}
+
+        if language_code == "cat":
+            voices["Male"] = "pau"
+            voices["Female"] = "ona"
+
+        logging.debug(
+            f"text_to_speech_coqui.get_available_voices: {voices} for language {language_code}"
+        )
+        return voices
+
     def _convert_text_to_speech(
         self,
         *,
-        assigned_google_voice: str,
+        assigned_voice: str,
         target_language: str,
         output_filename: str,
         text: str,
@@ -52,10 +65,12 @@ class TextToSpeechCoqui(TextToSpeech):
 
         wav_file = output_filename.replace(".mp3", ".wav")
         logging.debug(
-            f"text_to_speech.client.synthesize_speech: pre synthesize_speech: '{text}', '{target_language}', {wav_file}, speed speed: {speed}"
+            f"text_to_speech.client.synthesize_speech: pre synthesize_speech: '{text}', '{target_language}', file: {wav_file}, speed: {speed}, voice: {assigned_voice}"
         )
         iso_639_1 = self._get_iso_639_1(target_language)
-        self.coqui.synthesize_speech(text, iso_639_1, file_path=wav_file)
+        self.coqui.synthesize_speech(
+            text, iso_639_1, file_path=wav_file, voice=assigned_voice
+        )
 
         self._convert_to_mp3(wav_file, output_filename)
         logging.debug(

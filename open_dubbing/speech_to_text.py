@@ -16,6 +16,7 @@ from typing import Mapping, Sequence
 import logging
 from iso639 import Lang
 from abc import ABC, abstractmethod
+from open_dubbing.voice_gender_classifier import VoiceGenderClassifier
 
 
 class SpeechToText(ABC):
@@ -82,8 +83,33 @@ class SpeechToText(ABC):
             updated_utterance_metadata.append(new_item)
         return updated_utterance_metadata
 
-    # TODO: We need to gender prediciton here
-    # This is later important for TTS
+    #  Returns a list of unique speakers with the largest audio sample for the speaker
+    def _get_unique_speakers_largest_audio(self, utterance_metadata):
+        speakers = {}
+        for chunk in utterance_metadata:
+            speaker = chunk["speaker_id"]
+            length = chunk["end"] - chunk["start"]
+            dubbed_path = chunk["path"]
+
+            speaker_data = speakers.get(speaker, {})
+            save = False
+            if len(speaker_data) == 0:
+                save = True
+            else:
+                if length > speaker_data["length"]:
+                    save = True
+
+            if save:
+                speaker_data["length"] = length
+                speaker_data["path"] = dubbed_path
+                speakers[speaker] = speaker_data
+
+        speaker_tuple = [(speaker, data["path"]) for speaker, data in speakers.items()]
+        logging.debug(
+            f"text_to_speech._get_unique_speakers_largest_audio: {speaker_tuple}"
+        )
+        return speaker_tuple
+
     def diarize_speakers(
         self,
         *,
@@ -92,10 +118,18 @@ class SpeechToText(ABC):
         number_of_speakers: int,
     ) -> Sequence[tuple[str, str]]:
 
+        speaker_gender = {}
+        classifier = VoiceGenderClassifier()
+        speakers = self._get_unique_speakers_largest_audio(utterance_metadata)
+        for speaker, path in speakers:
+            gender = classifier.get_gender_for_file(path)
+            speaker_gender[speaker] = gender
+
         r = []
-        chunks = len(utterance_metadata)
-        for chunk in range(0, chunks):
-            _tuple = ("speaker_01", "Male")
+        for chunk in utterance_metadata:
+            speaker = chunk["speaker_id"]
+            gender = speaker_gender[speaker]
+            _tuple = (speaker, gender)
             r.append(_tuple)
 
         logging.debug(f"text_to_speech.diarize_speakers. Returns: {r}")

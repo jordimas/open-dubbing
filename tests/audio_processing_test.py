@@ -36,14 +36,13 @@ class TestCreatePyannoteTimestamps:
             silence.write_audiofile(temporary_file.name)
             mock_pipeline = MagicMock(spec=Pipeline)
             mock_pipeline.return_value.itertracks.return_value = [
-                (MagicMock(start=0.0, end=silence_duration), None, None)
+                (MagicMock(start=0.0, end=silence_duration), None, "SPEAKER_00")
             ]
             timestamps = audio_processing.create_pyannote_timestamps(
                 audio_file=temporary_file.name,
-                number_of_speakers=0,
                 pipeline=mock_pipeline,
             )
-            assert timestamps == [{"start": 0.0, "end": 10}]
+            assert timestamps == [{"start": 0.0, "end": 10, "speaker_id": "SPEAKER_00"}]
 
 
 class TestCutAndSaveAudio:
