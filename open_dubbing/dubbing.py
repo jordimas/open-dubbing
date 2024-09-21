@@ -291,6 +291,19 @@ class Dubber:
         )
         logging.info("Completed converting text to speech.")
 
+    def run_cleaning(self) -> None:
+        output_directory = None
+        for crunk in self.utterance_metadata:
+            for path in [crunk["path"], crunk["dubbed_path"]]:
+                os.remove(path)
+                if not output_directory:
+                    output_directory = os.path.dirname(path)
+
+        if output_directory:
+            for path in ["dubbed_audio_cat.mp3", "dubbed_vocals.mp3"]:
+                full_path = os.path.join(output_directory, path)
+                os.remove(full_path)
+
     def run_postprocessing(self) -> None:
         """Merges dubbed audio with the original background audio and video (if applicable).
 
@@ -394,6 +407,7 @@ class Dubber:
         task_start_time = time.time()
         self.run_save_utterance_metadata()
         self.run_postprocessing()
+        self.run_cleaning()
         self.log_debug_task("Saved completed", task_start_time)
         logging.info("Dubbing process finished.")
         end_time = time.time()
