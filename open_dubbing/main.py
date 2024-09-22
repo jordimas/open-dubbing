@@ -25,6 +25,7 @@ from open_dubbing.speech_to_text_whisper_transformers import (
 from open_dubbing.translation import Translation
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
+from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from iso639 import Lang
 from open_dubbing.coqui import Coqui
 
@@ -160,11 +161,12 @@ def main():
         "--tts",
         type=str,
         default="mms",
-        choices=["mms", "coqui"],
+        choices=["mms", "coqui", "edge"],
         help=(
             "Text to Speech engine to use. Choices are:"
             "'mms': Meta Multilingual Speech engine, supports many languages."
             "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
+            "'edge': Microsoft Edge TSS."
         ),
     )
     parser.add_argument(
@@ -202,6 +204,8 @@ def main():
 
     if args.tts == "mms":
         tts = TextToSpeechMMS(args.device)
+    elif args.tts == "edge":
+        tts = TextToSpeechEdge(args.device)
     elif args.tts == "coqui":
         tts = TextToSpeechCoqui(args.device)
         if not Coqui.is_espeak_ng_installed():
