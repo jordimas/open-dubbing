@@ -300,7 +300,10 @@ class Dubber:
                     output_directory = os.path.dirname(path)
 
         if output_directory:
-            for path in [f"dubbed_audio_{self.target_language}.mp3", "dubbed_vocals.mp3"]:
+            for path in [
+                f"dubbed_audio_{self.target_language}.mp3",
+                "dubbed_vocals.mp3",
+            ]:
                 full_path = os.path.join(output_directory, path)
                 os.remove(full_path)
 
