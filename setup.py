@@ -17,15 +17,15 @@ def read_version(fname="open_dubbing/__init__.py"):
 setup(
     name="open-dubbing",
     version=read_version(),
-    description="AI dubbing that automatically dubs videos",
+    description="AI dubbing system uses machine learning models to automatically translate and synchronize audio dialogue into different languages.",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/jordimas/open-dubbing",
     author="Jordi Mas",
     author_email="jmas@softcatala.org",
-    license="MIT",
+    license="Apache Software License 2.0",
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
