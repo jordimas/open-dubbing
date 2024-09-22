@@ -3,24 +3,26 @@
 
 # Introduction
 
-Open dubbing is an automatic video dubbing system that uses open source AI models.
+Open dubbing is an AI dubbing system uses machine learning models to automatically translate and synchronize audio dialogue into different languages.
 
-At the moment, it is pure *experimental* and excuse to help me to understand better STT, TTS and translation systems combined together.
+At the moment, it is pure *experimental* and an excuse to help me to understand better STT, TTS and translation systems combined together.
 
 # Features
 
 * Build on top of open source models and able to run it locally
 * Dubs automatically a video from a source to a target language
-* Supports multiple Tech To Speech engines
+* Supports multiple Text To Speech (TTS) engines
+* Gender voice detection to allow to assign properly synthetic voice
 
 # Roadmap
 
 Areas what we will like to explore:
 
 * Automatic detection of the source language of the video (using Whisper)
-* Gender voice detection to allow to assign properly synthetic voice later
 * Better control of voice used for dubbing
 * Support for TTS systems
+* Optimize it for long videos and less resource usage
+* Support for multiple video input formats
 
 # Demo
 
@@ -112,12 +114,32 @@ Core libraries used:
 * TTS
   * [coqui-tts](https://github.com/idiap/coqui-ai-TTS)
   * Meta [mms](https://github.com/facebookresearch/fairseq/tree/main/examples/mms)
+  * Microsoft [Edge TTS](https://github.com/rany2/edge-tts)
 
 And very special thanks to [ariel](https://github.com/google-marketing-solutions/ariel) from which we leveraged parts of their code base.
 
 # License
 
 See [license](./LICENSE)
+
+# How it works
+
+The system follows these steps:
+
+1. Isolate the speech from background noise, music, and other non-speech elements in the audio.
+2. Segment the audio in fragments where there is voice and identify the speakers (speaker diarization).
+3. Identify the gender of the speakers.
+4. Transcribe the speech into text using OpenAI Whisper.
+5. Translate the text from source language (e.g. English) to target language (e.g Catalan).
+6. Synthesize speech using a Text to Speech System using voices that match the gender and adjusting speed.
+7. The final dubbed video is then assembled, combining the synthetic audio with the original video footage, including any background sounds or music that were isolated earlier.
+
+There are 6 different AI models applied during the dubbing process.
+
+
+
+
+
 
 # Contact
 
