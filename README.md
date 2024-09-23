@@ -45,7 +45,7 @@ https://github.com/user-attachments/assets/99936655-5851-4d0c-827b-f36f79f56190
 
 # Supported languages
 
-The support languages depend on the combination of text to speech, translation system and text to speech system used. With Coqui TTS, these are the languages supported (I only tested a very few of them):
+The support languages depends on the combination of text to speech, translation system and text to speech system used. With Coqui TTS, these are the languages supported (I only tested a very few of them):
 
 Supported source languages: Afrikaans, Amharic, Armenian, Assamese, Bashkir, Basque, Belarusian, Bengali, Bosnian, Bulgarian, Burmese, Catalan, Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gujarati, Haitian, Hausa, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Italian, Japanese, Javanese, Kannada, Kazakh, Khmer, Korean, Lao, Lingala, Lithuanian, Luxembourgish, Macedonian, Malayalam, Maltese, Maori, Marathi, Modern Greek (1453-), Norwegian Nynorsk, Occitan (post 1500), Panjabi, Polish, Portuguese, Romanian, Russian, Sanskrit, Serbian, Shona, Sindhi, Sinhala, Slovak, Slovenian, Somali, Spanish, Sundanese, Swedish, Tagalog, Tajik, Tamil, Tatar, Telugu, Thai, Tibetan, Turkish, Turkmen, Ukrainian, Urdu, Vietnamese, Welsh, Yoruba, Yue Chinese
 
@@ -130,16 +130,11 @@ The system follows these steps:
 2. Segment the audio in fragments where there is voice and identify the speakers (speaker diarization).
 3. Identify the gender of the speakers.
 4. Transcribe the speech into text using OpenAI Whisper.
-5. Translate the text from source language (e.g. English) to target language (e.g Catalan).
+5. Translate the text from source language (e.g. English) to target language (e.g. Catalan).
 6. Synthesize speech using a Text to Speech System using voices that match the gender and adjusting speed.
 7. The final dubbed video is then assembled, combining the synthetic audio with the original video footage, including any background sounds or music that were isolated earlier.
 
 There are 6 different AI models applied during the dubbing process.
-
-
-
-
-
 
 # Contact
 
