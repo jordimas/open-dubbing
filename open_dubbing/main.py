@@ -54,6 +54,7 @@ def _init_logging():
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
+    logging.getLogger("pydub.converter").setLevel(logging.ERROR)
 
 def check_languages(source_language, target_language, _tts, _sst):
     spt = _sst.get_languages()
