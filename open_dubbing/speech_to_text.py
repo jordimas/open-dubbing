@@ -70,10 +70,15 @@ class SpeechToText(ABC):
         updated_utterance_metadata = []
         for item in utterance_metadata:
             new_item = item.copy()
-            transcribed_text = self._transcribe(
-                vocals_filepath=item["path"],
-                source_language_iso_639_1=iso_639_1,
-            )
+            try:
+                transcribed_text = self._transcribe(
+                    vocals_filepath=item["path"],
+                    source_language_iso_639_1=iso_639_1,
+                )
+            except Exception as e:
+                logging.error(f"speech_to_text.transcribe_audio_chunks. error: {e}")
+                transcribed_text = ""
+
             dubbing = len(transcribed_text) > 0
             logging.debug(
                 f"transcribe_audio_chunks. text: '{transcribed_text}' - dubbing: {dubbing}"
