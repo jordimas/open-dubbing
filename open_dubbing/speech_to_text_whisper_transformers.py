@@ -42,6 +42,14 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
         audio = audio.set_channels(1)  # Convert to mono
         audio = audio.set_frame_rate(16000)  # Set the frame rate to 16kHz
 
+        MIN_SECS = 0.5
+        # To prevent HuggingFace Whisper hallucinations with very short audios
+        if len(audio) < 1000 * MIN_SECS:
+            logging.warn(
+                f"SpeechToTextWhisperTransfomers._transcribe. Audio is less than {MIN_SECS} second, skipping transcription of '{vocals_filepath}'."
+            )
+            return ""
+
         # Convert the audio to a numpy array
         audio_input = (
             np.array(audio.get_array_of_samples()).astype(np.float32) / 32768.0
@@ -64,7 +72,7 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
             generated_ids, skip_special_tokens=True
         )[0]
         logging.debug(
-            f"SpeechToTextWhisperTransfomers._transcribe. transcription: {transcription}"
+            f"SpeechToTextWhisperTransfomers._transcribe. transcription: {transcription}, file {vocals_filepath}"
         )
         return transcription
 
