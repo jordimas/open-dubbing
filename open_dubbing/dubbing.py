@@ -24,13 +24,15 @@ import torch
 from typing import Final
 from open_dubbing import audio_processing
 from open_dubbing.speech_to_text import SpeechToText
+from open_dubbing.text_to_speech import TextToSpeech
 from open_dubbing.demucs import Demucs
 from open_dubbing.translation import Translation
 import logging
 from open_dubbing.video_processing import VideoProcessing
 from pyannote.audio import Pipeline
 import psutil
-from open_dubbing.text_to_speech import TextToSpeech
+import sys
+import resource
 
 _UTTERNACE_METADATA_FILE_NAME: Final[str] = "utterance_metadata"
 
@@ -147,18 +149,21 @@ class Dubber:
             )
         return renamed_input_file
 
-    def get_rss_memory(self):
-        process = psutil.Process(os.getpid())
-        current_rss = process.memory_info().rss / 1024**2
-        return current_rss
+    def get_maxrss_memory(self):
+        max_rss_self = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
+        if sys.platform == "darwin":
+            return max_rss_self / 1024
 
-    def log_debug_task(self, text, start_time):
+        return max_rss_self
+
+    def log_debug_task_and_getime(self, text, start_time):
         process = psutil.Process(os.getpid())
         current_rss = process.memory_info().rss / 1024**2
         _time = time.time() - start_time
         logging.info(
             f"Task '{text}': current_rss {current_rss:.2f} MB, time {_time:.2f}s"
         )
+        return _time
 
     @functools.cached_property
     def pyannote_pipeline(self) -> Pipeline:
@@ -183,11 +188,7 @@ class Dubber:
         logging.debug("Access to PyAnnote from HuggingFace verified.")
 
     def run_preprocessing(self) -> None:
-        """Splits audio/video, applies DEMUCS, and segments audio into utterances with PyAnnote.
-
-        Returns:
-            A named tuple containing paths and metadata of the processed files.
-        """
+        """Splits audio/video, applies DEMUCS, and segments audio into utterances with PyAnnote."""
         video_file, audio_file = VideoProcessing.split_audio_video(
             video_file=self.input_file, output_directory=self.output_directory
         )
@@ -389,33 +390,50 @@ class Dubber:
         """Orchestrates the entire dubbing process."""
         self._verify_api_access()
         logging.info("Dubbing process starting...")
+        times = {}
         start_time = time.time()
 
         task_start_time = time.time()
         self.run_preprocessing()
-        self.log_debug_task("Preprocessing completed", task_start_time)
-
+        times["preprocessing"] = self.log_debug_task_and_getime(
+            "Preprocessing completed", task_start_time
+        )
         logging.info("Speech to text...")
         task_start_time = time.time()
         self.run_speech_to_text()
-        self.log_debug_task("Speech to text completed", task_start_time)
+        times["stt"] = self.log_debug_task_and_getime(
+            "Speech to text completed", task_start_time
+        )
 
         task_start_time = time.time()
         self.run_translation()
-        self.log_debug_task("Translation completed", task_start_time)
+        times["translation"] = self.log_debug_task_and_getime(
+            "Translation completed", task_start_time
+        )
 
         task_start_time = time.time()
         self.run_configure_text_to_speech()
         self.run_text_to_speech()
-        self.log_debug_task("Text to speech completed", task_start_time)
+        times["tts"] = self.log_debug_task_and_getime(
+            "Text to speech completed", task_start_time
+        )
 
         task_start_time = time.time()
         self.run_save_utterance_metadata()
         self.run_postprocessing()
         self.run_cleaning()
-        self.log_debug_task("Saved completed", task_start_time)
+        times["postprocessing"] = self.log_debug_task_and_getime(
+            "Post processing completed", task_start_time
+        )
         logging.info("Dubbing process finished.")
-        end_time = time.time()
-        logging.info("Total execution time: %.2f seconds.", end_time - start_time)
+        total_time = time.time() - start_time
+        logging.info(f"Total execution time: {total_time:.2f} secs")
+        for task in times:
+            _time = times[task]
+            per = _time * 100 / total_time
+            logging.info(f" Task '{task}' in {_time:.2f} secs ({per:.2f}%)")
+
+        max_rss = self.get_maxrss_memory()
+        logging.info(f"Maximum memory used: {max_rss:.0f} MB")
         logging.info("Output files saved in: %s.", self.output_directory)
         return self.postprocessing_output
