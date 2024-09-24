@@ -295,7 +295,8 @@ class Dubber:
         output_directory = None
         for crunk in self.utterance_metadata:
             for path in [crunk["path"], crunk["dubbed_path"]]:
-                os.remove(path)
+                if os.path.exists(path):
+                    os.remove(path)
                 if not output_directory:
                     output_directory = os.path.dirname(path)
 
@@ -305,7 +306,8 @@ class Dubber:
                 "dubbed_vocals.mp3",
             ]:
                 full_path = os.path.join(output_directory, path)
-                os.remove(full_path)
+                if os.path.exists(full_path):
+                    os.remove(full_path)
 
     def run_postprocessing(self) -> None:
         """Merges dubbed audio with the original background audio and video (if applicable).
