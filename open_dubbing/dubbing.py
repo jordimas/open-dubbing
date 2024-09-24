@@ -293,8 +293,8 @@ class Dubber:
 
     def run_cleaning(self) -> None:
         output_directory = None
-        for crunk in self.utterance_metadata:
-            for path in [crunk["path"], crunk["dubbed_path"]]:
+        for chunk in self.utterance_metadata:
+            for path in [chunk["path"], chunk["dubbed_path"]]:
                 if os.path.exists(path):
                     os.remove(path)
                 if not output_directory:
