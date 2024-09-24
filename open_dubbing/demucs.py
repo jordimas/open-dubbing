@@ -26,7 +26,7 @@ class Demucs:
         audio_file: str,
         output_directory: str,
         device: str = "cpu",
-        shifts: int = 10,
+        shifts: int = 1,
         overlap: float = 0.25,
         mp3_bitrate: int = 320,
         mp3_preset: int = 2,

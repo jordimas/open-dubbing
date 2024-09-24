@@ -28,7 +28,7 @@ class TestBuildDemucsCommand:
                 "basic",
                 {},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 -j 0 --two-stems vocals --mp3"
                     " --mp3-bitrate 320 --mp3-preset 2 'audio.mp3'"
                 ),
@@ -37,7 +37,7 @@ class TestBuildDemucsCommand:
                 "flac",
                 {"flac": True, "mp3": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 -j 0 --two-stems vocals --flac"
                     " 'audio.mp3'"
                 ),
@@ -46,7 +46,7 @@ class TestBuildDemucsCommand:
                 "int24",
                 {"int24": True, "mp3": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 -j 0 --two-stems vocals --int24"
                     " 'audio.mp3'"
                 ),
@@ -55,7 +55,7 @@ class TestBuildDemucsCommand:
                 "float32",
                 {"float32": True, "mp3": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 -j 0 --two-stems vocals --float32"
                     " 'audio.mp3'"
                 ),
@@ -64,7 +64,7 @@ class TestBuildDemucsCommand:
                 "segment",
                 {"segment": 60},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 -j 0 --two-stems vocals --segment"
                     " 60 --mp3 --mp3-bitrate 320 --mp3-preset 2 'audio.mp3'"
                 ),
@@ -73,7 +73,7 @@ class TestBuildDemucsCommand:
                 "no_split",
                 {"split": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 -j 0 --two-stems vocals --no-split"
                     " --mp3 --mp3-bitrate 320 --mp3-preset 2 'audio.mp3'"
                 ),
@@ -164,7 +164,7 @@ class TestAssembleSplitAudioFilePaths:
             (
                 "Standard MP3",
                 (
-                    "python3 -m demucs.separate -o 'test' --device cpu --shifts 10"
+                    "python3 -m demucs.separate -o 'test' --device cpu --shifts 1"
                     " --overlap 0.25 --clip_mode rescale -j 0 --two-stems --segment"
                     " 60 'audio.mp3'"
                 ),
