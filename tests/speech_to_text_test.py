@@ -84,6 +84,22 @@ class TestTranscribe:
         ]
         assert transcribed_audio_chunks == expected_result
 
+    def test_transcribe_chunks_exception(self):
+        no_dubbing_phrases = ["goodbye"]
+        mock_model = MagicMock(spec=WhisperModel)
+        mock_model.side_effect = Exception("This is an error")
+        utterance_metadata = [dict(path=self.silence_audio, start=0.0, end=5.0)]
+        spt = SpeechToTextFasterWhisper()
+        spt.model = mock_model
+
+        transcribed_audio_chunks = spt.transcribe_audio_chunks(
+            utterance_metadata=utterance_metadata,
+            source_language="en",
+            no_dubbing_phrases=no_dubbing_phrases,
+        )
+        assert transcribed_audio_chunks[0]["text"] == ""
+        assert not transcribed_audio_chunks[0]["for_dubbing"]
+
 
 class TestAddSpeakerInfo:
 
@@ -140,7 +156,7 @@ class TestAddSpeakerInfo:
                 utterance_metadata, speaker_info
             )
 
-    def test__get_unique_speakers_largest_audio(self):
+    def test_get_unique_speakers_largest_audio(self):
         test_data = [
             {
                 "start": 110.73471875000001,
