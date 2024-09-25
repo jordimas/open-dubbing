@@ -293,6 +293,7 @@ class Dubber:
         logging.info("Completed converting text to speech.")
 
     def run_cleaning(self) -> None:
+        return
         output_directory = None
         for chunk in self.utterance_metadata:
             for path in [chunk["path"], chunk["dubbed_path"]]:

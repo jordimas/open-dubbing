@@ -19,6 +19,7 @@ from typing import Final, Mapping, Sequence
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
 import torch
+import logging
 
 _DEFAULT_DUBBED_VOCALS_AUDIO_FILE: Final[str] = "dubbed_vocals.mp3"
 _DEFAULT_DUBBED_AUDIO_FILE: Final[str] = "dubbed_audio"
@@ -123,20 +124,27 @@ def insert_audio_at_timestamps(
     output_directory: str,
 ) -> str:
     """Inserts audio chunks into a background audio track at specified timestamps."""
-
-    background_audio = AudioSegment.from_mp3(background_audio_file)
-    total_duration = background_audio.duration_seconds
-    output_audio = AudioSegment.silent(duration=total_duration * 1000)
-    for item in utterance_metadata:
-        audio_chunk = AudioSegment.from_mp3(item["dubbed_path"])
-        start_time = int(item["start"] * 1000)
-        output_audio = output_audio.overlay(
-            audio_chunk, position=start_time, loop=False
+    try:
+        background_audio = AudioSegment.from_mp3(background_audio_file)
+        total_duration = background_audio.duration_seconds
+        output_audio = AudioSegment.silent(duration=total_duration * 1000)
+        for item in utterance_metadata:
+            logging.debug(f'insert_audio_at_timestamps. Open: {item["dubbed_path"]}')
+            audio_chunk = AudioSegment.from_mp3(item["dubbed_path"])
+            start_time = int(item["start"] * 1000)
+            output_audio = output_audio.overlay(
+                audio_chunk, position=start_time, loop=False
+            )
+        dubbed_vocals_audio_file = os.path.join(
+            output_directory, _DEFAULT_DUBBED_VOCALS_AUDIO_FILE
         )
-    dubbed_vocals_audio_file = os.path.join(
-        output_directory, _DEFAULT_DUBBED_VOCALS_AUDIO_FILE
-    )
-    output_audio.export(dubbed_vocals_audio_file, format="mp3")
+        output_audio.export(dubbed_vocals_audio_file, format="mp3")
+    except Exception as e:
+        logging.error(
+            f"insert_audio_at_timestamps. background_audio_file: {background_audio_file}, error: {e}"
+        )
+        return background_audio
+
     return dubbed_vocals_audio_file
 
 
