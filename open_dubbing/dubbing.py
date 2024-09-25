@@ -116,6 +116,7 @@ class Dubber:
         stt: SpeechToText,
         device: str,
         cpu_threads: int = 0,
+        debug: bool = False,
         pyannote_model: str = _DEFAULT_PYANNOTE_MODEL,
         number_of_steps: int = _NUMBER_OF_STEPS,
     ) -> None:
@@ -131,6 +132,7 @@ class Dubber:
         self.stt = stt
         self.device = device
         self.cpu_threads = cpu_threads
+        self.debug = debug
 
         if cpu_threads > 0:
             torch.set_num_threads(cpu_threads)
@@ -293,6 +295,9 @@ class Dubber:
         logging.info("Completed converting text to speech.")
 
     def run_cleaning(self) -> None:
+        if self.debug:
+            return
+
         output_directory = None
         for chunk in self.utterance_metadata:
             for path in [chunk["path"], chunk["dubbed_path"]]:

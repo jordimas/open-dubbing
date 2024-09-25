@@ -195,6 +195,11 @@ def main():
         default=0,
         help="number of threads used for CPU inference (if not specified uses defaults for each framework)",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="keep intemediate files and generate specific files for debugging",
+    )
 
     args = parser.parse_args()
 
@@ -244,6 +249,7 @@ def main():
         stt=stt,
         device=args.device,
         cpu_threads=args.cpu_threads,
+        debug=args.debug,
     )
     logging.info(
         f"Processing '{args.input_file}' file with tts '{args.tts}', sst {args.stt} and device '{args.device}'"
