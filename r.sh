@@ -1,4 +1,4 @@
-rm *.log
+rm -f open_dubbing.log
 pip install .
 rm -r -f output/
 branch_name=$(git rev-parse --abbrev-ref HEAD)

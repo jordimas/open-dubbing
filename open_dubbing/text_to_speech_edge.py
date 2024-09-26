@@ -44,7 +44,7 @@ class TextToSpeechEdge(TextToSpeech):
         results["Female"] = voices[0]["ShortName"]
 
         logging.debug(
-            f"text_to_speech_edget.get_available_voices: {results} for language {language_code}"
+            f"text_to_speech_edge.get_available_voices: {results} for language {language_code}"
         )
 
         return results
@@ -54,8 +54,13 @@ class TextToSpeechEdge(TextToSpeech):
         iso_639_1 = o.pt1
         return iso_639_1
 
-    async def _save(self, text, assigned_voice, output_filename):
-        communicate = edge_tts.Communicate(text, assigned_voice)
+    def _does_voice_supports_speeds(self):
+        return True
+
+    async def _save(self, text, speed, assigned_voice, output_filename):
+        per = (100 * speed) - 100
+        str_per = f"+{per:0.0f}%"
+        communicate = edge_tts.Communicate(text, assigned_voice, rate=str_per)
         await communicate.save(output_filename)
 
     def _convert_text_to_speech(
@@ -71,10 +76,10 @@ class TextToSpeechEdge(TextToSpeech):
     ) -> str:
 
         logging.debug(
-            f"text_to_speech.client_edge.synthesize_speech: text: {text}, voice: {assigned_voice}"
+            f"text_to_speech.client_edge.synthesize_speech: text: {text}, speed: {speed}, voice: {assigned_voice}"
         )
 
-        asyncio.run(self._save(text, assigned_voice, output_filename))
+        asyncio.run(self._save(text, speed, assigned_voice, output_filename))
         logging.info(
             f"text_to_speech.client_edge.synthesize_speech: assigned_voice: {assigned_voice}, output_filename: '{output_filename}'"
         )
