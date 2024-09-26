@@ -60,13 +60,9 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
             audio_input, sampling_rate=16000, return_tensors="pt"
         ).input_features
 
-        forced_bos_token_id = self._processor.tokenizer.get_decoder_prompt_ids(
-            language=source_language_iso_639_1
-        )
-
         with torch.no_grad():
             generated_ids = self._model.generate(
-                input_features, forced_bos_token_id=forced_bos_token_id
+                input_features, language=source_language_iso_639_1
             )
         transcription = self._processor.batch_decode(
             generated_ids, skip_special_tokens=True
