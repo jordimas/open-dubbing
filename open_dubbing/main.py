@@ -141,7 +141,7 @@ def main():
     )
     parser.add_argument(
         "--output_directory",
-        required=True,
+        default="output/",
         help="Directory to save output files.",
     )
     parser.add_argument(
