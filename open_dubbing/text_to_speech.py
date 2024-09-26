@@ -34,7 +34,6 @@ class TextToSpeech(ABC):
     def get_available_voices(self, language_code: str) -> Mapping[str, str]:
         pass
 
-    # TODO
     def assign_voices(
         self,
         *,
@@ -128,7 +127,7 @@ class TextToSpeech(ABC):
         dubbed_audio = AudioSegment.from_file(dubbed_file)
         dubbed_duration = dubbed_audio.duration_seconds
         r = dubbed_duration / reference_length
-        logging.debug(f"TextToSpeech._calculate_target_utterance_speed: {r}")
+        logging.debug(f"text_to_speech._calculate_target_utterance_speed: {r}")
         return r
 
     def create_speaker_to_paths_mapping(
@@ -154,7 +153,7 @@ class TextToSpeech(ABC):
         *,
         reference_length: float,
         dubbed_file: str,
-        speed: float | None = None,
+        speed: float,
         chunk_size: int = _DEFAULT_CHUNK_SIZE,
     ) -> None:
         """Adjusts the speed of an MP3 file to match the reference file duration.
@@ -164,31 +163,22 @@ class TextToSpeech(ABC):
         """
 
         dubbed_audio = AudioSegment.from_file(dubbed_file)
-        if not speed:
-            speed = self._calculate_target_utterance_speed(
-                reference_length=reference_length, dubbed_file=dubbed_file
-            )
-        if speed <= 1.0:
-            return
         logging.info(
             "Adjusting audio speed will prevent overlaps of utterances. However,"
             " it might change the voice sligthly."
         )
         crossfade = max(1, chunk_size // 2)
-        MAX_SPEED = 1.3
-        if speed > MAX_SPEED:
-            logging.debug(
-                f"TextToSpeech.adjust_audio_speed: Reduced speed from {speed} to {MAX_SPEED}"
-            )
-            speed = MAX_SPEED
 
         logging.debug(
-            f"TextToSpeech.adjust_audio_speed: dubbed_audio: {dubbed_file}, speed: {speed}, chunk_size: {chunk_size}, crossfade: {crossfade}"
+            f"text_to_speech.adjust_audio_speed: dubbed_audio: {dubbed_file}, speed: {speed}, chunk_size: {chunk_size}, crossfade: {crossfade}"
         )
         output_audio = speedup(
             dubbed_audio, speed, chunk_size=chunk_size, crossfade=crossfade
         )
         output_audio.export(dubbed_file, format="mp3")
+
+    def _does_voice_supports_speeds(self):
+        return False
 
     def dub_utterances(
         self,
@@ -200,6 +190,7 @@ class TextToSpeech(ABC):
     ) -> Sequence[Mapping[str, str | float]]:
         """Processes a list of utterance metadata, generating dubbed audio files."""
 
+        logging.debug(f"TextToSpeech.dub_utterances: adjust_speed: {adjust_speed}")
         updated_utterance_metadata = []
         for utterance in utterance_metadata:
             utterance_copy = utterance.copy()
@@ -223,43 +214,55 @@ class TextToSpeech(ABC):
                         output_directory,
                         f"dubbed_chunk_{utterance['start']}_{utterance['end']}.mp3",
                     )
+
+                speed = utterance_copy["speed"]
                 dubbed_path = self._convert_text_to_speech(
                     assigned_voice=assigned_voice,
                     target_language=target_language,
                     output_filename=output_filename,
                     text=text,
                     pitch=utterance_copy["pitch"],
-                    speed=utterance_copy["speed"],
+                    speed=speed,
                     volume_gain_db=utterance_copy["volume_gain_db"],
                 )
-                condition_one = adjust_speed and False
                 assigned_voice = utterance_copy.get("assigned_voice", None)
                 assigned_voice = assigned_voice if assigned_voice else ""
-                condition_two = (
-                    adjust_speed  # Always on since Coqui does not support voice speed
-                )
+                support_speeds = self._does_voice_supports_speeds()
                 speed = self._calculate_target_utterance_speed(
                     reference_length=reference_length, dubbed_file=dubbed_path
                 )
-                if condition_one or condition_two:
-                    chunk_size = utterance_copy.get("chunk_size", _DEFAULT_CHUNK_SIZE)
-                    self._adjust_audio_speed(
-                        reference_length=reference_length,
-                        dubbed_file=dubbed_path,
-                        chunk_size=chunk_size,
-                    )
-                    utterance_copy["chunk_size"] = chunk_size
-                if speed != 1.0 and not False and not condition_two:
+                logging.debug(f"support_speeds: {support_speeds}, speed: {speed}")
+                if speed > 1.0:
+                    MAX_SPEED = 1.3
+                    if speed > MAX_SPEED:
+                        logging.debug(
+                            f"text_to_speech.dub_utterances: Reduced speed from {speed} to {MAX_SPEED}"
+                        )
+                        speed = MAX_SPEED
+
                     utterance_copy["speed"] = speed
-                    dubbed_path = self._convert_text_to_speech(
-                        assigned_voice=assigned_voice,
-                        target_language=target_language,
-                        output_filename=output_filename,
-                        text=text,
-                        pitch=utterance_copy["pitch"],
-                        speed=speed,
-                        volume_gain_db=utterance_copy["volume_gain_db"],
-                    )
+                    if support_speeds:
+                        dubbed_path = self._convert_text_to_speech(
+                            assigned_voice=assigned_voice,
+                            target_language=target_language,
+                            output_filename=output_filename,
+                            text=text,
+                            pitch=utterance_copy["pitch"],
+                            speed=speed,
+                            volume_gain_db=utterance_copy["volume_gain_db"],
+                        )
+                    else:
+                        chunk_size = utterance_copy.get(
+                            "chunk_size", _DEFAULT_CHUNK_SIZE
+                        )
+                        self._adjust_audio_speed(
+                            reference_length=reference_length,
+                            dubbed_file=dubbed_path,
+                            speed=speed,
+                            chunk_size=chunk_size,
+                        )
+                        utterance_copy["chunk_size"] = chunk_size
+
             utterance_copy["dubbed_path"] = dubbed_path
             updated_utterance_metadata.append(utterance_copy)
         return updated_utterance_metadata
