@@ -18,7 +18,7 @@ import torch
 from pydub import AudioSegment
 import numpy as np
 from open_dubbing.speech_to_text import SpeechToText
-from iso639 import Lang
+import array
 
 
 class SpeechToTextWhisperTransfomers(SpeechToText):
@@ -46,7 +46,7 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
         # To prevent HuggingFace Whisper hallucinations with very short audios
         if len(audio) < 1000 * MIN_SECS:
             logging.warn(
-                f"SpeechToTextWhisperTransfomers._transcribe. Audio is less than {MIN_SECS} second, skipping transcription of '{vocals_filepath}'."
+                f"speech_to_text_whisper_transfomers._transcribe. Audio is less than {MIN_SECS} second, skipping transcription of '{vocals_filepath}'."
             )
             return ""
 
@@ -60,21 +60,45 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
             audio_input, sampling_rate=16000, return_tensors="pt"
         ).input_features
 
-        forced_bos_token_id = self._processor.tokenizer.get_decoder_prompt_ids(
-            language=source_language_iso_639_1
-        )
-
         with torch.no_grad():
             generated_ids = self._model.generate(
-                input_features, forced_bos_token_id=forced_bos_token_id
+                input_features, language=source_language_iso_639_1
             )
         transcription = self._processor.batch_decode(
             generated_ids, skip_special_tokens=True
         )[0]
         logging.debug(
-            f"SpeechToTextWhisperTransfomers._transcribe. transcription: {transcription}, file {vocals_filepath}"
+            f"speech_to_text_whisper_transfomers._transcribe. transcription: {transcription}, file {vocals_filepath}"
         )
         return transcription
+
+    def _get_audio_language(self, audio: array.array) -> str:
+        audio_input = np.array(audio).astype(np.float32) / 32768.0
+
+        # Preprocess the audio input
+        input_features = self._processor(
+            audio_input, sampling_rate=16000, return_tensors="pt"
+        ).input_features
+
+        with torch.no_grad():
+            generated_ids = self._model.generate(input_features)
+
+        # Decode the transcription including special tokens to capture the language token
+        transcription_with_tokens = self._processor.batch_decode(
+            generated_ids, skip_special_tokens=False
+        )[0]
+
+        detected_language = None
+        if "|" in transcription_with_tokens:
+            for token in transcription_with_tokens.split("|"):
+                if (len(token) == 2 or len(token) == 3) and token.isalpha():
+                    detected_language = self._get_iso_639_3(token)
+                    break
+        logging.debug(
+            f"speech_to_text_whisper_transfomers._get_audio_language. Detected language: {detected_language}"
+        )
+
+        return detected_language
 
     def get_languages(self):
         languages = [
@@ -182,10 +206,6 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
 
         iso_639_3 = []
         for language in languages:
-            if language == "jw":
-                language = "jv"
-
-            o = Lang(language)
-            pt3 = o.pt3
+            pt3 = self._get_iso_639_3(language)
             iso_639_3.append(pt3)
         return iso_639_3

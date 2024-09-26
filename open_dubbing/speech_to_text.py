@@ -17,6 +17,8 @@ import logging
 from iso639 import Lang
 from abc import ABC, abstractmethod
 from open_dubbing.voice_gender_classifier import VoiceGenderClassifier
+from pydub import AudioSegment
+import array
 
 
 class SpeechToText(ABC):
@@ -46,6 +48,14 @@ class SpeechToText(ABC):
         o = Lang(iso_639_3)
         iso_639_1 = o.pt1
         return iso_639_1
+
+    def _get_iso_639_3(self, iso_639_1: str):
+        if iso_639_1 == "jw":
+            iso_639_1 = "jv"
+
+        o = Lang(iso_639_1)
+        iso_639_3 = o.pt3
+        return iso_639_3
 
     @abstractmethod
     def _transcribe(
@@ -163,3 +173,16 @@ class SpeechToText(ABC):
             new_utterance["ssml_gender"] = ssml_gender
             updated_utterance_metadata.append(new_utterance)
         return updated_utterance_metadata
+
+    @abstractmethod
+    def _get_audio_language(self, audio: array.array) -> str:
+        pass
+
+    def detect_language(self, filename: str) -> str:
+        DURATION_SECS = 30
+        audio = AudioSegment.from_file(filename)
+        audio = audio.set_channels(1)
+        audio = audio.set_frame_rate(16000)
+
+        first_seconds = audio[: DURATION_SECS * 1000].get_array_of_samples()
+        return self._get_audio_language(first_seconds)

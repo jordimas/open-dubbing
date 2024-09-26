@@ -86,7 +86,7 @@ pip install open_dubbing
 
 1. Go to and Accept [`pyannote/segmentation-3.0`](https://hf.co/pyannote/segmentation-3.0) user conditions
 2. Accept [`pyannote/speaker-diarization-3.1`](https://hf.co/pyannote/speaker-diarization-3.1) user conditions
-3. Go to and  access token at [`hf.co/settings/tokens`](https://hf.co/settings/tokens).
+3. Go to and access token at [`hf.co/settings/tokens`](https://hf.co/settings/tokens).
 
 # Usage
 
@@ -94,7 +94,7 @@ Quick start
 
 ```shell
 
- open-dubbing  --input_file video.mp4 --source_language=eng --target_language=cat --hugging_face_token=TOKEN
+ open-dubbing  --input_file video.mp4 --target_language=cat --hugging_face_token=TOKEN
 ```
 Where _TOKEN_ is the HuggingFace token that allows to access the models
 

@@ -146,7 +146,6 @@ def main():
     )
     parser.add_argument(
         "--source_language",
-        required=True,
         help="Source language (ISO 639-3)",
     )
     parser.add_argument(
@@ -236,7 +235,12 @@ def main():
         stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
 
     stt.load_model()
-    check_languages(args.source_language, args.target_language, tts, stt)
+    source_language = args.source_language
+    if not source_language:
+        source_language = stt.detect_language(args.input_file)
+        logging.info(f"Detected language '{source_language}'")
+
+    check_languages(source_language, args.target_language, tts, stt)
 
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
@@ -244,7 +248,7 @@ def main():
     dubber = Dubber(
         input_file=args.input_file,
         output_directory=args.output_directory,
-        source_language=args.source_language,
+        source_language=source_language,
         target_language=args.target_language,
         hugging_face_token=hugging_face_token,
         tts=tts,

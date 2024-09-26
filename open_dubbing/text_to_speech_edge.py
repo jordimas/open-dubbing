@@ -75,12 +75,8 @@ class TextToSpeechEdge(TextToSpeech):
         volume_gain_db: float,
     ) -> str:
 
-        logging.debug(
-            f"text_to_speech.client_edge.synthesize_speech: text: {text}, speed: {speed}, voice: {assigned_voice}"
-        )
-
         asyncio.run(self._save(text, speed, assigned_voice, output_filename))
-        logging.info(
+        logging.debug(
             f"text_to_speech.client_edge.synthesize_speech: assigned_voice: {assigned_voice}, output_filename: '{output_filename}'"
         )
         return output_filename

@@ -14,8 +14,9 @@
 
 from faster_whisper import WhisperModel
 import logging
-from iso639 import Lang
 from open_dubbing.speech_to_text import SpeechToText
+import array
+import numpy as np
 
 
 class SpeechToTextFasterWhisper(SpeechToText):
@@ -35,11 +36,7 @@ class SpeechToTextFasterWhisper(SpeechToText):
     def get_languages(self):
         iso_639_3 = []
         for language in self.model.supported_languages:
-            if language == "jw":
-                language = "jv"
-
-            o = Lang(language)
-            pt3 = o.pt3
+            pt3 = self._get_iso_639_3(language)
             iso_639_3.append(pt3)
         return iso_639_3
 
@@ -54,3 +51,11 @@ class SpeechToTextFasterWhisper(SpeechToText):
             source_language_iso_639_1,
         )
         return " ".join(segment.text for segment in segments)
+
+    def _get_audio_language(self, audio: array.array) -> str:
+        _, info = self.model.transcribe(np.array(audio))
+        detected_language = self._get_iso_639_3(info.language)
+        logging.debug(
+            f"speech_to_text_faster_whisper._get_audio_language. Detected language: {detected_language}"
+        )
+        return detected_language
