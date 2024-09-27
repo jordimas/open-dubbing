@@ -15,24 +15,28 @@
 import dataclasses
 import functools
 import json
+import logging
 import os
 import re
+import resource
 import shutil
+import sys
 import tempfile
 import time
-import torch
+
 from typing import Final
+
+import psutil
+import torch
+
+from pyannote.audio import Pipeline
+
 from open_dubbing import audio_processing
+from open_dubbing.demucs import Demucs
 from open_dubbing.speech_to_text import SpeechToText
 from open_dubbing.text_to_speech import TextToSpeech
-from open_dubbing.demucs import Demucs
 from open_dubbing.translation import Translation
-import logging
 from open_dubbing.video_processing import VideoProcessing
-from pyannote.audio import Pipeline
-import psutil
-import sys
-import resource
 
 _UTTERNACE_METADATA_FILE_NAME: Final[str] = "utterance_metadata"
 

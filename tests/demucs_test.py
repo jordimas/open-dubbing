@@ -14,8 +14,11 @@
 
 import subprocess
 import unittest.mock as mock
-import pytest
+
 from unittest.mock import patch
+
+import pytest
+
 from open_dubbing.demucs import Demucs
 
 

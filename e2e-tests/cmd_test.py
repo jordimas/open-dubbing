@@ -1,6 +1,7 @@
-import tempfile
-import os
 import json
+import os
+import tempfile
+
 from faster_whisper import WhisperModel
 
 
@@ -27,7 +28,7 @@ class TestCmd:
                 f"--output_directory='{directory}' "
                 "--source_language=eng "
                 "--target_language=cat "
-                "--tts=edge"
+                "--tts=coqui"
             )
             cmd = f"cd {directory} && {command}"
             os.system(cmd)

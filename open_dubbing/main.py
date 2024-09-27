@@ -13,21 +13,22 @@
 # limitations under the License.
 
 import argparse
-
-import sys
-import os
-from open_dubbing.dubbing import Dubber
 import logging
+import os
+import sys
+
+from iso639 import Lang
+
+from open_dubbing.coqui import Coqui
+from open_dubbing.dubbing import Dubber
 from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
 from open_dubbing.speech_to_text_whisper_transformers import (
     SpeechToTextWhisperTransfomers,
 )
-from open_dubbing.translation import Translation
-from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
-from iso639 import Lang
-from open_dubbing.coqui import Coqui
+from open_dubbing.text_to_speech_mms import TextToSpeechMMS
+from open_dubbing.translation import Translation
 
 
 def _init_logging():
@@ -141,7 +142,7 @@ def main():
     )
     parser.add_argument(
         "--output_directory",
-        required=True,
+        default="output/",
         help="Directory to save output files.",
     )
     parser.add_argument(

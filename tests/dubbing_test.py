@@ -16,8 +16,10 @@
 
 import os
 import tempfile
-from open_dubbing import dubbing
+
 import pytest
+
+from open_dubbing import dubbing
 
 
 class TestRenameInputFile:

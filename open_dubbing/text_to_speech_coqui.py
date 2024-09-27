@@ -13,10 +13,13 @@
 # limitations under the License.
 
 import logging
-from open_dubbing.text_to_speech import TextToSpeech
-from open_dubbing.coqui import Coqui
-from iso639 import Lang
+
 from typing import Mapping
+
+from iso639 import Lang
+
+from open_dubbing.coqui import Coqui
+from open_dubbing.text_to_speech import TextToSpeech
 
 
 class TextToSpeechCoqui(TextToSpeech):

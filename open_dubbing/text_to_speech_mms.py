@@ -13,12 +13,16 @@
 # limitations under the License.
 
 import logging
-from open_dubbing.text_to_speech import TextToSpeech
-from transformers import VitsModel, AutoTokenizer
-import torch
+
+from typing import Mapping
+
 import numpy as np
 import scipy.io.wavfile
-from typing import Mapping
+import torch
+
+from transformers import AutoTokenizer, VitsModel
+
+from open_dubbing.text_to_speech import TextToSpeech
 
 
 class TextToSpeechMMS(TextToSpeech):

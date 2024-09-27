@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
-from typing import Final, Mapping, Sequence
-import logging
 import json
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
+import logging
+import re
 import time
 
+from typing import Final, Mapping, Sequence
+
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 
 _BREAK_MARKER: Final[str] = "<BREAK>"
 
