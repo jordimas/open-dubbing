@@ -17,11 +17,13 @@
 import os
 import tempfile
 
-from open_dubbing.video_processing import VideoProcessing
+import numpy as np
+
 from moviepy.audio.AudioClip import AudioArrayClip
 from moviepy.editor import ColorClip
 from moviepy.video.compositing.CompositeVideoClip import clips_array
-import numpy as np
+
+from open_dubbing.video_processing import VideoProcessing
 
 
 def _create_mock_video(directory: str, video_duration: int = 5) -> str:

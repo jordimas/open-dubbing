@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-from transformers import WhisperProcessor, WhisperForConditionalGeneration
-import torch
-from pydub import AudioSegment
-import numpy as np
-from open_dubbing.speech_to_text import SpeechToText
 import array
+import logging
+
+import numpy as np
+import torch
+
+from pydub import AudioSegment
+from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
+from open_dubbing.speech_to_text import SpeechToText
 
 
 class SpeechToTextWhisperTransfomers(SpeechToText):

@@ -26,6 +26,11 @@ jobs:
         run: |
           flake8 open_dubbing/ tests/
 
+      - name: Check code with isort
+        if: ${{ always() }}
+        run: |
+          isort --check-only open_dubbing/ tests/
+
   run-tests:
     environment: CI/CD
     runs-on: ${{ matrix.os }}

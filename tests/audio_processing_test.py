@@ -16,12 +16,16 @@
 
 import os
 import tempfile
+
 from unittest.mock import MagicMock
-from open_dubbing import audio_processing
-from moviepy.audio.AudioClip import AudioArrayClip
+
 import numpy as np
+
+from moviepy.audio.AudioClip import AudioArrayClip
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
+
+from open_dubbing import audio_processing
 
 
 class TestCreatePyannoteTimestamps:

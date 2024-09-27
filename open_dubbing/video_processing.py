@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import os
+
 from typing import Final
+
 from moviepy.editor import AudioFileClip, VideoFileClip, concatenate_videoclips
 
 _DEFAULT_FPS: Final[int] = 30

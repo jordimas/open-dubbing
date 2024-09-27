@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from TTS.api import TTS
-import re
 import logging
+import re
 import subprocess
+
+from TTS.api import TTS
 
 
 class Coqui:

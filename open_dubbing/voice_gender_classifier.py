@@ -12,18 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
+
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+from pydub import AudioSegment
 from transformers import Wav2Vec2Processor
 from transformers.models.wav2vec2.modeling_wav2vec2 import (
     Wav2Vec2Model,
     Wav2Vec2PreTrainedModel,
 )
-import torch.nn.functional as F
-from pydub import AudioSegment
-import logging
 
 
 class ModelHead(nn.Module):

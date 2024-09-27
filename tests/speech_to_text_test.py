@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import namedtuple
+import os
 import tempfile
+
+from collections import namedtuple
 from unittest.mock import MagicMock
+
+import numpy as np
+import pytest
+
 from faster_whisper import WhisperModel
 from moviepy.audio.AudioClip import AudioArrayClip
-import numpy as np
+
 from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
-import pytest
-import os
 
 
 class TestTranscribe:

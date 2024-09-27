@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+
 from open_dubbing.speech_to_text_whisper_transformers import (
     SpeechToTextWhisperTransfomers,
 )

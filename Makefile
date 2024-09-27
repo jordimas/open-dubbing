@@ -1,8 +1,11 @@
 .PHONY: dev run-tests
 
+PATHS = open_dubbing/ tests/ e2e-tests/
+
 dev:
-	python -m black open_dubbing/ tests/ e2e-tests/
-	python -m flake8 open_dubbing/ tests/ e2e-tests/
+	python -m black $(PATHS)
+	python -m flake8 $(PATHS)
+	python -m isort $(PATHS)
 
 run-tests:
 	python -m pytest tests/

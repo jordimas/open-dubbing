@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Mapping, Sequence
-import logging
-from iso639 import Lang
-from abc import ABC, abstractmethod
-from open_dubbing.voice_gender_classifier import VoiceGenderClassifier
-from pydub import AudioSegment
 import array
+import logging
+
+from abc import ABC, abstractmethod
+from typing import Mapping, Sequence
+
+from iso639 import Lang
+from pydub import AudioSegment
+
+from open_dubbing.voice_gender_classifier import VoiceGenderClassifier
 
 
 class SpeechToText(ABC):

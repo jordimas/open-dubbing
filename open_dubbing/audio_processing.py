@@ -15,10 +15,13 @@
 """An audio processing module of Ariel package from the Google EMEA gTech Ads Data Science."""
 
 import os
+
 from typing import Final, Mapping, Sequence
+
+import torch
+
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
-import torch
 
 _DEFAULT_DUBBED_VOCALS_AUDIO_FILE: Final[str] = "dubbed_vocals.mp3"
 _DEFAULT_DUBBED_AUDIO_FILE: Final[str] = "dubbed_audio"

@@ -15,11 +15,15 @@
 
 import os
 import tempfile
-import pytest
-from open_dubbing.text_to_speech import TextToSpeech
-from pydub import AudioSegment
-from unittest.mock import patch
+
 from typing import Mapping
+from unittest.mock import patch
+
+import pytest
+
+from pydub import AudioSegment
+
+from open_dubbing.text_to_speech import TextToSpeech
 
 
 class TextToSpeechUT(TextToSpeech):

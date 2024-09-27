@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from faster_whisper import WhisperModel
-import logging
-from open_dubbing.speech_to_text import SpeechToText
 import array
+import logging
+
 import numpy as np
+
+from faster_whisper import WhisperModel
+
+from open_dubbing.speech_to_text import SpeechToText
 
 
 class SpeechToTextFasterWhisper(SpeechToText):

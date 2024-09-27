@@ -1,6 +1,7 @@
-import tempfile
-import os
 import json
+import os
+import tempfile
+
 from faster_whisper import WhisperModel
 
 

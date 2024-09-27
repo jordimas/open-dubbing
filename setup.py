@@ -1,8 +1,9 @@
-import pathlib
-from setuptools import setup
-import pkg_resources
 import os
+import pathlib
+
+import pkg_resources
 import setuptools
+from setuptools import setup
 
 HERE = pathlib.Path(__file__).parent
 
@@ -39,7 +40,7 @@ setup(
         )
     ],
     extras_require={
-        "dev": ["flake8==7.*", "black==24.*", "pytest"],
+        "dev": ["flake8==7.*", "black==24.*", "pytest==8.*", "isort==5.13"],
     },
     entry_points={
         "console_scripts": [

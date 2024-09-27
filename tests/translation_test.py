@@ -14,8 +14,9 @@
 
 """Tests for utility functions in translation.py."""
 
-from open_dubbing.translation import Translation
 import pytest
+
+from open_dubbing.translation import Translation
 
 
 class TestGenerateScript:

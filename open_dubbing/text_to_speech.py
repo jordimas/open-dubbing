@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
+
+from abc import ABC, abstractmethod
 from typing import Final, Mapping, Sequence
+
 from pydub import AudioSegment
 from pydub.effects import speedup
-import logging
-from abc import ABC, abstractmethod
 
 _DEFAULT_CHUNK_SIZE: Final[int] = 150
 

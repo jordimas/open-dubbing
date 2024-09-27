@@ -12,14 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import logging
-from open_dubbing.text_to_speech import TextToSpeech
+import re
+
 from typing import Mapping
+
 import edge_tts
+
 from edge_tts import VoicesManager, list_voices
 from iso639 import Lang
-import asyncio
-import re
+
+from open_dubbing.text_to_speech import TextToSpeech
 
 
 class TextToSpeechEdge(TextToSpeech):
