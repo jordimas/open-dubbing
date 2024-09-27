@@ -19,7 +19,7 @@ import os
 from typing import Final, Mapping, Sequence
 
 import torch
-
+import logging
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
 
@@ -165,21 +165,29 @@ def merge_background_and_vocals(
       The path to the output audio file with merged dubbed vocals and original
       background audio.
     """
+    try:
+        background = AudioSegment.from_mp3(background_audio_file)
+        vocals = AudioSegment.from_mp3(dubbed_vocals_audio_file)
+        background = background.normalize()
+        vocals = vocals.normalize()
+        background = background + background_volume_adjustment
+        vocals = vocals + vocals_volume_adjustment
+        shortest_length = min(len(background), len(vocals))
+        background = background[:shortest_length]
+        vocals = vocals[:shortest_length]
+        mixed_audio = background.overlay(vocals)
+        target_language_suffix = "_" + target_language.replace("-", "_").lower()
+        dubbed_audio_file = os.path.join(
+            output_directory,
+            _DEFAULT_DUBBED_AUDIO_FILE
+            + target_language_suffix
+            + _DEFAULT_OUTPUT_FORMAT,
+        )
+        mixed_audio.export(dubbed_audio_file, format="mp3")
+    except Exception as e:
+        logging.error(
+            f"merge_background_and_vocals. background_audio_file: {background_audio_file}, dubbed_vocals_audio_file: {dubbed_vocals_audio_file}, error: {e}"
+        )
+        return background_audio_file
 
-    background = AudioSegment.from_mp3(background_audio_file)
-    vocals = AudioSegment.from_mp3(dubbed_vocals_audio_file)
-    background = background.normalize()
-    vocals = vocals.normalize()
-    background = background + background_volume_adjustment
-    vocals = vocals + vocals_volume_adjustment
-    shortest_length = min(len(background), len(vocals))
-    background = background[:shortest_length]
-    vocals = vocals[:shortest_length]
-    mixed_audio = background.overlay(vocals)
-    target_language_suffix = "_" + target_language.replace("-", "_").lower()
-    dubbed_audio_file = os.path.join(
-        output_directory,
-        _DEFAULT_DUBBED_AUDIO_FILE + target_language_suffix + _DEFAULT_OUTPUT_FORMAT,
-    )
-    mixed_audio.export(dubbed_audio_file, format="mp3")
     return dubbed_audio_file
