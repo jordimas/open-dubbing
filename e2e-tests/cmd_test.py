@@ -2,6 +2,8 @@ import json
 import os
 import tempfile
 
+import pytest
+
 from faster_whisper import WhisperModel
 
 
@@ -16,7 +18,8 @@ class TestCmd:
             text += segment.text
         return text.strip(), info.language
 
-    def test_translations_with_coqui(self):
+    @pytest.mark.parametrize("tts_engine", ["coqui", "mms", "edge"])
+    def test_translations_with_tts(self, tts_engine):
         full_path = os.path.realpath(__file__)
         path, _ = os.path.split(full_path)
 
@@ -28,7 +31,7 @@ class TestCmd:
                 f"--output_directory='{directory}' "
                 "--source_language=eng "
                 "--target_language=cat "
-                "--tts=coqui"
+                f"--tts={tts_engine}"
             )
             cmd = f"cd {directory} && {command}"
             os.system(cmd)

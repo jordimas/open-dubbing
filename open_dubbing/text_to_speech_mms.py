@@ -48,7 +48,7 @@ class TextToSpeechMMS(TextToSpeech):
     ) -> str:
 
         logging.debug(f"TextToSpeechMMS._convert_text_to_speech: {text}")
-        local_files_only = True
+        local_files_only = False
 
         # Load pre-trained model and tokenizer
         model = VitsModel.from_pretrained(
