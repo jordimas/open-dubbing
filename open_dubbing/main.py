@@ -29,6 +29,7 @@ from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.translation import Translation
+from open_dubbing.video_processing import VideoProcessing
 
 
 def _init_logging():
@@ -208,6 +209,9 @@ def main():
     check_is_a_video(args.input_file)
 
     hugging_face_token = get_token(args.hugging_face_token)
+
+    if not VideoProcessing.is_ffmpeg_installed():
+        raise ValueError("You need to have ffmpeg (which includes ffprobe) installed.")
 
     if args.tts == "mms":
         tts = TextToSpeechMMS(args.device)
