@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.4]
+
+### Added
+
+- Check if ffmpeg is installed and report if it is not
+
 ## [0.0.3]
 
 ### Added
