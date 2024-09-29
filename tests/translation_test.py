@@ -19,7 +19,7 @@ import pytest
 from open_dubbing.translation import Translation
 
 
-class TestGenerateScript:
+class TestTranslation:
 
     @pytest.mark.parametrize(
         "test_name, utterance_metadata, expected_script",
@@ -86,9 +86,6 @@ class TestGenerateScript:
             result == expected_script
         ), f"Failed for {test_name}: expected {expected_script}, got {result}"
 
-
-class TestAddTranslations:
-
     @pytest.mark.parametrize(
         "utterance_metadata, translated_script, expected_translated_metadata",
         [
@@ -139,3 +136,10 @@ class TestAddTranslations:
             translated_script=translated_script,
         )
         assert updated_metadata == expected_translated_metadata
+
+    def test_get_nllb_language(self):
+        translation = Translation()
+
+        assert translation._get_nllb_language("eng") == "eng_Latn"
+        assert translation._get_nllb_language("ukr") == "ukr_Cyrl"
+        assert translation._get_nllb_language("cat") == "cat_Latn"

@@ -82,6 +82,17 @@ class Translation:
         result = _BREAK_MARKER.join(translated_parts)
         return result
 
+    def _get_nllb_language(self, source_language_iso_639_3: str) -> str:
+        tokenizer = self._get_tokenizer_nllb()
+        nllb_languages = tokenizer.lang_code_to_id.keys()
+        for nllb_language in nllb_languages:
+            if nllb_language[:3] == source_language_iso_639_3:
+                return nllb_language
+
+        raise ValueError(
+            f"Language {source_language_iso_639_3} not supported by Meta NLLB translation model"
+        )
+
     def translate_script(
         self,
         *,
@@ -113,8 +124,8 @@ class Translation:
             "translation",
             model=model,
             tokenizer=tokenizer,
-            src_lang=f"{source_language}" + "_Latn",  # TODO: Fix for other langs
-            tgt_lang=f"{target_language}" + "_Latn",
+            src_lang=self._get_nllb_language(source_language),
+            tgt_lang=self._get_nllb_language(target_language),
             max_length=1024,
         )
 
