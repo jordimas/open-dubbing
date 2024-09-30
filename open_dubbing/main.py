@@ -28,7 +28,7 @@ from open_dubbing.speech_to_text_whisper_transformers import (
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
-from open_dubbing.translation import Translation
+from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
 
@@ -59,9 +59,9 @@ def _init_logging():
     logging.getLogger("pydub.converter").setLevel(logging.ERROR)
 
 
-def check_languages(source_language, target_language, _tts, _sst):
+def check_languages(source_language, target_language, _tts, translation, _sst):
     spt = _sst.get_languages()
-    trans = Translation().get_languages()
+    trans = translation.get_languages()
     tts = _tts.get_languages()
 
     if source_language not in spt:
@@ -118,11 +118,11 @@ def _get_language_names(languages_iso_639_3):
     return sorted(names)
 
 
-def list_supported_languages(_tts, device):  # TODO: Not used
+def list_supported_languages(_tts, translation, device):  # TODO: Not used
     s = SpeechToTextFasterWhisper(device=device)
     s.load_model()
     spt = s.get_languages()
-    trans = Translation().get_languages()
+    trans = translation.get_languages()
     tts = _tts.get_languages()
 
     source = _get_language_names(set(spt).intersection(set(trans)))
@@ -245,7 +245,9 @@ def main():
         source_language = stt.detect_language(args.input_file)
         logging.info(f"Detected language '{source_language}'")
 
-    check_languages(source_language, args.target_language, tts, stt)
+    translation = TranslationNLLB(args.device)
+    translation.load_model()
+    check_languages(source_language, args.target_language, tts, translation, stt)
 
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
@@ -257,6 +259,7 @@ def main():
         target_language=args.target_language,
         hugging_face_token=hugging_face_token,
         tts=tts,
+        translation=translation,
         stt=stt,
         device=args.device,
         cpu_threads=args.cpu_threads,

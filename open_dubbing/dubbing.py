@@ -117,6 +117,7 @@ class Dubber:
         target_language: str,
         hugging_face_token: str | None = None,
         tts: TextToSpeech,
+        translation: Translation,
         stt: SpeechToText,
         device: str,
         cpu_threads: int = 0,
@@ -133,6 +134,7 @@ class Dubber:
         self.utterance_metadata = None
         self._number_of_steps = number_of_steps
         self.tts = tts
+        self.translation = translation
         self.stt = stt
         self.device = device
         self.cpu_threads = cpu_threads
@@ -258,17 +260,12 @@ class Dubber:
     def run_translation(self) -> None:
         """Translates transcribed text and potentially merges utterances"""
 
-        translation = Translation(self.device)
-        script = translation.generate_script(utterance_metadata=self.utterance_metadata)
-        translated_script = translation.translate_script(
-            script=script,
+        self.utterance_metadata = self.translation.translate_utterances(
+            utterance_metadata=self.utterance_metadata,
             source_language=self.source_language,
             target_language=self.target_language,
         )
-        self.utterance_metadata = translation.add_translations(
-            utterance_metadata=self.utterance_metadata,
-            translated_script=translated_script,
-        )
+
         logging.info("Completed translation.")
 
     def run_configure_text_to_speech(self) -> None:
