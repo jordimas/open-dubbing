@@ -14,6 +14,8 @@
 
 import logging
 import os
+import shutil
+import tempfile
 
 from abc import ABC, abstractmethod
 from typing import Final, Mapping, Sequence
@@ -103,6 +105,49 @@ class TextToSpeech(ABC):
     @abstractmethod
     def get_languages(self):
         pass
+
+    """ TTS add silence at the end that we want to remove to prevent increasing the speech of next
+        segments if is not necessary."""
+
+    def _convert_text_to_speech_without_end_silence(
+        self,
+        *,
+        assigned_voice: str,
+        target_language: str,
+        output_filename: str,
+        text: str,
+        pitch: float,
+        speed: float,
+        volume_gain_db: float,
+    ) -> str:
+
+        dubbed_file = self._convert_text_to_speech(
+            assigned_voice=assigned_voice,
+            target_language=target_language,
+            output_filename=output_filename,
+            text=text,
+            pitch=pitch,
+            speed=speed,
+            volume_gain_db=volume_gain_db,
+        )
+
+        dubbed_audio = AudioSegment.from_file(dubbed_file)
+        pre_duration = len(dubbed_audio)
+
+        with tempfile.NamedTemporaryFile() as temp_file:
+            shutil.copyfile(dubbed_file, temp_file.name)
+
+            cmd = f"ffmpeg -y -i {temp_file.name} -af silenceremove=stop_periods=-1:stop_duration=0.1:stop_threshold=-50dB {dubbed_file} > /dev/null 2>&1"
+            os.system(cmd)
+
+        dubbed_audio = AudioSegment.from_file(dubbed_file)
+        post_duration = len(dubbed_audio)
+        if pre_duration != post_duration:
+            logging.debug(
+                f"text_to_speech._convert_text_to_speech_without_end_silence. File {dubbed_file} shorten from {pre_duration} to {post_duration}"
+            )
+
+        return dubbed_file
 
     @abstractmethod
     def _convert_text_to_speech(
@@ -218,7 +263,7 @@ class TextToSpeech(ABC):
                     )
 
                 speed = utterance_copy["speed"]
-                dubbed_path = self._convert_text_to_speech(
+                dubbed_path = self._convert_text_to_speech_without_end_silence(
                     assigned_voice=assigned_voice,
                     target_language=target_language,
                     output_filename=output_filename,
@@ -244,7 +289,7 @@ class TextToSpeech(ABC):
 
                     utterance_copy["speed"] = speed
                     if support_speeds:
-                        dubbed_path = self._convert_text_to_speech(
+                        dubbed_path = self._convert_text_to_speech_without_end_silence(
                             assigned_voice=assigned_voice,
                             target_language=target_language,
                             output_filename=output_filename,
