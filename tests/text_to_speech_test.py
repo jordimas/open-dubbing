@@ -60,7 +60,7 @@ class TextToSpeechUT(TextToSpeech):
         pass
 
 
-class TestCalculateTargetUtteranceSpeed:
+class TestTextToSpeech:
 
     def test_calculate_target_utterance_speed(self):
         with tempfile.TemporaryDirectory() as tempdir:
@@ -72,9 +72,6 @@ class TestCalculateTargetUtteranceSpeed:
             )
             expected_result = 90000 / 60000
             assert result == expected_result
-
-
-class TestCreateSpeakerToPathsMapping:
 
     @pytest.mark.parametrize(
         "input_data, expected_result",
@@ -103,9 +100,6 @@ class TestCreateSpeakerToPathsMapping:
     def test_create_speaker_to_paths_mapping(self, input_data, expected_result):
         result = TextToSpeechUT().create_speaker_to_paths_mapping(input_data)
         assert result == expected_result
-
-
-class TestTextToSpeech:
 
     @pytest.mark.parametrize(
         "calculated_speed, expect_adjust_called, expected_final_speed",
@@ -151,6 +145,8 @@ class TestTextToSpeech:
             tts, "_adjust_audio_speed"
         ) as mock_adjust_speed, patch.object(
             tts, "_calculate_target_utterance_speed", return_value=calculated_speed
+        ), patch.object(
+            tts, "_do_need_to_increase_speed", return_value=True
         ):
             result = tts.dub_utterances(
                 utterance_metadata=utterance_metadata,
@@ -164,3 +160,60 @@ class TestTextToSpeech:
                 mock_adjust_speed.assert_not_called()
 
             assert result[0]["speed"] == expected_final_speed
+
+    @pytest.mark.parametrize(
+        "test_name, utterance_metadata, expected_result",
+        [
+            (
+                "continuous",
+                [
+                    {
+                        "text": "Hello, world!",
+                        "start": 1.0,
+                        "stop": 2.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                    {
+                        "text": "Hello, world!",
+                        "start": 2.0,
+                        "stop": 3.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                ],
+                2.0,
+            ),
+            (
+                "uses_empty_space",
+                [
+                    {
+                        "text": "Hello, world!",
+                        "start": 1.0,
+                        "stop": 2.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                    {
+                        "text": "Hello, world!",
+                        "start": 3.0,
+                        "stop": 5.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                ],
+                3.0,
+            ),
+        ],
+    )
+    def test_get_start_time_of_next_speech_utterance(
+        self, test_name, utterance_metadata, expected_result
+    ):
+        result = TextToSpeechUT().get_start_time_of_next_speech_utterance(
+            utterance_metadata=utterance_metadata, from_time=1.0
+        )
+        assert result == expected_result
