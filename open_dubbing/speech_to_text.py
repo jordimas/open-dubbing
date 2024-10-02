@@ -30,6 +30,7 @@ class SpeechToText(ABC):
         self.model = None
         self.device = device
         self.cpu_threads = cpu_threads
+        self.MIN_SECS = 0.5
 
     @property
     def model(self):
@@ -86,10 +87,17 @@ class SpeechToText(ABC):
             path = ""
             try:
                 path = item["path"]
-                transcribed_text = self._transcribe(
-                    vocals_filepath=item["path"],
-                    source_language_iso_639_1=iso_639_1,
-                )
+                duration = item["end"] - item["start"]
+                if self._is_short_audio(duration=duration):
+                    transcribed_text = ""
+                    logging.warn(
+                        f"speech_to_text._is_short_audio. Audio is less than {self.MIN_SECS} second, skipping transcription of '{path}'."
+                    )
+                else:
+                    transcribed_text = self._transcribe(
+                        vocals_filepath=path,
+                        source_language_iso_639_1=iso_639_1,
+                    )
             except Exception as e:
                 logging.error(
                     f"speech_to_text.transcribe_audio_chunks. file '{path}', error: '{e}'"
@@ -189,3 +197,10 @@ class SpeechToText(ABC):
 
         first_seconds = audio[: DURATION_SECS * 1000].get_array_of_samples()
         return self._get_audio_language(first_seconds)
+
+    # To prevent Whisper hallucinations with very short audios
+    def _is_short_audio(self, *, duration: float):
+        if duration < self.MIN_SECS:
+            return True
+
+        return False
