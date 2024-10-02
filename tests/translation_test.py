@@ -23,7 +23,7 @@ class TranslationUT(Translation):
     def load_model(self):
         pass
 
-    def get_languages(self):
+    def get_language_pairs(self):
         return []
 
     def _translate_text(

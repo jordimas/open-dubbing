@@ -66,13 +66,22 @@ class TranslationNLLB(Translation):
             else:
                 raise e
 
-    def get_languages(self):
+    def get_language_pairs(self):
         tokenizer = self._get_tokenizer_nllb()
         # Returns 'cat_Latn'
         original_list = tokenizer.lang_code_to_id.keys()
         # Get only the language codes
         supported_languages = [s[:3] for s in original_list]
-        return supported_languages
+        pairs = set()
+        for source in supported_languages:
+            for target in supported_languages:
+                if source == target:
+                    continue
+
+                pair = (source, target)
+                pairs.add(pair)
+
+        return pairs
 
     def _get_nllb_language(self, source_language_iso_639_3: str) -> str:
         tokenizer = self._get_tokenizer_nllb()

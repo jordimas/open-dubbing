@@ -28,6 +28,7 @@ from open_dubbing.speech_to_text_whisper_transformers import (
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
+from open_dubbing.translation_apertium import TranslationApertium
 from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
@@ -61,7 +62,9 @@ def _init_logging():
 
 def check_languages(source_language, target_language, _tts, translation, _sst):
     spt = _sst.get_languages()
-    trans = translation.get_languages()
+    translation_languages = translation.get_language_pairs()
+    logging.debug(f"check_languages. Pairs {len(translation_languages)}")
+
     tts = _tts.get_languages()
 
     if source_language not in spt:
@@ -69,14 +72,10 @@ def check_languages(source_language, target_language, _tts, translation, _sst):
             f"source language '{source_language}' is not supported by the speech recognition system. Supported languages: '{spt}"
         )
 
-    if source_language not in trans:
+    pair = (source_language, target_language)
+    if pair not in translation_languages:
         raise ValueError(
-            f"source language '{source_language}' is not supported by the translation system. Supported languages: '{trans}"
-        )
-
-    if target_language not in trans:
-        raise ValueError(
-            f"target language '{target_language}' is not supported by the translation system. Supported languages: '{trans}"
+            f"language pair '{pair}' is not supported by the translation system."
         )
 
     if target_language not in tts:
@@ -184,6 +183,23 @@ def main():
             "'transformers': Transformers OpenAI whisper implementation."
         ),
     )
+    parser.add_argument(
+        "--translator",
+        type=str,
+        default="nllb",
+        choices=["nllb", "apertium"],
+        help=(
+            "Text to Speech engine to use. Choices are:"
+            "'nllb': Meta's no Language Left Behind (NLLB)."
+            "'apertium'': Apertium compatible API server"
+        ),
+    )
+    parser.add_argument(
+        "--apertium-server",
+        type=str,
+        default="",
+        help=("Apertium's URL server to use"),
+    )
 
     parser.add_argument(
         "--device",
@@ -245,7 +261,20 @@ def main():
         source_language = stt.detect_language(args.input_file)
         logging.info(f"Detected language '{source_language}'")
 
-    translation = TranslationNLLB(args.device)
+    if args.translator == "nllb":
+        translation = TranslationNLLB(args.device)
+    elif args.translator == "apertium":
+        server = args.apertium_server
+        if len(server) == 0:
+            raise ValueError(
+                "When using Apertium's API, you need to specify with --apertium-server the URL of the server"
+            )
+
+        translation = TranslationApertium(args.device)
+        translation.set_server(server)
+    else:
+        raise ValueError(f"Invalid translator value {args.translator}")
+
     translation.load_model()
     check_languages(source_language, args.target_language, tts, translation, stt)
 

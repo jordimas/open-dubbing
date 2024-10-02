@@ -43,7 +43,7 @@ class Translation(ABC):
         return r
 
     @abstractmethod
-    def get_languages(self):
+    def get_language_pairs(self):
         pass
 
     @abstractmethod

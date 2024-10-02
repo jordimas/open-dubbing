@@ -19,6 +19,8 @@ for tts in "${tts_list[@]}"; do
           --output_directory="$output_directory" \
           --source_language=eng \
           --target_language="$language" \
+#          --translator="apertium" \
+#          --apertium-server=$APERTIUM_SERVER \
           --tts="$tts" \
           --device=cpu \
           --debug
