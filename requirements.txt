@@ -1,11 +1,15 @@
 numpy >= 1.17.3
 moviepy == 1.0.3
 demucs == 4.0.1
+psutil == 6.0.0
 torch >= 2.0.0,< 2.5
 pyannote.audio == 3.3.0
 pydub == 0.25.1
 faster-whisper == 1.0.2
 transformers == 4.40
+
+spacy[ja] == 3.7.6
 coqui-tts == 0.24.1
+
 iso639-lang == 2.3.0
 edge-tts == 6.1.12
