@@ -27,6 +27,19 @@ from open_dubbing.text_to_speech import TextToSpeech
 
 
 class TextToSpeechUT(TextToSpeech):
+    def _convert_text_to_speech_without_end_silence(
+        self,
+        *,
+        assigned_voice: str,
+        target_language: str,
+        output_filename: str,
+        text: str,
+        pitch: float,
+        speed: float,
+        volume_gain_db: float,
+    ) -> str:
+        pass
+
     def _convert_text_to_speech(
         self,
         *,
@@ -130,6 +143,10 @@ class TestTextToSpeech:
             tts, "_does_voice_supports_speeds", return_value=False
         ), patch.object(
             tts, "_convert_text_to_speech", return_value="dubbed_file_path"
+        ), patch.object(
+            tts,
+            "_convert_text_to_speech_without_end_silence",
+            return_value="dubbed_file_path",
         ), patch.object(
             tts, "_adjust_audio_speed"
         ) as mock_adjust_speed, patch.object(
