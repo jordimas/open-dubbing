@@ -25,6 +25,7 @@ from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
 from open_dubbing.speech_to_text_whisper_transformers import (
     SpeechToTextWhisperTransfomers,
 )
+from open_dubbing.text_to_speech_cmd import TextToSpeechCmd
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
@@ -169,6 +170,7 @@ def main():
             "'mms': Meta Multilingual Speech engine, supports many languages."
             "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
             "'edge': Microsoft Edge TSS."
+            "'cmd': TTS called by CMD."
         ),
     )
     parser.add_argument(
@@ -239,6 +241,8 @@ def main():
             raise ValueError(
                 "To use Coqui-tts you have to have espeak or espeak-ng installed"
             )
+    elif args.tts == "cmd":
+        tts = TextToSpeechCmd(args.device)
     else:
         raise ValueError(f"Invalid tts value {args.tts}")
 
