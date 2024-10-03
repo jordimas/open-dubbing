@@ -18,7 +18,7 @@ def read_version(fname="open_dubbing/__init__.py"):
 setup(
     name="open-dubbing",
     version=read_version(),
-    description="AI dubbing system uses machine learning models to automatically translate and synchronize audio dialogue into different languages.",
+    description="AI dubbing system which uses machine learning models to automatically translate and synchronize audio dialogue into different languages.",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/jordimas/open-dubbing",
