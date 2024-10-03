@@ -220,6 +220,14 @@ def main():
         help="keep intemediate files and generate specific files for debugging",
     )
 
+    parser.add_argument(
+        "--nllb_model",
+        type=str,
+        default="nllb-200-1.3B",
+        choices=["nllb-200-1.3B", "nllb-200-3.3B"],
+        help="NLLB translation model size. 'nllb-200-3.3B' gives best performance",
+    )
+
     args = parser.parse_args()
 
     check_is_a_video(args.input_file)
@@ -263,6 +271,7 @@ def main():
 
     if args.translator == "nllb":
         translation = TranslationNLLB(args.device)
+        translation.load_model(args.nllb_model)
     elif args.translator == "apertium":
         server = args.apertium_server
         if len(server) == 0:
@@ -275,7 +284,6 @@ def main():
     else:
         raise ValueError(f"Invalid translator value {args.translator}")
 
-    translation.load_model()
     check_languages(source_language, args.target_language, tts, translation, stt)
 
     if not os.path.exists(args.output_directory):

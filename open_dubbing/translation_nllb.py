@@ -26,8 +26,8 @@ class TranslationNLLB(Translation):
         self.translator = None
         self.translator_languages = ""
 
-    def load_model(self):
-        self.model_name = "facebook/nllb-200-1.3B"
+    def load_model(self, name="nllb-200-1.3B"):
+        self.model_name = f"facebook/{name}"
         self.tokenizer = self._get_tokenizer_nllb()
 
     def _translate_text(
