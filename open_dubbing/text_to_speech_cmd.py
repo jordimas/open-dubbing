@@ -30,8 +30,8 @@ class TextToSpeechCmd(TextToSpeech):
         voices = {}
 
         if language_code == "cat":
-            voices["Male"] = "21"
-            voices["Female"] = "20"
+            voices["Female"] = "2"
+            voices["Male"] = "3"
 
         logging.debug(
             f"text_to_speech_coqui.get_available_voices: {voices} for language {language_code}"
@@ -51,6 +51,8 @@ class TextToSpeechCmd(TextToSpeech):
     ) -> str:
 
         directory = "/home/jordi/sc/open-dubbing2/Matcha-TTS"
+        # python3 matcha_vocos_inference.py --output_path=/output/path --text_input="Bon dia Manel, avui anem a la muntanya." --length_scale=0.8 --temperature=0.7 --speaker_id 0 --cleaner "catalan_balear_cleaners"
+
         cmd = f'python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input="{text}"'
         cmd = f"cd {directory} && {cmd}"
         logging.info(f"cmd: {cmd}")
