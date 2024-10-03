@@ -11,16 +11,16 @@ At the moment, it is pure *experimental* and an excuse to help me to understand 
 
 * Build on top of open source models and able to run it locally
 * Dubs automatically a video from a source to a target language
-* Supports multiple Text To Speech (TTS) engines
+* Supports multiple Text To Speech (TTS) engines (Coqui, MMS, etc)
 * Gender voice detection to allow to assign properly synthetic voice
+* Support for multiple translation engines (NLLB, Apertium, etc)
+* Automatic detection of the source language of the video (using Whisper)
 
 # Roadmap
 
 Areas what we will like to explore:
 
-* Automatic detection of the source language of the video (using Whisper)
 * Better control of voice used for dubbing
-* Support for TTS systems
 * Optimize it for long videos and less resource usage
 * Support for multiple video input formats
 
@@ -104,7 +104,7 @@ To get a list of available options:
 open-dubbing --help
 ```
 
-# Libraries used
+# Appreciation
 
 Core libraries used:
 * [demucs](https://github.com/facebookresearch/demucs) to separate vocals from the audio
