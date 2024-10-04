@@ -26,14 +26,14 @@ from open_dubbing.speech_to_text import SpeechToText
 
 class SpeechToTextWhisperTransfomers(SpeechToText):
 
-    def __init__(self, device="cpu", cpu_threads=0):
-        super().__init__(device, cpu_threads)
+    def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
+        super().__init__(device=device, model_name=model_name, cpu_threads=cpu_threads)
         self._processor = None
 
     def load_model(self):
-        model_name = "openai/whisper-medium"
-        self._processor = WhisperProcessor.from_pretrained(model_name)
-        self._model = WhisperForConditionalGeneration.from_pretrained(model_name)
+        full_model_name = f"openai/whisper-{self.model_name}"
+        self._processor = WhisperProcessor.from_pretrained(full_model_name)
+        self._model = WhisperForConditionalGeneration.from_pretrained(full_model_name)
 
     def _transcribe(
         self,

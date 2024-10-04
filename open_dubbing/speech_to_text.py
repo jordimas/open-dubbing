@@ -26,7 +26,8 @@ from open_dubbing.voice_gender_classifier import VoiceGenderClassifier
 
 class SpeechToText(ABC):
 
-    def __init__(self, device="cpu", cpu_threads=0):
+    def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
+        self.model_name = model_name
         self.model = None
         self.device = device
         self.cpu_threads = cpu_threads

@@ -11,16 +11,16 @@ At the moment, it is pure *experimental* and an excuse to help me to understand 
 
 * Build on top of open source models and able to run it locally
 * Dubs automatically a video from a source to a target language
-* Supports multiple Text To Speech (TTS) engines
+* Supports multiple Text To Speech (TTS) engines (Coqui, MMS, etc)
 * Gender voice detection to allow to assign properly synthetic voice
+* Support for multiple translation engines (NLLB, Apertium, etc)
+* Automatic detection of the source language of the video (using Whisper)
 
 # Roadmap
 
 Areas what we will like to explore:
 
-* Automatic detection of the source language of the video (using Whisper)
 * Better control of voice used for dubbing
-* Support for TTS systems
 * Optimize it for long videos and less resource usage
 * Support for multiple video input formats
 
@@ -88,7 +88,7 @@ pip install open_dubbing
 2. Accept [`pyannote/speaker-diarization-3.1`](https://hf.co/pyannote/speaker-diarization-3.1) user conditions
 3. Go to and access token at [`hf.co/settings/tokens`](https://hf.co/settings/tokens).
 
-# Usage
+# Quick start
 
 Quick start
 
@@ -104,7 +104,11 @@ To get a list of available options:
 open-dubbing --help
 ```
 
-# Libraries used
+# Documentation
+
+For more detailed documentation on how the tool works and how to use it, see our [documentation page](./DOCUMENTATION.md).
+
+# Appreciation
 
 Core libraries used:
 * [demucs](https://github.com/facebookresearch/demucs) to separate vocals from the audio
@@ -121,20 +125,6 @@ And very special thanks to [ariel](https://github.com/google-marketing-solutions
 # License
 
 See [license](./LICENSE)
-
-# How it works
-
-The system follows these steps:
-
-1. Isolate the speech from background noise, music, and other non-speech elements in the audio.
-2. Segment the audio in fragments where there is voice and identify the speakers (speaker diarization).
-3. Identify the gender of the speakers.
-4. Transcribe the speech into text using OpenAI Whisper.
-5. Translate the text from source language (e.g. English) to target language (e.g. Catalan).
-6. Synthesize speech using a Text to Speech System using voices that match the gender and adjusting speed.
-7. The final dubbed video is then assembled, combining the synthetic audio with the original video footage, including any background sounds or music that were isolated earlier.
-
-There are 6 different AI models applied during the dubbing process.
 
 # Contact
 

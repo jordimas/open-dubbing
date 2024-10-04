@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.5]
+
+### Added
+
+- Only speed audios when it's really needed improving quality of final audio syntesis
+- Support for Apertium API as translation engine
+- Allow to select between different model sizes for NLLB translation engine
+- Allow to select between different model sizes for Whisper speech to text engine
+
 ## [0.0.4]
 
 ### Added
