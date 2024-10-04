@@ -32,6 +32,11 @@ from open_dubbing.translation_apertium import TranslationApertium
 from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
+WHISPER_MODEL_NAMES = [
+    "medium",
+    "large-v3",
+]
+
 
 def _init_logging():
     # Create a logger
@@ -225,7 +230,14 @@ def main():
         type=str,
         default="nllb-200-1.3B",
         choices=["nllb-200-1.3B", "nllb-200-3.3B"],
-        help="NLLB translation model size. 'nllb-200-3.3B' gives best performance",
+        help="NLLB translation model size. 'nllb-200-3.3B' gives best translation quality",
+    )
+
+    parser.add_argument(
+        "--whisper_model",
+        default="medium",
+        choices=WHISPER_MODEL_NAMES,
+        help="name of the OpenAI Whisper speech to text model size to use",
     )
 
     args = parser.parse_args()
@@ -255,13 +267,29 @@ def main():
 
     if args.stt == "auto":
         if sys.platform == "darwin":
-            stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
+            stt = SpeechToTextWhisperTransfomers(
+                model_name=args.whisper_model,
+                device=args.device,
+                cpu_threads=args.cpu_threads,
+            )
         else:
-            stt = SpeechToTextFasterWhisper(args.device, args.cpu_threads)
+            stt = SpeechToTextFasterWhisper(
+                model_name=args.whisper_model,
+                device=args.device,
+                cpu_threads=args.cpu_threads,
+            )
     elif args.stt == "faster-whisper":
-        stt = SpeechToTextFasterWhisper(args.device, args.cpu_threads)
+        stt = SpeechToTextFasterWhisper(
+            model_name=args.whisper_model,
+            device=args.device,
+            cpu_threads=args.cpu_threads,
+        )
     else:
-        stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
+        stt = SpeechToTextWhisperTransfomers(
+            model_name=args.whisper_model,
+            device=args.device,
+            cpu_threads=args.cpu_threads,
+        )
 
     stt.load_model()
     source_language = args.source_language
