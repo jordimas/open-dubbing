@@ -9,7 +9,7 @@ faster-whisper == 1.0.2
 transformers == 4.40
 
 spacy[ja] == 3.7.6
-coqui-tts == 0.24.1
+coqui-tts == 0.24.2
 
 iso639-lang == 2.3.0
 edge-tts == 6.1.12
