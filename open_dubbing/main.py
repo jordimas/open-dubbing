@@ -145,7 +145,7 @@ def main():
     parser.add_argument(
         "--input_file",
         required=True,
-        help="Path to the input video or audio file.",
+        help="Path to the input video file.",
     )
     parser.add_argument(
         "--output_directory",
