@@ -139,7 +139,9 @@ def list_supported_languages(_tts, translation, device):  # TODO: Not used
 def main():
     _init_logging()
     """Parses command-line arguments and runs the dubbing process."""
-    parser = argparse.ArgumentParser(description="Run the end-to-end dubbing process.")
+    parser = argparse.ArgumentParser(
+        description="AI dubbing system which uses machine learning models to automatically translate and synchronize audio dialogue into different languages"
+    )
     parser.add_argument(
         "--input_file",
         required=True,
@@ -217,12 +219,12 @@ def main():
         "--cpu_threads",
         type=int,
         default=0,
-        help="number of threads used for CPU inference (if not specified uses defaults for each framework)",
+        help="number of threads used for CPU inference (if is not specified uses defaults for each framework)",
     )
     parser.add_argument(
         "--debug",
         action="store_true",
-        help="keep intemediate files and generate specific files for debugging",
+        help="keep intermediate files and generate specific files for debugging",
     )
 
     parser.add_argument(
