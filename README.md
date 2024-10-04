@@ -4,6 +4,7 @@
 # Introduction
 
 Open dubbing is an AI dubbing system uses machine learning models to automatically translate and synchronize audio dialogue into different languages.
+It is designed as a command line tool.
 
 At the moment, it is pure *experimental* and an excuse to help me to understand better STT, TTS and translation systems combined together.
 
@@ -94,9 +95,14 @@ Quick start
 
 ```shell
 
- open-dubbing  --input_file video.mp4 --target_language=cat --hugging_face_token=TOKEN
+ open-dubbing --input_file video.mp4 --target_language=cat --hugging_face_token=TOKEN
 ```
-Where _TOKEN_ is the HuggingFace token that allows to access the models
+
+Where:
+- _TOKEN_ is the HuggingFace token that allows to access the models
+- _cat_ in this case is the target language using iso ISO 639-3 language codes
+
+By default, the source language is predicted using the first 30 seconds of the video. If this does not work (e.g. there is only music at the begining), use the parameter _source_language_ to specify the source language using ISO 639-3 language codes (e.g. 'eng' for English).
 
 To get a list of available options:
 
