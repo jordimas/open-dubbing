@@ -30,8 +30,9 @@ class TextToSpeechCmd(TextToSpeech):
         voices = {}
 
         if language_code == "cat":
-            voices["Female"] = "2"
-            voices["Male"] = "3"
+            voices["Male"] = "2"
+            voices["Female"] = "3"
+
 
         logging.debug(
             f"text_to_speech_coqui.get_available_voices: {voices} for language {language_code}"
