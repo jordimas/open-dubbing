@@ -88,7 +88,6 @@ class TestRunCutAndSaveAudio:
                     utterance_metadata=utterance_metadata,
                     audio_file=temporary_file.name,
                     output_directory=output_directory,
-                    elevenlabs_clone_voices=False,
                 )
                 expected_file = os.path.join(output_directory, "chunk_0.0_5.0.mp3")
                 _ = {
