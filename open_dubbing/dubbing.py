@@ -18,7 +18,6 @@ import json
 import logging
 import os
 import re
-import resource
 import shutil
 import sys
 import tempfile
@@ -157,12 +156,17 @@ class Dubber:
             )
         return renamed_input_file
 
-    def get_maxrss_memory(self):
+    def log_maxrss_memory(self):
+        if sys.platform == "win32" or sys.platform == "win64":
+            return
+
+        import resource
+
         max_rss_self = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
         if sys.platform == "darwin":
             return max_rss_self / 1024
 
-        return max_rss_self
+        logging.info(f"Maximum memory used: {max_rss_self:.0f} MB")
 
     def log_debug_task_and_getime(self, text, start_time):
         process = psutil.Process(os.getpid())
@@ -439,7 +443,6 @@ class Dubber:
             per = _time * 100 / total_time
             logging.info(f" Task '{task}' in {_time:.2f} secs ({per:.2f}%)")
 
-        max_rss = self.get_maxrss_memory()
-        logging.info(f"Maximum memory used: {max_rss:.0f} MB")
+        self.log_maxrss_memory()
         logging.info("Output files saved in: %s.", self.output_directory)
         return self.postprocessing_output
