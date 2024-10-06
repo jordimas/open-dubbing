@@ -242,6 +242,12 @@ def main():
         help="name of the OpenAI Whisper speech to text model size to use",
     )
 
+    parser.add_argument(
+        "--target_language_region",
+        default="",
+        help="For some TTS you can specify the region of the language. For example, 'ES' will indicate accent from Spain.",
+    )
+
     args = parser.parse_args()
 
     check_is_a_video(args.input_file)
@@ -324,6 +330,7 @@ def main():
         output_directory=args.output_directory,
         source_language=source_language,
         target_language=args.target_language,
+        target_language_region=args.target_language_region,
         hugging_face_token=hugging_face_token,
         tts=tts,
         translation=translation,

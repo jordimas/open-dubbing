@@ -14,7 +14,7 @@
 
 import logging
 
-from typing import Mapping
+from typing import List
 
 import numpy as np
 import scipy.io.wavfile
@@ -22,7 +22,7 @@ import torch
 
 from transformers import AutoTokenizer, VitsModel
 
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechMMS(TextToSpeech):
@@ -32,8 +32,8 @@ class TextToSpeechMMS(TextToSpeech):
         self.device = device
         logging.getLogger("transformers").setLevel(logging.ERROR)
 
-    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
-        return {}
+    def get_available_voices(self, language_code: str) -> List[Voice]:
+        return []
 
     def _convert_text_to_speech(
         self,

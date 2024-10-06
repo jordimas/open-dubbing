@@ -114,6 +114,7 @@ class Dubber:
         output_directory: str,
         source_language: str,
         target_language: str,
+        target_language_region: str,
         hugging_face_token: str | None = None,
         tts: TextToSpeech,
         translation: Translation,
@@ -128,6 +129,7 @@ class Dubber:
         self.output_directory = output_directory
         self.source_language = source_language
         self.target_language = target_language
+        self.target_language_region = target_language_region
         self.pyannote_model = pyannote_model
         self.hugging_face_token = hugging_face_token
         self.utterance_metadata = None
@@ -282,7 +284,7 @@ class Dubber:
         assigned_voices = self.tts.assign_voices(
             utterance_metadata=self.utterance_metadata,
             target_language=self.target_language,
-            preferred_voices=None,
+            target_language_region=self.target_language_region,
         )
         self.utterance_metadata = self.tts.update_utterance_metadata(
             utterance_metadata=self.utterance_metadata,
