@@ -39,6 +39,38 @@ import sys
 
 
 def _init_logging():
+    # Create a logger
+#    logger = logging.getLogger()    
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    logger = logging.getLogger("open_dubbing")
+    logger.setLevel(logging.INFO)  # Set the global log level
+
+    # File handler for logging to a file
+    file_handler = logging.FileHandler("open_dubbing.log")
+    file_handler.setLevel(logging.DEBUG)
+
+    # Console handler for logging to the console
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    # Formatter for log messages
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+    # Set formatter for both handlers
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    logging.root = logger
+    logging.getLogger().handlers = logger.handlers
+
+
+def _init_logging__good():
     logfile = "open_dubbing.log"
 
     # Get log level and output stream settings from environment variables
@@ -69,6 +101,32 @@ def _init_logging():
 
 ##    logging.root = app_logger
 ##    logging.getLogger().handlers = app_logger.handlers
+
+def _init_logging_old():
+    # Create a logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)  # Set the global log level
+
+    # File handler for logging to a file
+    file_handler = logging.FileHandler("open_dubbing.log")
+    file_handler.setLevel(logging.DEBUG)
+
+    # Console handler for logging to the console
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    # Formatter for log messages
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+    # Set formatter for both handlers
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    logging.getLogger("pydub.converter").setLevel(logging.ERROR)
 
 
 def check_languages(source_language, target_language, _tts, translation, _sst):
