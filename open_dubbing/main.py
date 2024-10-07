@@ -33,31 +33,42 @@ from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
 
+import logging
+import os
+import sys
+
+
 def _init_logging():
-    # Create a logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)  # Set the global log level
+    logfile = "open_dubbing.log"
 
-    # File handler for logging to a file
-    file_handler = logging.FileHandler("open_dubbing.log")
-    file_handler.setLevel(logging.DEBUG)
+    # Get log level and output stream settings from environment variables
+    LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
+    LOGSTDOUT = os.environ.get("LOGSTDOUT", "0")
 
-    # Console handler for logging to the console
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
+    # Set up a separate logger for your application
+    #    app_logger = logging.getLogger("open_dubbing")
+    app_logger = logging.getLogger()
+    app_logger.setLevel("INFO")  # Highest level
 
-    # Formatter for log messages
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    # Handle console logging
+    if LOGSTDOUT == "0":
+        console = logging.StreamHandler()  # Default stderr
+    else:
+        console = logging.StreamHandler(stream=sys.stdout)
 
-    # Set formatter for both handlers
-    file_handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
+    console.setLevel("INFO")
+    app_logger.addHandler(console)
 
-    # Add handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    # File logging
+    file_handler = logging.FileHandler(logfile)
+    file_handler.setLevel("DEBUG")
+    app_logger.addHandler(file_handler)
 
-    logging.getLogger("pydub.converter").setLevel(logging.ERROR)
+    # Replace the root logger with `app_logger`
+
+
+##    logging.root = app_logger
+##    logging.getLogger().handlers = app_logger.handlers
 
 
 def check_languages(source_language, target_language, _tts, translation, _sst):
