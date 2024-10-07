@@ -33,78 +33,10 @@ from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
 
-import logging
-import os
-import sys
-
-
 def _init_logging():
+
     # Create a logger
-#    logger = logging.getLogger()    
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    logger = logging.getLogger("open_dubbing")
-    logger.setLevel(logging.INFO)  # Set the global log level
-
-    # File handler for logging to a file
-    file_handler = logging.FileHandler("open_dubbing.log")
-    file_handler.setLevel(logging.DEBUG)
-
-    # Console handler for logging to the console
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-
-    # Formatter for log messages
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-
-    # Set formatter for both handlers
-    file_handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
-
-    # Add handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-
-    logging.root = logger
-    logging.getLogger().handlers = logger.handlers
-
-
-def _init_logging__good():
-    logfile = "open_dubbing.log"
-
-    # Get log level and output stream settings from environment variables
-    LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
-    LOGSTDOUT = os.environ.get("LOGSTDOUT", "0")
-
-    # Set up a separate logger for your application
-    #    app_logger = logging.getLogger("open_dubbing")
-    app_logger = logging.getLogger()
-    app_logger.setLevel("INFO")  # Highest level
-
-    # Handle console logging
-    if LOGSTDOUT == "0":
-        console = logging.StreamHandler()  # Default stderr
-    else:
-        console = logging.StreamHandler(stream=sys.stdout)
-
-    console.setLevel("INFO")
-    app_logger.addHandler(console)
-
-    # File logging
-    file_handler = logging.FileHandler(logfile)
-    file_handler.setLevel("DEBUG")
-    app_logger.addHandler(file_handler)
-
-    # Replace the root logger with `app_logger`
-
-
-##    logging.root = app_logger
-##    logging.getLogger().handlers = app_logger.handlers
-
-def _init_logging_old():
-    # Create a logger
-    logger = logging.getLogger()
+    logger = logging.getLogger("")
     logger.setLevel(logging.DEBUG)  # Set the global log level
 
     # File handler for logging to a file
@@ -126,7 +58,10 @@ def _init_logging_old():
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
-    logging.getLogger("pydub.converter").setLevel(logging.ERROR)
+    # Optionally, apply ERROR level to all loggers except the root logger
+    for name in logging.root.manager.loggerDict:
+        if name not in [""]:
+            logging.getLogger(name).setLevel(logging.ERROR)
 
 
 def check_languages(source_language, target_language, _tts, translation, _sst):
