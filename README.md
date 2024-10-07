@@ -83,6 +83,8 @@ Install package:
 pip install open_dubbing
 ```
 
+Windows is currently not a specific supported platform. If you find issue, please report them.
+
 ## Accept pyannote license
 
 1. Go to and Accept [`pyannote/segmentation-3.0`](https://hf.co/pyannote/segmentation-3.0) user conditions

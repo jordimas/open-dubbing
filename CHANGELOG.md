@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.6]
+
+### Added
+- Support for building in Windows. Tests pass.
+- Allow to define region for target language (like ES-MX) used for TTS
+
 ## [0.0.5]
 
 ### Added
