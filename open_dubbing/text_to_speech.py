@@ -14,6 +14,7 @@
 
 import logging
 import os
+import platform
 import shutil
 import tempfile
 
@@ -91,7 +92,8 @@ class TextToSpeech(ABC):
         return voice_assignment
 
     def _convert_to_mp3(self, input_file, output_mp3):
-        cmd = f"ffmpeg -y -i {input_file} {output_mp3} > /dev/null 2>&1"
+        null_device = "NUL" if platform.system().lower() == "windows" else "/dev/null"
+        cmd = f"ffmpeg -y -i {input_file} {output_mp3} > {null_device} 2>&1"
         logging.debug(cmd)
         os.system(cmd)
         os.remove(input_file)
@@ -161,11 +163,18 @@ class TextToSpeech(ABC):
         dubbed_audio = AudioSegment.from_file(dubbed_file)
         pre_duration = len(dubbed_audio)
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        filename = ""
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             shutil.copyfile(dubbed_file, temp_file.name)
-
-            cmd = f"ffmpeg -y -i {temp_file.name} -af silenceremove=stop_periods=-1:stop_duration=0.1:stop_threshold=-50dB {dubbed_file} > /dev/null 2>&1"
+            null_device = (
+                "NUL" if platform.system().lower() == "windows" else "/dev/null"
+            )
+            cmd = f"ffmpeg -y -i {temp_file.name} -af silenceremove=stop_periods=-1:stop_duration=0.1:stop_threshold=-50dB {dubbed_file} > {null_device} 2>&1"
             os.system(cmd)
+            filename = temp_file.name
+
+        if os.path.exists(filename):
+            os.remove(filename)
 
         dubbed_audio = AudioSegment.from_file(dubbed_file)
         post_duration = len(dubbed_audio)
