@@ -17,7 +17,7 @@ import os
 
 from typing import Mapping
 
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechCmd(TextToSpeech):
@@ -27,11 +27,20 @@ class TextToSpeechCmd(TextToSpeech):
         self.device = device
 
     def get_available_voices(self, language_code: str) -> Mapping[str, str]:
-        voices = {}
+        voices = []
 
         if language_code == "cat":
-            voices["Male"] = "2"
-            voices["Female"] = "3"
+            voice = Voice(
+                name="2",
+                gender="Male",
+            )
+            voices.append(voice)
+
+            voice = Voice(
+                name="3",
+                gender="Female",
+            )
+            voices.append(voice)
 
         logging.debug(
             f"text_to_speech_cmd.get_available_voices: {voices} for language {language_code}"
