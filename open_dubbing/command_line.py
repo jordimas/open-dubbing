@@ -56,7 +56,7 @@ class CommandLine:
             "--tts",
             type=str,
             default="mms",
-            choices=["mms", "coqui", "edge"],
+            choices=["mms", "coqui", "edge", "cmd"],
             help=(
                 "Text to Speech engine to use. Choices are:"
                 "'mms': Meta Multilingual Speech engine, supports many languages."
