@@ -14,16 +14,23 @@
 
 import logging
 import os
+import platform
 import shutil
 import tempfile
 
 from abc import ABC, abstractmethod
-from typing import Final, Mapping, Sequence
+from typing import Final, List, Mapping, NamedTuple, Sequence
 
 from pydub import AudioSegment
 from pydub.effects import speedup
 
 _DEFAULT_CHUNK_SIZE: Final[int] = 150
+
+
+class Voice(NamedTuple):
+    name: str
+    gender: str
+    region: str = ""
 
 
 class TextToSpeech(ABC):
@@ -35,18 +42,37 @@ class TextToSpeech(ABC):
         self._DEFAULT_VOLUME_GAIN_DB: Final[float] = 16.0
 
     @abstractmethod
-    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
+    def get_available_voices(self, language_code: str) -> List[Voice]:
         pass
+
+    def get_voices_with_region_preference(
+        self, *, voices: List[Voice], target_language_region: str
+    ) -> List[Voice]:
+        if len(target_language_region) == 0:
+            return voices
+
+        voices_copy = voices[:]
+
+        for voice in voices:
+            if voice.region.endswith(target_language_region):
+                voices_copy.remove(voice)
+                voices_copy.insert(0, voice)
+
+        return voices_copy
 
     def assign_voices(
         self,
         *,
         utterance_metadata: Sequence[Mapping[str, str | float]],
         target_language: str,
-        preferred_voices: Sequence[str] = "",
+        target_language_region: str,
     ) -> Mapping[str, str | None]:
 
         voices = self.get_available_voices(target_language)
+        voices = self.get_voices_with_region_preference(
+            voices=voices, target_language_region=target_language_region
+        )
+
         voice_assignment = {}
         if len(voices) == 0:
             voice_assignment["speaker_01"] = "ona"
@@ -57,14 +83,17 @@ class TextToSpeech(ABC):
                     continue
 
                 gender = chunk["ssml_gender"]
-                voice = voices[gender]
-                voice_assignment[speaker_id] = voice
+                for voice in voices:
+                    if voice.gender == gender:
+                        voice_assignment[speaker_id] = voice.name
+                        break
 
         logging.debug(f"text_to_speech.assign_voices. Returns: {voice_assignment}")
         return voice_assignment
 
     def _convert_to_mp3(self, input_file, output_mp3):
-        cmd = f"ffmpeg -y -i {input_file} {output_mp3} > /dev/null 2>&1"
+        null_device = "NUL" if platform.system().lower() == "windows" else "/dev/null"
+        cmd = f"ffmpeg -y -i {input_file} {output_mp3} > {null_device} 2>&1"
         logging.debug(cmd)
         os.system(cmd)
         os.remove(input_file)
@@ -134,11 +163,18 @@ class TextToSpeech(ABC):
         dubbed_audio = AudioSegment.from_file(dubbed_file)
         pre_duration = len(dubbed_audio)
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        filename = ""
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             shutil.copyfile(dubbed_file, temp_file.name)
-
-            cmd = f"ffmpeg -y -i {temp_file.name} -af silenceremove=stop_periods=-1:stop_duration=0.1:stop_threshold=-50dB {dubbed_file} > /dev/null 2>&1"
+            null_device = (
+                "NUL" if platform.system().lower() == "windows" else "/dev/null"
+            )
+            cmd = f"ffmpeg -y -i {temp_file.name} -af silenceremove=stop_periods=-1:stop_duration=0.1:stop_threshold=-50dB {dubbed_file} > {null_device} 2>&1"
             os.system(cmd)
+            filename = temp_file.name
+
+        if os.path.exists(filename):
+            os.remove(filename)
 
         dubbed_audio = AudioSegment.from_file(dubbed_file)
         post_duration = len(dubbed_audio)

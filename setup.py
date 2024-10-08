@@ -47,4 +47,5 @@ setup(
             "open-dubbing=open_dubbing.main:main",
         ]
     },
+    python_requires='>=3.10'
 )

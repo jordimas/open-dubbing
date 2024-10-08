@@ -23,7 +23,7 @@ import pytest
 
 from pydub import AudioSegment
 
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechUT(TextToSpeech):
@@ -217,3 +217,27 @@ class TestTextToSpeech:
             utterance_metadata=utterance_metadata, from_time=1.0
         )
         assert result == expected_result
+
+    def test_get_voices_with_region_filter(self):
+        voices = [
+            Voice(name="Voice1", gender="Male", region="US"),
+            Voice(name="Voice2", gender="Female", region="UK"),
+            Voice(name="Voice3", gender="Male", region="IN"),
+            Voice(name="Voice4", gender="Female", region="IN"),
+        ]
+
+        result = TextToSpeechUT().get_voices_with_region_preference(
+            voices=voices, target_language_region="UK"
+        )
+        assert result[0].region == "UK"
+
+        result = TextToSpeechUT().get_voices_with_region_preference(
+            voices=voices, target_language_region="IN"
+        )
+        assert result[0].region == "IN"
+        assert result[1].region == "IN"
+
+        result = TextToSpeechUT().get_voices_with_region_preference(
+            voices=voices, target_language_region=""
+        )
+        assert result[0].region == "US"

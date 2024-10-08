@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""An audio processing module of Ariel package from the Google EMEA gTech Ads Data Science."""
 
 import os
 
@@ -93,7 +92,6 @@ def run_cut_and_save_audio(
     utterance_metadata: Sequence[Mapping[str, float]],
     audio_file: str,
     output_directory: str,
-    elevenlabs_clone_voices: bool = False,
 ) -> Sequence[Mapping[str, float]]:
     """Cuts an audio file into chunks based on provided time ranges and saves each chunk to a file.
 
@@ -103,8 +101,8 @@ def run_cut_and_save_audio(
     """
 
     audio = AudioSegment.from_file(audio_file)
-    key = "vocals_path" if elevenlabs_clone_voices else "path"
-    prefix = "vocals_chunk" if elevenlabs_clone_voices else "chunk"
+    key = "path"
+    prefix = "chunk"
     updated_utterance_metadata = []
     for utterance in utterance_metadata:
         chunk_path = _cut_and_save_audio(

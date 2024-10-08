@@ -31,54 +31,54 @@ class TestBuildDemucsCommand:
                 "basic",
                 {},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 -j 0 --two-stems vocals --mp3"
-                    " --mp3-bitrate 320 --mp3-preset 2 'audio.mp3'"
+                    ' --mp3-bitrate 320 --mp3-preset 2 "audio.mp3"'
                 ),
             ),
             (
                 "flac",
                 {"flac": True, "mp3": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 -j 0 --two-stems vocals --flac"
-                    " 'audio.mp3'"
+                    ' "audio.mp3"'
                 ),
             ),
             (
                 "int24",
                 {"int24": True, "mp3": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 -j 0 --two-stems vocals --int24"
-                    " 'audio.mp3'"
+                    ' "audio.mp3"'
                 ),
             ),
             (
                 "float32",
                 {"float32": True, "mp3": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 -j 0 --two-stems vocals --float32"
-                    " 'audio.mp3'"
+                    ' "audio.mp3"'
                 ),
             ),
             (
                 "segment",
                 {"segment": 60},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 -j 0 --two-stems vocals --segment"
-                    " 60 --mp3 --mp3-bitrate 320 --mp3-preset 2 'audio.mp3'"
+                    ' 60 --mp3 --mp3-bitrate 320 --mp3-preset 2 "audio.mp3"'
                 ),
             ),
             (
                 "no_split",
                 {"split": False},
                 (
-                    "python -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 -j 0 --two-stems vocals --no-split"
-                    " --mp3 --mp3-bitrate 320 --mp3-preset 2 'audio.mp3'"
+                    ' --mp3 --mp3-bitrate 320 --mp3-preset 2 "audio.mp3"'
                 ),
             ),
         ],
@@ -116,7 +116,7 @@ class TestExtractCommandInfo:
                 "Standard MP3",
                 (
                     "python3 -m demucs.separate -o 'out_folder' --mp3 --two-stems"
-                    " 'audio.mp3'"
+                    ' "audio.mp3"'
                 ),
                 "out_folder",
                 ".mp3",
@@ -167,28 +167,28 @@ class TestAssembleSplitAudioFilePaths:
             (
                 "Standard MP3",
                 (
-                    "python3 -m demucs.separate -o 'test' --device cpu --shifts 1"
+                    'python3 -m demucs.separate -o "test" --device cpu --shifts 1'
                     " --overlap 0.25 --clip_mode rescale -j 0 --two-stems --segment"
-                    " 60 'audio.mp3'"
+                    ' 60 "audio.mp3"'
                 ),
                 "test/htdemucs/audio/vocals.wav",
                 "test/htdemucs/audio/no_vocals.wav",
             ),
             (
                 "FLAC Output",
-                "python3 -m demucs.separate -o 'out_flac' --flac 'audio.mp3'",
+                "python3 -m demucs.separate -o 'out_flac' --flac \"audio.mp3\"",
                 "out_flac/htdemucs/audio/vocals.flac",
                 "out_flac/htdemucs/audio/no_vocals.flac",
             ),
             (
                 "WAV Output (int24)",
-                "python3 -m demucs.separate -o 'out_wav' --int24 'audio.mp3'",
+                "python3 -m demucs.separate -o 'out_wav' --int24 \"audio.mp3\"",
                 "out_wav/htdemucs/audio/vocals.wav",
                 "out_wav/htdemucs/audio/no_vocals.wav",
             ),
             (
                 "WAV Output (float32)",
-                "python3 -m demucs.separate -o 'out_float32' --float32 'audio.mp3'",
+                "python3 -m demucs.separate -o 'out_float32' --float32 \"audio.mp3\"",
                 "out_float32/htdemucs/audio/vocals.wav",
                 "out_float32/htdemucs/audio/no_vocals.wav",
             ),

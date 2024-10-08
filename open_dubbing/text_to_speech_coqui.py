@@ -14,12 +14,12 @@
 
 import logging
 
-from typing import Mapping
+from typing import List
 
 from iso639 import Lang
 
 from open_dubbing.coqui import Coqui
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechCoqui(TextToSpeech):
@@ -42,12 +42,12 @@ class TextToSpeechCoqui(TextToSpeech):
         iso_639_1 = o.pt1
         return iso_639_1
 
-    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
-        voices = {}
+    def get_available_voices(self, language_code: str) -> List[Voice]:
+        voices = []
 
         if language_code == "cat":
-            voices["Male"] = "pau"
-            voices["Female"] = "ona"
+            voices.append(Voice(name="pau", gender="Male"))
+            voices.append(Voice(name="ona", gender="Female"))
 
         logging.debug(
             f"text_to_speech_coqui.get_available_voices: {voices} for language {language_code}"
