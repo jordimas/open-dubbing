@@ -83,7 +83,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        coverage run -m pytest tests/
+        coverage run --source=open_dubbing -m pytest tests/
         coverage report
         coverage xml
 
