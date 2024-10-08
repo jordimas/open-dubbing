@@ -62,6 +62,7 @@ class CommandLine:
                 "'mms': Meta Multilingual Speech engine, supports many languages."
                 "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
                 "'edge': Microsoft Edge TSS."
+                "'cmd': User define TTS invoked from command line"
             ),
         )
         parser.add_argument(

@@ -33,9 +33,8 @@ class TextToSpeechCmd(TextToSpeech):
             voices["Male"] = "2"
             voices["Female"] = "3"
 
-
         logging.debug(
-            f"text_to_speech_coqui.get_available_voices: {voices} for language {language_code}"
+            f"text_to_speech_cmd.get_available_voices: {voices} for language {language_code}"
         )
         return voices
 
@@ -61,7 +60,7 @@ class TextToSpeechCmd(TextToSpeech):
         wav_file = os.path.join(directory, f"output/spk_{assigned_voice}/synth.wav")
         self._convert_to_mp3(wav_file, output_filename)
 
-        logging.debug(f"TextToSpeechMMS._convert_text_to_speech: {text}")
+        logging.debug(f"text_to_speech_cmd._convert_text_to_speech: {text}")
 
         return output_filename
 
