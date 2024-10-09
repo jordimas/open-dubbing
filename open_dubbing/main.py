@@ -33,11 +33,24 @@ from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
 
-def _init_logging():
+class ThirdPartyLevelFilter(logging.Filter):
+    def __init__(self, min_level, max_level):
+        self.min_level = min_level
+        self.max_level = max_level
 
+    def filter(self, record):
+        # List of third-party library loggers (adjust as needed)
+
+        # Apply the filter only to loggers that belong to third-party libraries
+        if record.name != "root":
+            return self.min_level <= record.levelno <= self.max_level
+        return True  # Allow all levels for non-third-party loggers (your app)
+
+
+def _init_logging():
     # Create a logger
     logger = logging.getLogger("")
-    logger.setLevel(logging.DEBUG)  # Set the global log level
+    logger.setLevel(logging.DEBUG)
 
     # File handler for logging to a file
     file_handler = logging.FileHandler("open_dubbing.log")
@@ -54,14 +67,14 @@ def _init_logging():
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
+    # Add a filter to allow only specific log levels (e.g., only WARNING level logs)
+    third_party_filter = ThirdPartyLevelFilter(logging.WARNING, logging.CRITICAL)
+    file_handler.addFilter(third_party_filter)
+    console_handler.addFilter(third_party_filter)
+
     # Add handlers to the logger
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
-
-    # Optionally, apply ERROR level to all loggers except the root logger
-    for name in logging.root.manager.loggerDict:
-        if name not in [""]:
-            logging.getLogger(name).setLevel(logging.ERROR)
 
 
 def check_languages(source_language, target_language, _tts, translation, _sst):
