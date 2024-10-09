@@ -31,8 +31,6 @@ class TextToSpeechMMS(TextToSpeech):
         super().__init__()
         self.device = device
 
-    #        logging.getLogger("transformers").setLevel(logging.ERROR)
-
     def get_available_voices(self, language_code: str) -> List[Voice]:
         return []
 

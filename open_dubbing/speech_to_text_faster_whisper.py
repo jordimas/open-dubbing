@@ -27,8 +27,6 @@ class SpeechToTextFasterWhisper(SpeechToText):
     def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
         super().__init__(device=device, model_name=model_name, cpu_threads=cpu_threads)
 
-    #        logging.getLogger("faster_whisper").setLevel(logging.ERROR)
-
     def load_model(self):
         self._model = WhisperModel(
             model_size_or_path=self.model_name,
