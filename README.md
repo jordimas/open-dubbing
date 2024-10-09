@@ -56,16 +56,18 @@ Supported target languages: Achinese, Akan, Amharic, Assamese, Awadhi, Ayacucho 
 
 # Installation
 
-## Install dependencies
+To install the open_dubbing in all platforms:
 
-Linux:
+```shell
+pip install open_dubbing
+```
+
+## Linux additional dependencies
+
+In Linux you also need to install:
 
 ```shell
 sudo apt install ffmpeg
-```
-Mac OS
-```shell
-brew install ffmpeg
 ```
 
 If you are going to use Coqui-tts you also need to install espeak-ng:
@@ -73,18 +75,27 @@ If you are going to use Coqui-tts you also need to install espeak-ng:
 ```shell
 sudo apt install espeak-ng
 ```
-Mac OS
+
+## macOS additional dependencies
+
+In macOS you also need to install:
+
+```shell
+brew install ffmpeg
+```
+
+If you are going to use Coqui-tts you also need to install espeak-ng:
+
 ```shell
 brew install espeak-ng
 ```
 
-Install package:
+## Windows additional dependencies
 
-```shell
-pip install open_dubbing
-```
+Windows currently works but it has not been tested extensively.
 
-Windows is currently not a specific supported platform. If you find issue, please report them.
+You also need to install [ffmpeg](https://www.ffmpeg.org/download.html) for Windows. Make sure that is the system path.
+
 
 ## Accept pyannote license
 
@@ -105,7 +116,7 @@ Where:
 - _TOKEN_ is the HuggingFace token that allows to access the models
 - _cat_ in this case is the target language using iso ISO 639-3 language codes
 
-By default, the source language is predicted using the first 30 seconds of the video. If this does not work (e.g. there is only music at the begining), use the parameter _source_language_ to specify the source language using ISO 639-3 language codes (e.g. 'eng' for English).
+By default, the source language is predicted using the first 30 seconds of the video. If this does not work (e.g. there is only music at the beginning), use the parameter _source_language_ to specify the source language using ISO 639-3 language codes (e.g. 'eng' for English).
 
 To get a list of available options:
 
