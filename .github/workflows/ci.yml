@@ -36,18 +36,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-         os: [ubuntu-latest, macos-latest]
+         os: [ubuntu-latest, macos-latest, windows-latest]
+         python-version: [3.10.15, 3.11, 3.12]
+         exclude:
+          - os: macos-latest
+            python-version: 3.10.15
+          - os: windows-latest
+            python-version: 3.10.15
 
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies on Linux
-      if: matrix.os == 'ubuntu-latest'
+      if: startsWith(matrix.os, 'ubuntu')
       run: |
         sudo apt update
         sudo apt install -y ffmpeg espeak-ng
         pip install .
-        pip install pytest
+        pip install pytest coverage
         pip cache purge
         sudo apt-get clean
 
@@ -58,12 +69,38 @@ jobs:
         brew update
         brew install ffmpeg espeak-ng
         pip install .
-        pip install pytest
+        pip install pytest coverage
         pip cache purge
 
-    - name: Run Unit tests
+    - name: Install dependencies on Windows
+      if: matrix.os == 'windows-latest'
       run: |
-        make run-tests
+        choco install ffmpeg -y
+        pip install .
+        pip install pytest coverage
+        pip cache purge
+
+
+    - name: Run tests with coverage
+      run: |
+        coverage run --source=open_dubbing -m pytest tests/
+        coverage report
+        coverage xml
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage.xml
+
+    - name: Report test coverage
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: coverage.xml
+        flags: unittests
+        name: codecov-coverage
+        fail_ci_if_error: true
 
     - name: Run end-to-end test
       env:

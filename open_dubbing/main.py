@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import logging
 import os
 import sys
 
 from iso639 import Lang
 
+from open_dubbing.command_line import CommandLine
 from open_dubbing.coqui import Coqui
 from open_dubbing.dubbing import Dubber
 from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
@@ -31,11 +31,6 @@ from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.translation_apertium import TranslationApertium
 from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
-
-WHISPER_MODEL_NAMES = [
-    "medium",
-    "large-v3",
-]
 
 
 def _init_logging():
@@ -138,111 +133,7 @@ def list_supported_languages(_tts, translation, device):  # TODO: Not used
 
 def main():
     _init_logging()
-    """Parses command-line arguments and runs the dubbing process."""
-    parser = argparse.ArgumentParser(
-        description="AI dubbing system which uses machine learning models to automatically translate and synchronize audio dialogue into different languages"
-    )
-    parser.add_argument(
-        "--input_file",
-        required=True,
-        help="Path to the input video file.",
-    )
-    parser.add_argument(
-        "--output_directory",
-        default="output/",
-        help="Directory to save output files.",
-    )
-    parser.add_argument(
-        "--source_language",
-        help="Source language (ISO 639-3)",
-    )
-    parser.add_argument(
-        "--target_language",
-        required=True,
-        help="Target language for dubbing (ISO 639-3).",
-    )
-    parser.add_argument(
-        "--hugging_face_token",
-        default=None,
-        help="Hugging Face API token.",
-    )
-    parser.add_argument(
-        "--tts",
-        type=str,
-        default="mms",
-        choices=["mms", "coqui", "edge"],
-        help=(
-            "Text to Speech engine to use. Choices are:"
-            "'mms': Meta Multilingual Speech engine, supports many languages."
-            "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
-            "'edge': Microsoft Edge TSS."
-        ),
-    )
-    parser.add_argument(
-        "--stt",
-        type=str,
-        default="auto",
-        choices=["auto", "faster-whisper", "transformers"],
-        help=(
-            "Speech to text. Choices are:"
-            "'auto': Autoselect best implementation."
-            "'faster-whisper': Faster-whisper's OpenAI whisper implementation."
-            "'transformers': Transformers OpenAI whisper implementation."
-        ),
-    )
-    parser.add_argument(
-        "--translator",
-        type=str,
-        default="nllb",
-        choices=["nllb", "apertium"],
-        help=(
-            "Text to Speech engine to use. Choices are:"
-            "'nllb': Meta's no Language Left Behind (NLLB)."
-            "'apertium'': Apertium compatible API server"
-        ),
-    )
-    parser.add_argument(
-        "--apertium-server",
-        type=str,
-        default="",
-        help=("Apertium's URL server to use"),
-    )
-
-    parser.add_argument(
-        "--device",
-        type=str,
-        default="cpu",
-        choices=["cpu", "cuda"],
-        help=("Device to use"),
-    )
-    parser.add_argument(
-        "--cpu_threads",
-        type=int,
-        default=0,
-        help="number of threads used for CPU inference (if is not specified uses defaults for each framework)",
-    )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="keep intermediate files and generate specific files for debugging",
-    )
-
-    parser.add_argument(
-        "--nllb_model",
-        type=str,
-        default="nllb-200-1.3B",
-        choices=["nllb-200-1.3B", "nllb-200-3.3B"],
-        help="NLLB translation model size. 'nllb-200-3.3B' gives best translation quality",
-    )
-
-    parser.add_argument(
-        "--whisper_model",
-        default="medium",
-        choices=WHISPER_MODEL_NAMES,
-        help="name of the OpenAI Whisper speech to text model size to use",
-    )
-
-    args = parser.parse_args()
+    args = CommandLine.read_parameters()
 
     check_is_a_video(args.input_file)
 
@@ -324,6 +215,7 @@ def main():
         output_directory=args.output_directory,
         source_language=source_language,
         target_language=args.target_language,
+        target_language_region=args.target_language_region,
         hugging_face_token=hugging_face_token,
         tts=tts,
         translation=translation,

@@ -1,5 +1,6 @@
 [![PyPI version](https://img.shields.io/pypi/v/open-dubbing.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/open-dubbing/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/open-dubbing.svg)](https://pypistats.org/packages/open-dubbing)
+[![codecov](https://codecov.io/github/jordimas/open-dubbing/graph/badge.svg?token=TI6SIB9SGK)](https://codecov.io/github/jordimas/open-dubbing)
 
 # Introduction
 
@@ -82,6 +83,8 @@ Install package:
 ```shell
 pip install open_dubbing
 ```
+
+Windows is currently not a specific supported platform. If you find issue, please report them.
 
 ## Accept pyannote license
 

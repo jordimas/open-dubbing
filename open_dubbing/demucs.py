@@ -69,7 +69,7 @@ class Demucs:
             "-m",
             "demucs.separate",
             "-o",
-            f"'{output_directory}'",
+            f'"{output_directory}"',
             "--device",
             device,
             "--shifts",
@@ -100,7 +100,7 @@ class Demucs:
             command_parts.append("--int24")
         if float32:
             command_parts.append("--float32")
-        command_parts.append(f"'{audio_file}'")
+        command_parts.append(f'"{audio_file}"')
         return " ".join(command_parts)
 
     def execute_demucs_command(self, command: str) -> None:

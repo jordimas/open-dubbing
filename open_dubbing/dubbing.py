@@ -18,7 +18,6 @@ import json
 import logging
 import os
 import re
-import resource
 import shutil
 import sys
 import tempfile
@@ -115,6 +114,7 @@ class Dubber:
         output_directory: str,
         source_language: str,
         target_language: str,
+        target_language_region: str,
         hugging_face_token: str | None = None,
         tts: TextToSpeech,
         translation: Translation,
@@ -129,6 +129,7 @@ class Dubber:
         self.output_directory = output_directory
         self.source_language = source_language
         self.target_language = target_language
+        self.target_language_region = target_language_region
         self.pyannote_model = pyannote_model
         self.hugging_face_token = hugging_face_token
         self.utterance_metadata = None
@@ -157,12 +158,17 @@ class Dubber:
             )
         return renamed_input_file
 
-    def get_maxrss_memory(self):
+    def log_maxrss_memory(self):
+        if sys.platform == "win32" or sys.platform == "win64":
+            return
+
+        import resource
+
         max_rss_self = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
         if sys.platform == "darwin":
             return max_rss_self / 1024
 
-        return max_rss_self
+        logging.info(f"Maximum memory used: {max_rss_self:.0f} MB")
 
     def log_debug_task_and_getime(self, text, start_time):
         process = psutil.Process(os.getpid())
@@ -278,7 +284,7 @@ class Dubber:
         assigned_voices = self.tts.assign_voices(
             utterance_metadata=self.utterance_metadata,
             target_language=self.target_language,
-            preferred_voices=None,
+            target_language_region=self.target_language_region,
         )
         self.utterance_metadata = self.tts.update_utterance_metadata(
             utterance_metadata=self.utterance_metadata,
@@ -439,7 +445,6 @@ class Dubber:
             per = _time * 100 / total_time
             logging.info(f" Task '{task}' in {_time:.2f} secs ({per:.2f}%)")
 
-        max_rss = self.get_maxrss_memory()
-        logging.info(f"Maximum memory used: {max_rss:.0f} MB")
+        self.log_maxrss_memory()
         logging.info("Output files saved in: %s.", self.output_directory)
         return self.postprocessing_output

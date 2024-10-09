@@ -16,14 +16,14 @@ import asyncio
 import logging
 import re
 
-from typing import Mapping
+from typing import List
 
 import edge_tts
 
 from edge_tts import VoicesManager, list_voices
 from iso639 import Lang
 
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechEdge(TextToSpeech):
@@ -36,22 +36,35 @@ class TextToSpeechEdge(TextToSpeech):
         super().__init__()
         self.device = device
 
-    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
-        results = {}
+    def get_available_voices(self, language_code: str) -> List[Voice]:
+        voices = []
         iso_639_1 = self._get_iso_639_1(language_code)
 
         voice_manager = asyncio.run(self._create_manager())
 
-        voices = voice_manager.find(Gender="Male", Language=iso_639_1)
-        results["Male"] = voices[0]["ShortName"]
-        voices = voice_manager.find(Gender="Female", Language=iso_639_1)
-        results["Female"] = voices[0]["ShortName"]
+        edge_voices = voice_manager.find(Language=iso_639_1)
+        for edge_voice in edge_voices:
+            if not all(key in edge_voice for key in ["ShortName", "Gender", "Locale"]):
+                logging.warn(
+                    f"Skipping voice '{edge_voice}' since is missing some fields"
+                )
+                continue
+
+            voice = Voice(
+                name=edge_voice["ShortName"],
+                gender=edge_voice["Gender"],
+                region=edge_voice["Locale"],
+            )
+            voices.append(voice)
+            logging.debug(
+                f'shortname: {edge_voice["ShortName"]}, gender: {edge_voice["Gender"]}, locale: {edge_voice["Locale"]}'
+            )
 
         logging.debug(
-            f"text_to_speech_edge.get_available_voices: {results} for language {language_code}"
+            f"text_to_speech_edge.get_available_voices: {voices} for language {language_code}"
         )
 
-        return results
+        return voices
 
     def _get_iso_639_1(self, iso_639_3: str):
         o = Lang(iso_639_3)
