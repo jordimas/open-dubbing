@@ -56,13 +56,13 @@ class CommandLine:
             "--tts",
             type=str,
             default="mms",
-            choices=["mms", "coqui", "edge", "cmd"],
+            choices=["mms", "coqui", "edge", "cli"],
             help=(
                 "Text to Speech engine to use. Choices are:"
                 "'mms': Meta Multilingual Speech engine, supports many languages."
                 "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
                 "'edge': Microsoft Edge TSS."
-                "'cmd': User define TTS invoked from command line"
+                "'cli': User define TTS invoked from command line"
             ),
         )
         parser.add_argument(
@@ -136,7 +136,7 @@ class CommandLine:
         )
 
         parser.add_argument(
-            "--tts_cmd_cfg_file",
+            "--tts_cli_cfg_file",
             default="",
             help="JSon configuration file when using a TTS which is involved by command line..",
         )

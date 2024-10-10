@@ -21,7 +21,7 @@ from typing import List
 from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
-class TextToSpeechCmd(TextToSpeech):
+class TextToSpeechCLI(TextToSpeech):
 
     def __init__(self, device="cpu", configuration_file=None):
         super().__init__()
@@ -50,7 +50,7 @@ class TextToSpeechCmd(TextToSpeech):
             voices.append(voice)
 
         logging.info(
-            f"text_to_speech_cmd.get_available_voices: {voices} for language {language_code}"
+            f"text_to_speech_cli.get_available_voices: {voices} for language {language_code}"
         )
         return voices
 
@@ -80,7 +80,7 @@ class TextToSpeechCmd(TextToSpeech):
 
         self._convert_to_mp3(wav_file, output_filename)
 
-        logging.debug(f"text_to_speech_cmd._convert_text_to_speech: {text}")
+        logging.debug(f"text_to_speech_cli._convert_text_to_speech: {text}")
 
         return output_filename
 
@@ -92,5 +92,5 @@ class TextToSpeechCmd(TextToSpeech):
 
         languages_list = list(languages)
 
-        logging.info(f"text_to_speech_cmd.get_languages: {languages_list}")
+        logging.info(f"text_to_speech_cli.get_languages: {languages_list}")
         return languages_list
