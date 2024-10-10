@@ -72,7 +72,9 @@ class TextToSpeechCLI(TextToSpeech):
         )
         return_code = os.system(cmd)
         if return_code != 0:
-            raise RuntimeError(f"Command 'cmd' failed with return code: {return_code}")
+            raise RuntimeError(
+                f"Command '{cmd}' failed with return code: {return_code}"
+            )
 
         output_pattern = self.configuration["output_pattern"]
         wav_file = output_pattern.format(
@@ -82,7 +84,6 @@ class TextToSpeechCLI(TextToSpeech):
         self._convert_to_mp3(wav_file, output_filename)
 
         logging.debug(f"text_to_speech_cli._convert_text_to_speech: {text}")
-
         return output_filename
 
     def get_languages(self):
