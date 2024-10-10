@@ -88,10 +88,16 @@ Currently the system supports the following TTS systems:
     - Good quality for the languages supported
   - Cons
     - This is a closed source option only for benchmarking
+* CLI TTS
+  * Allows you to use any TTS that can be called from the command line
     
 The main driver to decide which TTS to use is the quality for your target language and the number of voices supported.
+
+## Extending support for new TTS engines
     
 It is possible to add support for new TTS engines by extending the class _TextToSpeech_
+
+Additionally CLI TTS, allows you to use any TTS that can be called from the command line.
 
 # Translation
 
