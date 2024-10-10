@@ -23,14 +23,14 @@ from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 class TextToSpeechCmd(TextToSpeech):
 
-    def __init__(self, device="cpu"):
+    def __init__(self, device="cpu", configuration_file=None):
         super().__init__()
         self.device = device
-        self.configuration = self.load_json()
+        self.configuration = self.load_json(configuration_file)
         self.output_dir = os.path.abspath("tts-ouput/")
 
-    def load_json(self):
-        with open("/home/jordi/sc/open-dubbing2/samples/tts_sample.json", "r") as file:
+    def load_json(self, configuration_file):
+        with open(configuration_file, "r") as file:
             data = json.load(file)
 
         return data

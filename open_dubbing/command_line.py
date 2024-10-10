@@ -135,4 +135,10 @@ class CommandLine:
             help="For some TTS you can specify the region of the language. For example, 'ES' will indicate accent from Spain.",
         )
 
+        parser.add_argument(
+            "--tts_cmd_cfg_file",
+            default="",
+            help="JSon configuration file when using a TTS which is involved by command line..",
+        )
+
         return parser.parse_args()
