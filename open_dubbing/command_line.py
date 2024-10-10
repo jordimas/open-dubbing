@@ -138,7 +138,7 @@ class CommandLine:
         parser.add_argument(
             "--tts_cli_cfg_file",
             default="",
-            help="JSon configuration file when using a TTS which is involved by command line..",
+            help="JSon configuration file when using a TTS which is involved by command line.",
         )
 
         return parser.parse_args()
