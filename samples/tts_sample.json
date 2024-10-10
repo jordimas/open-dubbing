@@ -6,49 +6,57 @@
             "name": "quim-balear",
             "id": "0",
             "gender": "male",
-            "language": "cat"
+            "language": "cat",
+            "region": "balear"
         },
         {
             "name": "olga-balear",
             "id": "1",
             "gender": "female",
-            "language": "cat"
+            "language": "cat",
+            "region": "balear"
         },
         {
             "name": "grau-central",
             "id": "2",
             "gender": "male",
-            "language": "cat"
+            "language": "cat",
+            "region": "central"
         },
         {
             "name": "elia-central",
             "id": "3",
             "gender": "female",
-            "language": "cat"
+            "language": "cat",
+            "region": "central"
         },
         {
             "name": "pere-nord",
             "id": "4",
             "gender": "male",
-            "language": "cat"
+            "language": "cat",
+            "region": "nord"
         },
         {
             "name": "emma-nord",
             "id": "5",
             "gender": "female",
-            "language": "cat"
+            "language": "cat",
+            "region": "nord"
         },
         {
             "name": "lluc-valencia",
             "id": "6",
             "gender": "male",
-            "language": "cat"
+            "language": "cat",
+            "region": "valencia"
         },
         {
             "name": "gina-valencia",
             "id": "7",
             "gender": "female",
-            "language": "cat"
+            "language": "cat",
+            "region": "valencia"
         }
     ]
 }

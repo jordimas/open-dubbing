@@ -45,7 +45,7 @@ class TextToSpeechCmd(TextToSpeech):
             voice = Voice(
                 name=voice_cfg["id"],
                 gender=voice_cfg["gender"],
-                # region=voice_cfg["region"],
+                region=voice_cfg["region"],
             )
             voices.append(voice)
 
