@@ -49,7 +49,7 @@ class TextToSpeechCLI(TextToSpeech):
             )
             voices.append(voice)
 
-        logging.info(
+        logging.debug(
             f"text_to_speech_cli.get_available_voices: {voices} for language {language_code}"
         )
         return voices
@@ -93,5 +93,5 @@ class TextToSpeechCLI(TextToSpeech):
 
         languages_list = list(languages)
 
-        logging.info(f"text_to_speech_cli.get_languages: {languages_list}")
+        logging.debug(f"text_to_speech_cli.get_languages: {languages_list}")
         return languages_list
