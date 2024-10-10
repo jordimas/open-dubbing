@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import logging
 import os
 
@@ -25,24 +26,29 @@ class TextToSpeechCmd(TextToSpeech):
     def __init__(self, device="cpu"):
         super().__init__()
         self.device = device
+        self.configuration = self.load_json()
+
+    def load_json(self):
+        with open("/home/jordi/sc/open-dubbing2/samples/tts_sample.json", "r") as file:
+            data = json.load(file)
+
+        return data
 
     def get_available_voices(self, language_code: str) -> Mapping[str, str]:
         voices = []
 
-        if language_code == "cat":
+        for voice_cfg in self.configuration["voices"]:
+            if voice_cfg["language"] != language_code:
+                continue
+
             voice = Voice(
-                name="2",
-                gender="Male",
+                name=voice_cfg["id"],
+                gender=voice_cfg["gender"],
+                region=voice_cfg["region"],
             )
             voices.append(voice)
 
-            voice = Voice(
-                name="3",
-                gender="Female",
-            )
-            voices.append(voice)
-
-        logging.debug(
+        logging.info(
             f"text_to_speech_cmd.get_available_voices: {voices} for language {language_code}"
         )
         return voices

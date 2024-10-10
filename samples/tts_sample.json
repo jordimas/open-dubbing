@@ -1,0 +1,19 @@
+{
+    "command": "python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input=\"{text}\"",
+    "license": "MIT",
+    "voices": [
+        {
+            "id": "2",
+            "gender": "male",
+            "language": "cat",
+            "region": "central"
+        },
+        {
+            "id": "3",
+            "gender": "female",
+            "language": "cat",            
+            "region": "central"
+        }
+    ]
+}
+
