@@ -66,10 +66,6 @@ class TextToSpeechCmd(TextToSpeech):
     ) -> str:
 
         directory = "/home/jordi/sc/open-dubbing2/Matcha-TTS"
-        # python3 matcha_vocos_inference.py --output_path=/output/path --text_input="Bon dia Manel, avui anem a la muntanya." --length_scale=0.8 --temperature=0.7 --speaker_id 0 --cleaner "catalan_balear_cleaners"
-
-        # cmd = f'python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input="{text}"'
-        # cmd = f"cd {directory} && {cmd}"
         command = self.configuration["command"]
         cmd = command.format(assigned_voice=assigned_voice, text=text)
         logging.info(f"cmd: {cmd}")
@@ -82,4 +78,12 @@ class TextToSpeechCmd(TextToSpeech):
         return output_filename
 
     def get_languages(self):
-        return ["cat"]
+        languages = set()
+        for voice_cfg in self.configuration["voices"]:
+            language = voice_cfg["language"]
+            languages.add(language)
+
+        languages_list = list(languages)
+
+        logging.info(f"text_to_speech_cmd.get_languages: {languages_list}")
+        return languages_list
