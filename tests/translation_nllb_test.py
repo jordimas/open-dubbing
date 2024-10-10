@@ -24,7 +24,7 @@ class TestTranslationNLLB:
             "open_dubbing.translation_nllb.TranslationNLLB._get_tokenizer_nllb"
         ) as mock_get_tokenizer_nllb:
             mock_tokenizer = MagicMock()
-            mock_tokenizer.lang_code_to_id.keys.return_value = [
+            mock_tokenizer.additional_special_tokens = [
                 "cat_Latn",
                 "ukr_Cyrl",
                 "eng_Latn",
@@ -44,7 +44,7 @@ class TestTranslationNLLB:
         ) as mock_get_tokenizer_nllb:
             mock_tokenizer = MagicMock()
             # Mock the return of lang_code_to_id.keys() to return a list of language codes
-            mock_tokenizer.lang_code_to_id.keys.return_value = [
+            mock_tokenizer.additional_special_tokens = [
                 "cat_Latn",
                 "eng_Latn",
                 "fra_Latn",
