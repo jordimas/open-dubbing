@@ -68,8 +68,10 @@ class TextToSpeechCmd(TextToSpeech):
         directory = "/home/jordi/sc/open-dubbing2/Matcha-TTS"
         # python3 matcha_vocos_inference.py --output_path=/output/path --text_input="Bon dia Manel, avui anem a la muntanya." --length_scale=0.8 --temperature=0.7 --speaker_id 0 --cleaner "catalan_balear_cleaners"
 
-        cmd = f'python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input="{text}"'
-        cmd = f"cd {directory} && {cmd}"
+        # cmd = f'python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input="{text}"'
+        # cmd = f"cd {directory} && {cmd}"
+        command = self.configuration["command"]
+        cmd = command.format(assigned_voice=assigned_voice, text=text)
         logging.info(f"cmd: {cmd}")
         os.system(cmd)
         wav_file = os.path.join(directory, f"output/spk_{assigned_voice}/synth.wav")

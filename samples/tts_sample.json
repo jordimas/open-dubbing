@@ -1,6 +1,5 @@
 {
-    "command": "python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input=\"{text}\"",
-    "license": "MIT",
+    "command": "cd /home/jordi/sc/open-dubbing2/Matcha-TTS && python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input=\"{text}\"",
     "voices": [
         {
             "id": "2",
