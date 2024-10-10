@@ -99,6 +99,13 @@ It is possible to add support for new TTS engines by extending the class _TextTo
 
 Additionally CLI TTS, allows you to use any TTS that can be called from the command line.
 
+You need to provide a configuration file (see [tss_cli_sample.json](./samples/tss_cli_sample.json)
+and call it like this.
+
+```shell
+ open-dubbing --input_file video.mp4 --tts="cmd" --tts_cmd_cfg_file="your_tts_configuration.json"
+```
+
 # Translation
 
 We currently support two translation engines:
