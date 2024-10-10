@@ -16,7 +16,7 @@ import json
 import logging
 import os
 
-from typing import Mapping
+from typing import List
 
 from open_dubbing.text_to_speech import TextToSpeech, Voice
 
@@ -27,6 +27,7 @@ class TextToSpeechCmd(TextToSpeech):
         super().__init__()
         self.device = device
         self.configuration = self.load_json()
+        self.output_dir = os.path.abspath("tts-ouput/")
 
     def load_json(self):
         with open("/home/jordi/sc/open-dubbing2/samples/tts_sample.json", "r") as file:
@@ -34,7 +35,7 @@ class TextToSpeechCmd(TextToSpeech):
 
         return data
 
-    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
+    def get_available_voices(self, language_code: str) -> List[Voice]:
         voices = []
 
         for voice_cfg in self.configuration["voices"]:
@@ -44,7 +45,7 @@ class TextToSpeechCmd(TextToSpeech):
             voice = Voice(
                 name=voice_cfg["id"],
                 gender=voice_cfg["gender"],
-                region=voice_cfg["region"],
+                # region=voice_cfg["region"],
             )
             voices.append(voice)
 
@@ -66,10 +67,17 @@ class TextToSpeechCmd(TextToSpeech):
     ) -> str:
 
         command = self.configuration["command"]
-        cmd = command.format(assigned_voice=assigned_voice, text=text)
+        cmd = command.format(
+            assigned_voice=assigned_voice, text=text, directory=self.output_dir
+        )
         logging.info(f"cmd: {cmd}")
         os.system(cmd)
-        wav_file = os.path.join(directory, f"output/spk_{assigned_voice}/synth.wav")
+
+        output_pattern = self.configuration["output_pattern"]
+        wav_file = output_pattern.format(
+            assigned_voice=assigned_voice, text=text, directory=self.output_dir
+        )
+
         self._convert_to_mp3(wav_file, output_filename)
 
         logging.debug(f"text_to_speech_cmd._convert_text_to_speech: {text}")
