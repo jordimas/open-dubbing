@@ -2,16 +2,54 @@
     "command": "cd /home/jordi/sc/open-dubbing2/Matcha-TTS && python3 matcha_vocos_inference.py --output_path=output/ --speaker_id {assigned_voice} --text_input=\"{text}\"",
     "voices": [
         {
+            "name": "quim-balear",
+            "id": "0",
+            "gender": "male",
+            "language": "cat",
+        },
+        {
+            "name": "olga-balear",
+            "id": "1",
+            "gender": "female",
+            "language": "cat",
+        },
+        {
+            "name": "grau-central",
             "id": "2",
             "gender": "male",
             "language": "cat",
             "region": "central"
         },
         {
+            "name": "elia-central",
             "id": "3",
             "gender": "female",
-            "language": "cat",            
+            "language": "cat",
             "region": "central"
+        },
+        {
+            "name": "pere-nord",
+            "id": "4",
+            "gender": "male",
+            "language": "cat"
+        },
+        {
+            "name": "emma-nord",
+            "id": "5",
+            "gender": "female",
+            "language": "cat"
+        },
+        {
+            "name": "lluc-valencia",
+            "id": "6",
+            "gender": "male",
+            "language": "cat"
+        },
+        {
+            "name": "gina-valencia",
+            "id": "7",
+            "gender": "female",
+            "language": "cat"
         }
     ]
 }

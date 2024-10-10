@@ -65,7 +65,6 @@ class TextToSpeechCmd(TextToSpeech):
         volume_gain_db: float,
     ) -> str:
 
-        directory = "/home/jordi/sc/open-dubbing2/Matcha-TTS"
         command = self.configuration["command"]
         cmd = command.format(assigned_voice=assigned_voice, text=text)
         logging.info(f"cmd: {cmd}")
