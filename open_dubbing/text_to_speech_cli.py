@@ -70,8 +70,9 @@ class TextToSpeechCLI(TextToSpeech):
         cmd = command.format(
             assigned_voice=assigned_voice, text=text, directory=self.output_dir
         )
-        logging.info(f"cmd: {cmd}")
-        os.system(cmd)
+        return_code = os.system(cmd)
+        if return_code != 0:
+            raise RuntimeError(f"Command 'cmd' failed with return code: {return_code}")
 
         output_pattern = self.configuration["output_pattern"]
         wav_file = output_pattern.format(
