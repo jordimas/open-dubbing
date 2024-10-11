@@ -60,3 +60,5 @@ class TestCmd:
                     assert "Bon dia, em dic Jordi Mas." == text_array[0]
                     assert "Sóc de Barcelona." == text_array[1]
                     assert "I m'encanta aquesta ciutat." == text_array[2]
+
+                assert all("Male" == entry["ssml_gender"] for entry in data)

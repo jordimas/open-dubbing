@@ -120,9 +120,8 @@ class VoiceGenderClassifier:
         self,
         x: np.ndarray,
         sampling_rate: int,
-        embeddings: bool = False,
     ) -> np.ndarray:
-        r"""Predict age and gender or extract embeddings from raw audio signal."""
+        r"""Predict age and gender from raw audio signal."""
 
         # Run through processor to normalize signal
         y = self.processor(x, sampling_rate=sampling_rate)
@@ -133,11 +132,8 @@ class VoiceGenderClassifier:
         # Run through model
         with torch.no_grad():
             y = self.model(y)
-            if embeddings:
-                return y[0]  # Return hidden states (embeddings)
-            else:
-                logits_age, logits_gender = y[1], y[2]  # Age and gender logits
-                return logits_age, logits_gender
+            logits_age, logits_gender = y[1], y[2]  # Age and gender logits
+            return logits_age, logits_gender
 
     def _interpret_gender(self, logits_gender):
         """Convert gender logits into a male/female label."""
@@ -160,7 +156,7 @@ class VoiceGenderClassifier:
         signal, sampling_rate = self.load_audio_file(file_path)
 
         # Predict age and gender
-        age_logits, gender_logits = self._predict(signal, sampling_rate)
+        _, gender_logits = self._predict(signal, sampling_rate)
         predicted_gender = self._interpret_gender(gender_logits)
         logging.debug(
             f"The audio from {os.path.basename(file_path)} is predicted {predicted_gender}"
