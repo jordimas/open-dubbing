@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.7]
+
+### Added
+- Support for any TTS which can be invoked from the command line
+
 ## [0.0.6]
 
 ### Added
@@ -14,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Only speed audios when it's really needed improving quality of final audio syntesis
+- Only speed audios when it's really needed improving quality of final audio synthesis
 - Support for Apertium API as translation engine
 - Allow to select between different model sizes for NLLB translation engine
 - Allow to select between different model sizes for Whisper speech to text engine
@@ -38,7 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Support for Microsoft Edge TTS
-- Gender classifier to identify gender in the original video and produce the syntetic voices in target language that match the gender
+- Gender classifier to identify gender in the original video and produce the synthetic voices in target language that match the gender
 
 ## [0.0.1]
 
