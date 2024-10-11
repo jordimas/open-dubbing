@@ -1,0 +1,21 @@
+{
+    "command": "cd /MYDIR && python3 matcha_vocos_inference.py --output_path={directory} --speaker_id {assigned_voice} --text_input=\"{text}\"",
+    "output_pattern": "{directory}/spk_{assigned_voice}/synth.wav",
+    "voices": [
+        {
+            "name": "quim-balear",
+            "id": "0",
+            "gender": "male",
+            "language": "cat",
+            "region": "balear"
+        },
+        {
+            "name": "grau-central",
+            "id": "2",
+            "gender": "male",
+            "language": "cat",
+            "region": "central"
+        }
+    ]
+}
+

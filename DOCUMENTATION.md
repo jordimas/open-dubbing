@@ -3,18 +3,18 @@
 Executing _open-dubbing  --help_ produces the following output:
 
 ```text
-
-usage: open-dubbing [-h] --input_file INPUT_FILE [--output_directory OUTPUT_DIRECTORY] [--source_language SOURCE_LANGUAGE] --target_language TARGET_LANGUAGE
-                    [--hugging_face_token HUGGING_FACE_TOKEN] [--tts {mms,coqui,edge}] [--stt {auto,faster-whisper,transformers}] [--translator {nllb,apertium}]
-                    [--apertium-server APERTIUM_SERVER] [--device {cpu,cuda}] [--cpu_threads CPU_THREADS] [--debug] [--nllb_model {nllb-200-1.3B,nllb-200-3.3B}]
-                    [--whisper_model {medium,large-v3}]
+usage: open-dubbing [-h] --input_file INPUT_FILE [--output_directory OUTPUT_DIRECTORY] [--source_language SOURCE_LANGUAGE] --target_language
+                    TARGET_LANGUAGE [--hugging_face_token HUGGING_FACE_TOKEN] [--tts {mms,coqui,edge,cli}] [--stt {auto,faster-whisper,transformers}]
+                    [--translator {nllb,apertium}] [--apertium-server APERTIUM_SERVER] [--device {cpu,cuda}] [--cpu_threads CPU_THREADS] [--debug]
+                    [--nllb_model {nllb-200-1.3B,nllb-200-3.3B}] [--whisper_model {medium,large-v3}] [--target_language_region TARGET_LANGUAGE_REGION]
+                    [--tts_cli_cfg_file TTS_CLI_CFG_FILE]
 
 AI dubbing system which uses machine learning models to automatically translate and synchronize audio dialogue into different languages
 
 options:
   -h, --help            show this help message and exit
   --input_file INPUT_FILE
-                        Path to the input video or audio file.
+                        Path to the input video file.
   --output_directory OUTPUT_DIRECTORY
                         Directory to save output files.
   --source_language SOURCE_LANGUAGE
@@ -23,14 +23,15 @@ options:
                         Target language for dubbing (ISO 639-3).
   --hugging_face_token HUGGING_FACE_TOKEN
                         Hugging Face API token.
-  --tts {mms,coqui,edge}
-                        Text to Speech engine to use. Choices are:'mms': Meta Multilingual Speech engine, supports many languages.'coqui': Coqui TTS, an open-source alternative for
-                        high-quality TTS.'edge': Microsoft Edge TSS.
+  --tts {mms,coqui,edge,cli}
+                        Text to Speech engine to use. Choices are:'mms': Meta Multilingual Speech engine, supports many languages.'coqui': Coqui TTS,
+                        an open-source alternative for high-quality TTS.'edge': Microsoft Edge TSS.'cli': User defined TTS invoked from command line
   --stt {auto,faster-whisper,transformers}
-                        Speech to text. Choices are:'auto': Autoselect best implementation.'faster-whisper': Faster-whisper's OpenAI whisper implementation.'transformers':
-                        Transformers OpenAI whisper implementation.
+                        Speech to text. Choices are:'auto': Autoselect best implementation.'faster-whisper': Faster-whisper's OpenAI whisper
+                        implementation.'transformers': Transformers OpenAI whisper implementation.
   --translator {nllb,apertium}
-                        Text to Speech engine to use. Choices are:'nllb': Meta's no Language Left Behind (NLLB).'apertium'': Apertium compatible API server
+                        Text to Speech engine to use. Choices are:'nllb': Meta's no Language Left Behind (NLLB).'apertium'': Apertium compatible API
+                        server
   --apertium-server APERTIUM_SERVER
                         Apertium's URL server to use
   --device {cpu,cuda}   Device to use
@@ -41,6 +42,11 @@ options:
                         NLLB translation model size. 'nllb-200-3.3B' gives best translation quality
   --whisper_model {medium,large-v3}
                         name of the OpenAI Whisper speech to text model size to use
+  --target_language_region TARGET_LANGUAGE_REGION
+                        For some TTS you can specify the region of the language. For example, 'ES' will indicate accent from Spain.
+  --tts_cli_cfg_file TTS_CLI_CFG_FILE
+                        JSon configuration file when using a TTS which is involved by command line.
+
 
 ```
 
@@ -88,10 +94,23 @@ Currently the system supports the following TTS systems:
     - Good quality for the languages supported
   - Cons
     - This is a closed source option only for benchmarking
+* CLI TTS
+  * Allows you to use any TTS that can be called from the command line
     
 The main driver to decide which TTS to use is the quality for your target language and the number of voices supported.
+
+## Extending support for new TTS engines
     
 It is possible to add support for new TTS engines by extending the class _TextToSpeech_
+
+Additionally CLI TTS, allows you to use any TTS that can be called from the command line.
+
+You need to provide a configuration file (see [tss_cli_sample.json](./samples/tss_cli_sample.json)
+and call it like this.
+
+```shell
+ open-dubbing --input_file video.mp4 --tts="cmd" --tts_cmd_cfg_file="your_tts_configuration.json"
+```
 
 # Translation
 
