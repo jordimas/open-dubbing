@@ -1,9 +1,7 @@
 import os
 import pathlib
-
-import pkg_resources
-import setuptools
-from setuptools import setup
+from setuptools import setup, find_packages
+import ast
 
 HERE = pathlib.Path(__file__).parent
 
@@ -11,8 +9,16 @@ README = (HERE / "README.md").read_text()
 
 
 def read_version(fname="open_dubbing/__init__.py"):
-    exec(compile(open(fname, encoding="utf-8").read(), fname, "exec"))
-    return locals()["__version__"]
+    with open(fname, encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("__version__"):
+                return ast.literal_eval(line.split("=")[1].strip())
+
+    raise ValueError("__version__ not found in the file")
+
+def parse_requirements(fname="requirements.txt"):
+    with open(HERE / fname, encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip() and not line.startswith("#")]
 
 
 setup(
@@ -31,14 +37,9 @@ setup(
         "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
-    packages=setuptools.find_packages(),
+    packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        str(r)
-        for r in pkg_resources.parse_requirements(
-            open(os.path.join(os.path.dirname(__file__), "requirements.txt"))
-        )
-    ],
+    install_requires=parse_requirements(),
     extras_require={
         "dev": ["flake8==7.*", "black==24.*", "pytest==8.*", "isort==5.13"],
     },
