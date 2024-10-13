@@ -117,14 +117,14 @@ class CommandLine:
         parser.add_argument(
             "--nllb_model",
             type=str,
-            default="nllb-200-1.3B",
+            default="nllb-200-3.3B",
             choices=["nllb-200-1.3B", "nllb-200-3.3B"],
-            help="NLLB translation model size. 'nllb-200-3.3B' gives best translation quality",
+            help="NLLB translation model size. 'nllb-200-3.3B' gives best translation quality and 'nllb-200-1.3B' is the fastest",
         )
 
         parser.add_argument(
             "--whisper_model",
-            default="medium",
+            default="large-v3",
             choices=WHISPER_MODEL_NAMES,
             help="name of the OpenAI Whisper speech to text model size to use",
         )

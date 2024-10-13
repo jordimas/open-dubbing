@@ -39,6 +39,8 @@ class TestCmd:
                 f"--output_directory={directory} "
                 "--source_language=eng "
                 "--target_language=cat "
+                "--nllb_model=nllb-200-1.3B "
+                "--whisper_model=medium "
                 f"--tts={tts_engine}"
             )
             cmd = f"cd {directory} && {command}"
