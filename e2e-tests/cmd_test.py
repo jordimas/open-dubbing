@@ -39,6 +39,8 @@ class TestCmd:
                 f"--output_directory={directory} "
                 "--source_language=eng "
                 "--target_language=cat "
+                "--nllb_model=nllb-200-1.3B "
+                "--whisper_model=medium "
                 f"--tts={tts_engine}"
             )
             cmd = f"cd {directory} && {command}"
@@ -60,3 +62,5 @@ class TestCmd:
                     assert "Bon dia, em dic Jordi Mas." == text_array[0]
                     assert "Sóc de Barcelona." == text_array[1]
                     assert "I m'encanta aquesta ciutat." == text_array[2]
+
+                assert all("Male" == entry["ssml_gender"] for entry in data)

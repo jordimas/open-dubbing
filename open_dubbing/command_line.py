@@ -56,12 +56,13 @@ class CommandLine:
             "--tts",
             type=str,
             default="mms",
-            choices=["mms", "coqui", "edge"],
+            choices=["mms", "coqui", "edge", "cli"],
             help=(
                 "Text to Speech engine to use. Choices are:"
                 "'mms': Meta Multilingual Speech engine, supports many languages."
                 "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
                 "'edge': Microsoft Edge TSS."
+                "'cli': User defined TTS invoked from command line"
             ),
         )
         parser.add_argument(
@@ -116,14 +117,14 @@ class CommandLine:
         parser.add_argument(
             "--nllb_model",
             type=str,
-            default="nllb-200-1.3B",
+            default="nllb-200-3.3B",
             choices=["nllb-200-1.3B", "nllb-200-3.3B"],
-            help="NLLB translation model size. 'nllb-200-3.3B' gives best translation quality",
+            help="NLLB translation model size. 'nllb-200-3.3B' gives best translation quality and 'nllb-200-1.3B' is the fastest",
         )
 
         parser.add_argument(
             "--whisper_model",
-            default="medium",
+            default="large-v3",
             choices=WHISPER_MODEL_NAMES,
             help="name of the OpenAI Whisper speech to text model size to use",
         )
@@ -132,6 +133,12 @@ class CommandLine:
             "--target_language_region",
             default="",
             help="For some TTS you can specify the region of the language. For example, 'ES' will indicate accent from Spain.",
+        )
+
+        parser.add_argument(
+            "--tts_cli_cfg_file",
+            default="",
+            help="JSon configuration file when using a TTS which is involved by command line.",
         )
 
         return parser.parse_args()

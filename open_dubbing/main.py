@@ -25,6 +25,7 @@ from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
 from open_dubbing.speech_to_text_whisper_transformers import (
     SpeechToTextWhisperTransfomers,
 )
+from open_dubbing.text_to_speech_cli import TextToSpeechCLI
 from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
@@ -133,8 +134,8 @@ def list_supported_languages(_tts, translation, device):  # TODO: Not used
 
 def main():
     _init_logging()
-    args = CommandLine.read_parameters()
 
+    args = CommandLine.read_parameters()
     check_is_a_video(args.input_file)
 
     hugging_face_token = get_token(args.hugging_face_token)
@@ -152,6 +153,13 @@ def main():
             raise ValueError(
                 "To use Coqui-tts you have to have espeak or espeak-ng installed"
             )
+    elif args.tts == "cli":
+        if len(args.tts_cli_cfg_file) == 0:
+            raise ValueError(
+                "When using the tts CLI you need to provide a configuration file which describes the commands and voices to use."
+            )
+
+        tts = TextToSpeechCLI(args.device, args.tts_cli_cfg_file)
     else:
         raise ValueError(f"Invalid tts value {args.tts}")
 
