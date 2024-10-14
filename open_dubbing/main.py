@@ -199,7 +199,7 @@ def main():
         logging.info(f"Detected language '{source_language}'")
 
     if args.translator == "nllb":
-        translation = TranslationNLLB(args.device)
+        translation = TranslationNLLB(args.device, args.local_files_only)
         translation.load_model(args.nllb_model)
     elif args.translator == "apertium":
         server = args.apertium_server

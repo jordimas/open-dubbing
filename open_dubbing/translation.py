@@ -25,7 +25,7 @@ _BREAK_MARKER: Final[str] = "<BREAK>"
 
 class Translation(ABC):
 
-    def __init__(self, device="cpu"):
+    def __init__(self, device="cpu", local_files_only=False):
         self.device = device
 
     @abstractmethod

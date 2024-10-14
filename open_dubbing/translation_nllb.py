@@ -21,10 +21,11 @@ from open_dubbing.translation import Translation
 
 class TranslationNLLB(Translation):
 
-    def __init__(self, device="cpu"):
+    def __init__(self, device="cpu", local_files_only=False):
         super().__init__(device)
         self.translator = None
         self.translator_languages = ""
+        self.local_files_only = local_files_only
 
     def load_model(self, name="nllb-200-1.3B"):
         self.model_name = f"facebook/{name}"
@@ -50,16 +51,20 @@ class TranslationNLLB(Translation):
         return translated[0]["translation_text"]
 
     def _get_tokenizer_nllb(self):
-        return AutoTokenizer.from_pretrained(self.model_name)
+        return AutoTokenizer.from_pretrained(
+            self.model_name, local_files_only=self.local_files_only
+        )
 
     def _get_model_nllb(self):
         try:
-            return AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to(
-                self.device
-            )
+            return AutoModelForSeq2SeqLM.from_pretrained(
+                self.model_name, local_files_only=self.local_files_only
+            ).to(self.device)
         except RuntimeError as e:
             if self.device == "cuda":
-                return AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to("cpu")
+                return AutoModelForSeq2SeqLM.from_pretrained(
+                    self.model_name, local_files_only=self.local_files_only
+                ).to("cpu")
                 logging.warning(
                     f"Loading translation model {self.model_name} in CPU since cannot be load in GPU"
                 )

@@ -23,6 +23,14 @@ WHISPER_MODEL_NAMES = [
 class CommandLine:
 
     @staticmethod
+    def _str2bool(string):
+        str2val = {"true": True, "false": False}
+        if string and string.lower() in str2val:
+            return str2val[string.lower()]
+        else:
+            raise ValueError(f"Expected one of {set(str2val.keys())}, got {string}")
+
+    @staticmethod
     def read_parameters():
         """Parses command-line arguments and runs the dubbing process."""
         parser = argparse.ArgumentParser(
@@ -139,6 +147,13 @@ class CommandLine:
             "--tts_cli_cfg_file",
             default="",
             help="JSon configuration file when using a TTS which is involved by command line.",
+        )
+
+        parser.add_argument(
+            "--local_files_only",
+            type=CommandLine()._str2bool,
+            default=False,
+            help="use only models in cache without connecting to Internet to check if there are newer versions",
         )
 
         return parser.parse_args()
