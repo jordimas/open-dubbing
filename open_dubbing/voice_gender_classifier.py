@@ -79,13 +79,12 @@ class AgeGenderModel(Wav2Vec2PreTrainedModel):
 
 class VoiceGenderClassifier:
 
-    def __init__(self):
-
+    def __init__(self, device="cpu"):
+        self.device = device
         # Load model from hub
-        self.device = "cpu"
         model_name = "audeering/wav2vec2-large-robust-24-ft-age-gender"
         self.processor = Wav2Vec2Processor.from_pretrained(model_name)
-        self.model = AgeGenderModel.from_pretrained(model_name)
+        self.model = AgeGenderModel.from_pretrained(model_name).to(self.device)
 
     # Function to load and process the MP3 file using pydub
     def load_audio_file(self, file_path, target_sampling_rate=16000):
@@ -147,7 +146,7 @@ class VoiceGenderClassifier:
 
         # Find the index with the highest probability between female and male
         predicted_gender_idx = torch.argmax(male_female_logits, dim=1).item()
-        probabilities = F.softmax(male_female_logits, dim=1)
+        probabilities = F.softmax(male_female_logits, dim=1).cpu()
         prob_female, prob_male = probabilities[0].tolist()  # Since it's batch size of 1
 
         return gender_labels[predicted_gender_idx]

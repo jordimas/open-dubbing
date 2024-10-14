@@ -150,7 +150,7 @@ class SpeechToText(ABC):
     ) -> Sequence[tuple[str, str]]:
 
         speaker_gender = {}
-        classifier = VoiceGenderClassifier()
+        classifier = VoiceGenderClassifier(self.device)
         speakers = self._get_unique_speakers_largest_audio(utterance_metadata)
         for speaker, path in speakers:
             gender = classifier.get_gender_for_file(path)
