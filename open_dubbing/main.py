@@ -172,24 +172,28 @@ def main():
                 model_name=args.whisper_model,
                 device=args.device,
                 cpu_threads=args.cpu_threads,
+                local_files_only=args.local_files_only,
             )
         else:
             stt = SpeechToTextFasterWhisper(
                 model_name=args.whisper_model,
                 device=args.device,
                 cpu_threads=args.cpu_threads,
+                local_files_only=args.local_files_only,
             )
     elif args.stt == "faster-whisper":
         stt = SpeechToTextFasterWhisper(
             model_name=args.whisper_model,
             device=args.device,
             cpu_threads=args.cpu_threads,
+            local_files_only=args.local_files_only,
         )
     else:
         stt = SpeechToTextWhisperTransfomers(
             model_name=args.whisper_model,
             device=args.device,
             cpu_threads=args.cpu_threads,
+            local_files_only=args.local_files_only,
         )
 
     stt.load_model()

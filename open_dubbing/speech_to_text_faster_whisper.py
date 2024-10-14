@@ -24,7 +24,14 @@ from open_dubbing.speech_to_text import SpeechToText
 
 class SpeechToTextFasterWhisper(SpeechToText):
 
-    def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
+    def __init__(
+        self,
+        *,
+        model_name="medium",
+        device="cpu",
+        cpu_threads=0,
+        local_files_only=False,
+    ):
         super().__init__(device=device, model_name=model_name, cpu_threads=cpu_threads)
 
         logging.getLogger("faster_whisper").setLevel(logging.ERROR)
@@ -35,6 +42,7 @@ class SpeechToTextFasterWhisper(SpeechToText):
             device=self.device,
             cpu_threads=self.cpu_threads,
             compute_type="float16" if self.device == "cuda" else "int8",
+            local_files_only=self.local_files_only,
         )
 
     def get_languages(self):

@@ -26,11 +26,19 @@ from open_dubbing.voice_gender_classifier import VoiceGenderClassifier
 
 class SpeechToText(ABC):
 
-    def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
+    def __init__(
+        self,
+        *,
+        model_name="medium",
+        device="cpu",
+        cpu_threads=0,
+        local_files_only=False,
+    ):
         self.model_name = model_name
         self.model = None
         self.device = device
         self.cpu_threads = cpu_threads
+        self.local_files_only = local_files_only
         self.MIN_SECS = 0.5
 
     @property
