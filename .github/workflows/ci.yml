@@ -77,15 +77,16 @@ jobs:
     - name: Install application with Coqui
       if: matrix.coqui == 'coqui_yes'
       run: |
-        pip install pytest coverage
         pip install .[coqui]
-        pip cache purge
 
     - name: Install application without Coqui
       if: matrix.coqui != 'coqui_yes'
       run: |
+        pip install .
+
+    - name: Install dev packages
+      run: |
         pip install pytest coverage
-        pip install .[coqui]
         pip cache purge
 
     - name: Run tests with coverage
