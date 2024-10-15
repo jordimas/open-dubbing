@@ -8,13 +8,6 @@ import pytest
 from faster_whisper import WhisperModel
 
 
-def tts_combinations_per_platform():
-    if platform.system().lower() == "windows":
-        return pytest.mark.parametrize("tts_engine", ["edge", "mms"])
-    else:
-        return pytest.mark.parametrize("tts_engine", ["edge", "mms"])
-
-
 class TestCmd:
 
     # TODO: To check transcription out of the final video
@@ -26,7 +19,7 @@ class TestCmd:
             text += segment.text
         return text.strip(), info.language
 
-    @tts_combinations_per_platform()
+    @pytest.mark.parametrize("tts_engine", ["edge", "mms"])
     def test_translations_with_tts(self, tts_engine):
         full_path = os.path.realpath(__file__)
         path, _ = os.path.split(full_path)
