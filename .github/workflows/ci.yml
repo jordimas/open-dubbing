@@ -38,7 +38,7 @@ jobs:
       matrix:
          os: [ubuntu-latest, macos-latest, windows-latest]
          python-version: [3.10.15, 3.11, 3.12]
-         coqui: [yes, no]
+         coqui: [coqui_yes, coqui_no]
          exclude:
           - os: macos-latest
             python-version: 3.10.15
@@ -74,20 +74,18 @@ jobs:
         choco install ffmpeg -y
 
     - name: Install application with Coqui
-      if: matrix.coqui == 'yes'
+      if: matrix.coqui == 'coqui_yes'
       run: |
         pip install pytest coverage
         pip install .[coqui]
         pip cache purge
 
     - name: Install application without Coqui
-      if: matrix.coqui != 'yes'
+      if: matrix.coqui != 'coqui_yes'
       run: |
         pip install pytest coverage
         pip install .[coqui]
         pip cache purge
-
-
 
     - name: Run tests with coverage
       run: |
