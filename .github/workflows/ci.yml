@@ -57,7 +57,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y ffmpeg espeak-ng
-        pip install .
+        pip install .[coqui]
         pip install pytest coverage
         pip cache purge
         sudo apt-get clean
@@ -68,7 +68,7 @@ jobs:
         sysctl -n machdep.cpu.brand_string
         brew update
         brew install ffmpeg espeak-ng
-        pip install .
+        pip install .[coqui]
         pip install pytest coverage
         pip cache purge
 
@@ -76,7 +76,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         choco install ffmpeg -y
-        pip install .
+        pip install .[coqui]
         pip install pytest coverage
         pip cache purge
 
