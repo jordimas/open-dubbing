@@ -73,20 +73,20 @@ jobs:
       run: |
         choco install ffmpeg -y
 
-    - name: Install application without Coqui
-      if: matrix.os == 'no'
-      run: |
-        pip install pytest coverage
-        pip install .[coqui]
-        pip cache purge
-
-
     - name: Install application with Coqui
       if: matrix.coqui == 'yes'
       run: |
         pip install pytest coverage
         pip install .[coqui]
         pip cache purge
+
+    - name: Install application without Coqui
+      if: matrix.coqui != 'yes'
+      run: |
+        pip install pytest coverage
+        pip install .[coqui]
+        pip cache purge
+
 
 
     - name: Run tests with coverage
