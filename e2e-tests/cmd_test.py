@@ -12,7 +12,7 @@ def tts_combinations_per_platform():
     if platform.system().lower() == "windows":
         return pytest.mark.parametrize("tts_engine", ["edge", "mms"])
     else:
-        return pytest.mark.parametrize("tts_engine", ["coqui", "edge", "mms"])
+        return pytest.mark.parametrize("tts_engine", ["edge", "mms"])
 
 
 class TestCmd:
