@@ -5,7 +5,7 @@ psutil == 6.0.0
 torch >= 2.0.0,< 2.5
 pyannote.audio == 3.3.0
 pydub == 0.25.1
-faster-whisper == 1.0.2
+faster-whisper == 1.0.3
 transformers == 4.40
 
 spacy[ja] == 3.7.6
