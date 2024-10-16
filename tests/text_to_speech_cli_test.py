@@ -34,11 +34,12 @@ class TestTextToSpeech:
         assert "cat" == languages_list[0]
 
     def test_get_command(self):
+        self.tts.device = "cuda"
         command = self.tts._get_command(
             assigned_voice="myvoice", directory="dir", text="hello world"
         )
         assert (
-            'cd /MYDIR && python3 matcha_vocos_inference.py --output_path=dir --speaker_id myvoice --text_input="hello world"'
+            'cd /MYDIR && python3 matcha_vocos_inference.py --device cuda --output_path=dir --speaker_id myvoice --text_input="hello world"'
             == command
         )
 
