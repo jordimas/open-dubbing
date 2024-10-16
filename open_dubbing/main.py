@@ -19,14 +19,12 @@ import sys
 from iso639 import Lang
 
 from open_dubbing.command_line import CommandLine
-from open_dubbing.coqui import Coqui
 from open_dubbing.dubbing import Dubber
 from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
 from open_dubbing.speech_to_text_whisper_transformers import (
     SpeechToTextWhisperTransfomers,
 )
 from open_dubbing.text_to_speech_cli import TextToSpeechCLI
-from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
 from open_dubbing.translation_apertium import TranslationApertium
@@ -145,6 +143,14 @@ def main():
     elif args.tts == "edge":
         tts = TextToSpeechEdge(args.device)
     elif args.tts == "coqui":
+        try:
+            from open_dubbing.coqui import Coqui
+            from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
+        except Exception:
+            raise ValueError(
+                "Make sure that Coqui-tts is installed by running 'pip install open-dubbing[coqui]'"
+            )
+
         tts = TextToSpeechCoqui(args.device)
         if not Coqui.is_espeak_ng_installed():
             raise ValueError(

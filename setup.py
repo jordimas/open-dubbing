@@ -42,6 +42,7 @@ setup(
     install_requires=parse_requirements(),
     extras_require={
         "dev": ["flake8==7.*", "black==24.*", "pytest==8.*", "isort==5.13"],
+        "coqui": ["coqui-tts == 0.24.1"],
     },
     entry_points={
         "console_scripts": [
