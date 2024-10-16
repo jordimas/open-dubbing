@@ -88,7 +88,7 @@ class TextToSpeech(ABC):
                         voice_assignment[speaker_id] = voice.name
                         break
 
-        logging.debug(f"text_to_speech.assign_voices. Returns: {voice_assignment}")
+        logging.info(f"text_to_speech.assign_voices. Returns: {voice_assignment}")
         return voice_assignment
 
     def _convert_to_mp3(self, input_file, output_mp3):
