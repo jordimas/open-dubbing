@@ -34,18 +34,14 @@ from open_dubbing.translation_nllb import TranslationNLLB
 from open_dubbing.video_processing import VideoProcessing
 
 
-def _init_logging():
+def _init_logging(log_level):
     # Create a logger
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)  # Set the global log level
+    logger.setLevel(log_level)  # Set the global log level
 
     # File handler for logging to a file
     file_handler = logging.FileHandler("open_dubbing.log")
-    file_handler.setLevel(logging.DEBUG)
-
-    # Console handler for logging to the console
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
 
     # Formatter for log messages
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -133,9 +129,10 @@ def list_supported_languages(_tts, translation, device):  # TODO: Not used
 
 
 def main():
-    _init_logging()
 
     args = CommandLine.read_parameters()
+    _init_logging(args.log_level)
+
     check_is_a_video(args.input_file)
 
     hugging_face_token = get_token(args.hugging_face_token)

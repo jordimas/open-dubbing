@@ -141,4 +141,11 @@ class CommandLine:
             help="JSon configuration file when using a TTS which is involved by command line.",
         )
 
+        parser.add_argument(
+            "--log-level",
+            default="INFO",
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            help="Set the logging level",
+        )
+
         return parser.parse_args()
