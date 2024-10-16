@@ -175,7 +175,7 @@ class Dubber:
         current_rss = process.memory_info().rss / 1024**2
         _time = time.time() - start_time
         logging.info(
-            f"Task '{text}': current_rss {current_rss:.2f} MB, time {_time:.2f}s"
+            f"Completed task '{text}': current_rss {current_rss:.2f} MB, time {_time:.2f}s"
         )
         return _time
 
@@ -234,7 +234,6 @@ class Dubber:
             audio_vocals_file=audio_vocals_file,
             audio_background_file=audio_background_file,
         )
-        logging.info("Completed preprocessing.")
 
     def run_speech_to_text(self) -> None:
         """Transcribes audio, applies speaker diarization, and updates metadata with Gemini.
@@ -261,7 +260,6 @@ class Dubber:
         self.utterance_metadata = self.stt.add_speaker_info(
             utterance_metadata=utterance_metadata, speaker_info=speaker_info
         )
-        logging.info("Completed transcription.")
 
     def run_translation(self) -> None:
         """Translates transcribed text and potentially merges utterances"""
@@ -271,8 +269,6 @@ class Dubber:
             source_language=self.source_language,
             target_language=self.target_language,
         )
-
-        logging.info("Completed translation.")
 
     def run_configure_text_to_speech(self) -> None:
         """Configures the Text-To-Speech process.
@@ -299,7 +295,6 @@ class Dubber:
             target_language=self.target_language,
             adjust_speed=True,
         )
-        logging.info("Completed converting text to speech.")
 
     def run_cleaning(self) -> None:
         if self.debug:
@@ -364,7 +359,6 @@ class Dubber:
             audio_file=dubbed_audio_file,
             video_file=dubbed_video_file,
         )
-        logging.info("Completed postprocessing.")
 
     def run_save_utterance_metadata(self) -> None:
         """Saves a Python dictionary to a JSON file.
