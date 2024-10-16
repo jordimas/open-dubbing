@@ -1,5 +1,6 @@
 Merged:
 - coqui_optional
+- logging
 
 # Changelog
 
