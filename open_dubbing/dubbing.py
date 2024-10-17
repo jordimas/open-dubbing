@@ -151,7 +151,7 @@ class Dubber:
             logging.warning(
                 "The input file was renamed because the original name contained"
                 " spaces, hyphens, or other incompatible characters. The updated"
-                f" input file is: {renamed_input_file}"
+                f" input file is: '{renamed_input_file}' previous '{self._input_file}'"
             )
             overwrite_input_file(
                 input_file=self._input_file, updated_input_file=renamed_input_file
