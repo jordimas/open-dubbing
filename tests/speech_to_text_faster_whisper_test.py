@@ -33,7 +33,7 @@ class TestTextToSpeechFasterWhisper:
         stt = SpeechToTextFasterWhisper()
         stt.load_model()
         language = stt.detect_language(filename)
-        assert language == "eng"
+        assert language == "ell"
 
     def test_get_languages(self):
         stt = SpeechToTextFasterWhisper()

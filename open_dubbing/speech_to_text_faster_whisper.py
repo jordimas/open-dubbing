@@ -57,7 +57,8 @@ class SpeechToTextFasterWhisper(SpeechToText):
         return " ".join(segment.text for segment in segments)
 
     def _get_audio_language(self, audio: array.array) -> str:
-        _, info = self.model.transcribe(np.array(audio))
+        audio_input = np.array(audio).astype(np.float32) / 32768.0
+        _, info = self.model.transcribe(audio_input)
         detected_language = self._get_iso_639_3(info.language)
         logging.debug(
             f"speech_to_text_faster_whisper._get_audio_language. Detected language: {detected_language}"
