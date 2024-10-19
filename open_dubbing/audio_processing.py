@@ -82,7 +82,7 @@ def _cut_and_save_audio(
     end_time_ms = int(utterance["end"] * 1000)
     chunk = audio[start_time_ms:end_time_ms]
     chunk_filename = f"{prefix}_{utterance['start']}_{utterance['end']}.mp3"
-    chunk_path = f"{output_directory}/{chunk_filename}"
+    chunk_path = os.path.join(output_directory, chunk_filename)
     chunk.export(chunk_path, format="mp3")
     return chunk_path
 
