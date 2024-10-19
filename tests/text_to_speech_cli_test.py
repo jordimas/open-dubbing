@@ -43,6 +43,16 @@ class TestTextToSpeech:
             == command
         )
 
+    def test_get_command_command(self):
+        self.tts.device = "cuda"
+        command = self.tts._get_command(
+            assigned_voice="myvoice", directory="dir", text='hello world "friend"'
+        )
+        assert (
+            'cd /MYDIR && python3 matcha_vocos_inference.py --device cuda --output_path=dir --speaker_id myvoice --text_input="hello world friend"'
+            == command
+        )
+
     def test_get_output_pattern(self):
         pattern = self.tts._get_output_pattern(
             assigned_voice="myvoice", directory="dir", text="hello world"
