@@ -236,7 +236,7 @@ def main():
         debug=args.debug,
     )
     logging.info(
-        f"Processing '{args.input_file}' file with tts '{args.tts}', sst {args.stt} and device '{args.device}'"
+        f"Processing '{args.input_file}' file with tts '{args.tts}', sst '{args.stt}' and device '{args.device}'"
     )
     dubber.dub()
 
