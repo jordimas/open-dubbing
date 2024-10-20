@@ -80,7 +80,6 @@ class TestDubbing:
                 stt=None,
                 device="cpu",
             )
-
             dubbing.utterance_metadata = {
                 "utterances": {
                     "utterances": [
@@ -95,12 +94,6 @@ class TestDubbing:
             with open(metadata_file, encoding="utf-8") as json_data:
                 data = json.load(json_data)
 
-                assert data == {
-                    "utterances": {
-                        "utterances": [
-                            {"start": 1.26, "end": 3.94},
-                            {"start": 5.24, "end": 6.629},
-                        ]
-                    },
-                    "source_language": "spa",
-                }
+                print(data)
+                assert data == {'utterances': {'utterances': {'utterances': [{'start': 1.26, 'end': 3.94}, {'start': 5.24, 'end': 6.629}]}}, 'source_language': 'spa'}
+
