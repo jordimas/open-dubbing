@@ -133,7 +133,6 @@ class Dubber:
         self.pyannote_model = pyannote_model
         self.hugging_face_token = hugging_face_token
         self.utterance_metadata = None
-        self.metadata = None
         self._number_of_steps = number_of_steps
         self.tts = tts
         self.translation = translation
@@ -152,7 +151,7 @@ class Dubber:
             logging.warning(
                 "The input file was renamed because the original name contained"
                 " spaces, hyphens, or other incompatible characters. The updated"
-                f" input file is: '{renamed_input_file}' previous '{self._input_file}'"
+                f" input file is: {renamed_input_file}"
             )
             overwrite_input_file(
                 input_file=self._input_file, updated_input_file=renamed_input_file
@@ -218,14 +217,11 @@ class Dubber:
             demucs.assemble_split_audio_file_paths(command=demucs_command)
         )
 
-        self.metadata = audio_processing.create_pyannote_timestamps(
+        utterance_metadata = audio_processing.create_pyannote_timestamps(
             audio_file=audio_file,
             pipeline=self.pyannote_pipeline,
             device=self.device,
         )
-
-        self.metadata["source_language"] = self.source_language
-        utterance_metadata = self.metadata["utterances"]
         utterance_metadata = audio_processing.run_cut_and_save_audio(
             utterance_metadata=utterance_metadata,
             audio_file=audio_file,
@@ -376,7 +372,10 @@ class Dubber:
             _UTTERNACE_METADATA_FILE_NAME + target_language_suffix + ".json",
         )
         try:
-            json_data = json.dumps(self.metadata, ensure_ascii=False, indent=4)
+            all_data = {}
+            all_data["utterances"] = self.utterance_metadata
+            all_data["source_language"] = self.source_language
+            json_data = json.dumps(all_data, ensure_ascii=False, indent=4)
             with tempfile.NamedTemporaryFile(
                 mode="w", delete=False, encoding="utf-8"
             ) as temporary_file:
