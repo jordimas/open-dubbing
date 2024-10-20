@@ -44,7 +44,8 @@ class TestCmd:
             metadata_file = os.path.join(directory, "utterance_metadata_cat.json")
             with open(metadata_file, encoding="utf-8") as json_data:
                 data = json.load(json_data)
-                text_array = [entry["translated_text"] for entry in data]
+                utterances = data["utterances"]
+                text_array = [entry["translated_text"] for entry in utterances]
                 print(f"text_array: {text_array}")
                 if operating == "darwin":
                     assert "- Bon dia. - Bé." == text_array[0]
@@ -56,4 +57,4 @@ class TestCmd:
                     assert "Sóc de Barcelona." == text_array[1]
                     assert "I m'encanta aquesta ciutat." == text_array[2]
 
-                assert all("Male" == entry["ssml_gender"] for entry in data)
+                assert all("Male" == entry["ssml_gender"] for entry in utterances)
