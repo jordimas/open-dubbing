@@ -91,7 +91,7 @@ class SpeechToText(ABC):
                 duration = item["end"] - item["start"]
                 if self._is_short_audio(duration=duration):
                     transcribed_text = ""
-                    logging.warn(
+                    logging.debug(
                         f"speech_to_text._is_short_audio. Audio is less than {self.MIN_SECS} second, skipping transcription of '{path}'."
                     )
                 else:
