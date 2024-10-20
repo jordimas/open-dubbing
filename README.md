@@ -1,9 +1,11 @@
 [![PyPI version](https://img.shields.io/pypi/v/open-dubbing.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/open-dubbing/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/open-dubbing.svg)](https://pypistats.org/packages/open-dubbing)
+[![codecov](https://codecov.io/github/jordimas/open-dubbing/graph/badge.svg?token=TI6SIB9SGK)](https://codecov.io/github/jordimas/open-dubbing)
 
 # Introduction
 
 Open dubbing is an AI dubbing system uses machine learning models to automatically translate and synchronize audio dialogue into different languages.
+It is designed as a command line tool.
 
 At the moment, it is pure *experimental* and an excuse to help me to understand better STT, TTS and translation systems combined together.
 
@@ -11,16 +13,16 @@ At the moment, it is pure *experimental* and an excuse to help me to understand 
 
 * Build on top of open source models and able to run it locally
 * Dubs automatically a video from a source to a target language
-* Supports multiple Text To Speech (TTS) engines
+* Supports multiple Text To Speech (TTS) engines (Coqui, MMS, etc)
 * Gender voice detection to allow to assign properly synthetic voice
+* Support for multiple translation engines (NLLB, Apertium, etc)
+* Automatic detection of the source language of the video (using Whisper)
 
 # Roadmap
 
 Areas what we will like to explore:
 
-* Automatic detection of the source language of the video (using Whisper)
 * Better control of voice used for dubbing
-* Support for TTS systems
 * Optimize it for long videos and less resource usage
 * Support for multiple video input formats
 
@@ -54,16 +56,18 @@ Supported target languages: Achinese, Akan, Amharic, Assamese, Awadhi, Ayacucho 
 
 # Installation
 
-## Install dependencies
+To install the open_dubbing in all platforms:
 
-Linux:
+```shell
+pip install open_dubbing
+```
+
+## Linux additional dependencies
+
+In Linux you also need to install:
 
 ```shell
 sudo apt install ffmpeg
-```
-Mac OS
-```shell
-brew install ffmpeg
 ```
 
 If you are going to use Coqui-tts you also need to install espeak-ng:
@@ -71,16 +75,27 @@ If you are going to use Coqui-tts you also need to install espeak-ng:
 ```shell
 sudo apt install espeak-ng
 ```
-Mac OS
+
+## macOS additional dependencies
+
+In macOS you also need to install:
+
+```shell
+brew install ffmpeg
+```
+
+If you are going to use Coqui-tts you also need to install espeak-ng:
+
 ```shell
 brew install espeak-ng
 ```
 
-Install package:
+## Windows additional dependencies
 
-```shell
-pip install open_dubbing
-```
+Windows currently works but it has not been tested extensively.
+
+You also need to install [ffmpeg](https://www.ffmpeg.org/download.html) for Windows. Make sure that is the system path.
+
 
 ## Accept pyannote license
 
@@ -88,15 +103,20 @@ pip install open_dubbing
 2. Accept [`pyannote/speaker-diarization-3.1`](https://hf.co/pyannote/speaker-diarization-3.1) user conditions
 3. Go to and access token at [`hf.co/settings/tokens`](https://hf.co/settings/tokens).
 
-# Usage
+# Quick start
 
 Quick start
 
 ```shell
 
- open-dubbing  --input_file video.mp4 --target_language=cat --hugging_face_token=TOKEN
+ open-dubbing --input_file video.mp4 --target_language=cat --hugging_face_token=TOKEN
 ```
-Where _TOKEN_ is the HuggingFace token that allows to access the models
+
+Where:
+- _TOKEN_ is the HuggingFace token that allows to access the models
+- _cat_ in this case is the target language using iso ISO 639-3 language codes
+
+By default, the source language is predicted using the first 30 seconds of the video. If this does not work (e.g. there is only music at the beginning), use the parameter _source_language_ to specify the source language using ISO 639-3 language codes (e.g. 'eng' for English).
 
 To get a list of available options:
 
@@ -104,7 +124,11 @@ To get a list of available options:
 open-dubbing --help
 ```
 
-# Libraries used
+# Documentation
+
+For more detailed documentation on how the tool works and how to use it, see our [documentation page](./DOCUMENTATION.md).
+
+# Appreciation
 
 Core libraries used:
 * [demucs](https://github.com/facebookresearch/demucs) to separate vocals from the audio
@@ -121,20 +145,6 @@ And very special thanks to [ariel](https://github.com/google-marketing-solutions
 # License
 
 See [license](./LICENSE)
-
-# How it works
-
-The system follows these steps:
-
-1. Isolate the speech from background noise, music, and other non-speech elements in the audio.
-2. Segment the audio in fragments where there is voice and identify the speakers (speaker diarization).
-3. Identify the gender of the speakers.
-4. Transcribe the speech into text using OpenAI Whisper.
-5. Translate the text from source language (e.g. English) to target language (e.g. Catalan).
-6. Synthesize speech using a Text to Speech System using voices that match the gender and adjusting speed.
-7. The final dubbed video is then assembled, combining the synthetic audio with the original video footage, including any background sounds or music that were isolated earlier.
-
-There are 6 different AI models applied during the dubbing process.
 
 # Contact
 

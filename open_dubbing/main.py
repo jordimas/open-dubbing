@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹandez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,37 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import logging
 import os
 import sys
 
 from iso639 import Lang
 
-from open_dubbing.coqui import Coqui
+from open_dubbing.command_line import CommandLine
 from open_dubbing.dubbing import Dubber
 from open_dubbing.speech_to_text_faster_whisper import SpeechToTextFasterWhisper
 from open_dubbing.speech_to_text_whisper_transformers import (
     SpeechToTextWhisperTransfomers,
 )
-from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
+from open_dubbing.text_to_speech_cli import TextToSpeechCLI
 from open_dubbing.text_to_speech_edge import TextToSpeechEdge
 from open_dubbing.text_to_speech_mms import TextToSpeechMMS
-from open_dubbing.translation import Translation
+from open_dubbing.translation_apertium import TranslationApertium
+from open_dubbing.translation_nllb import TranslationNLLB
+from open_dubbing.video_processing import VideoProcessing
 
 
-def _init_logging():
+def _init_logging(log_level):
     # Create a logger
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)  # Set the global log level
+    logger.setLevel(log_level)  # Set the global log level
 
     # File handler for logging to a file
     file_handler = logging.FileHandler("open_dubbing.log")
-    file_handler.setLevel(logging.DEBUG)
-
-    # Console handler for logging to the console
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
 
     # Formatter for log messages
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -58,9 +55,11 @@ def _init_logging():
     logging.getLogger("pydub.converter").setLevel(logging.ERROR)
 
 
-def check_languages(source_language, target_language, _tts, _sst):
+def check_languages(source_language, target_language, _tts, translation, _sst):
     spt = _sst.get_languages()
-    trans = Translation().get_languages()
+    translation_languages = translation.get_language_pairs()
+    logging.debug(f"check_languages. Pairs {len(translation_languages)}")
+
     tts = _tts.get_languages()
 
     if source_language not in spt:
@@ -68,14 +67,10 @@ def check_languages(source_language, target_language, _tts, _sst):
             f"source language '{source_language}' is not supported by the speech recognition system. Supported languages: '{spt}"
         )
 
-    if source_language not in trans:
+    pair = (source_language, target_language)
+    if pair not in translation_languages:
         raise ValueError(
-            f"source language '{source_language}' is not supported by the translation system. Supported languages: '{trans}"
-        )
-
-    if target_language not in trans:
-        raise ValueError(
-            f"target language '{target_language}' is not supported by the translation system. Supported languages: '{trans}"
+            f"language pair '{pair}' is not supported by the translation system."
         )
 
     if target_language not in tts:
@@ -117,11 +112,11 @@ def _get_language_names(languages_iso_639_3):
     return sorted(names)
 
 
-def list_supported_languages(_tts, device):  # TODO: Not used
+def list_supported_languages(_tts, translation, device):  # TODO: Not used
     s = SpeechToTextFasterWhisper(device=device)
     s.load_model()
     spt = s.get_languages()
-    trans = Translation().get_languages()
+    trans = translation.get_languages()
     tts = _tts.get_languages()
 
     source = _get_language_names(set(spt).intersection(set(trans)))
@@ -132,93 +127,42 @@ def list_supported_languages(_tts, device):  # TODO: Not used
 
 
 def main():
-    _init_logging()
-    """Parses command-line arguments and runs the dubbing process."""
-    parser = argparse.ArgumentParser(description="Run the end-to-end dubbing process.")
-    parser.add_argument(
-        "--input_file",
-        required=True,
-        help="Path to the input video or audio file.",
-    )
-    parser.add_argument(
-        "--output_directory",
-        default="output/",
-        help="Directory to save output files.",
-    )
-    parser.add_argument(
-        "--source_language",
-        help="Source language (ISO 639-3)",
-    )
-    parser.add_argument(
-        "--target_language",
-        required=True,
-        help="Target language for dubbing (ISO 639-3).",
-    )
-    parser.add_argument(
-        "--hugging_face_token",
-        default=None,
-        help="Hugging Face API token.",
-    )
-    parser.add_argument(
-        "--tts",
-        type=str,
-        default="mms",
-        choices=["mms", "coqui", "edge"],
-        help=(
-            "Text to Speech engine to use. Choices are:"
-            "'mms': Meta Multilingual Speech engine, supports many languages."
-            "'coqui': Coqui TTS, an open-source alternative for high-quality TTS."
-            "'edge': Microsoft Edge TSS."
-        ),
-    )
-    parser.add_argument(
-        "--stt",
-        type=str,
-        default="auto",
-        choices=["auto", "faster-whisper", "transformers"],
-        help=(
-            "Speech to text. Choices are:"
-            "'auto': Autoselect best implementation."
-            "'faster-whisper': Faster-whisper's OpenAI whisper implementation."
-            "'transformers': Transformers OpenAI whisper implementation."
-        ),
-    )
 
-    parser.add_argument(
-        "--device",
-        type=str,
-        default="cpu",
-        choices=["cpu", "cuda"],
-        help=("Device to use"),
-    )
-    parser.add_argument(
-        "--cpu_threads",
-        type=int,
-        default=0,
-        help="number of threads used for CPU inference (if not specified uses defaults for each framework)",
-    )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="keep intemediate files and generate specific files for debugging",
-    )
-
-    args = parser.parse_args()
+    args = CommandLine.read_parameters()
+    _init_logging(args.log_level)
 
     check_is_a_video(args.input_file)
 
     hugging_face_token = get_token(args.hugging_face_token)
+
+    if not VideoProcessing.is_ffmpeg_installed():
+        raise ValueError("You need to have ffmpeg (which includes ffprobe) installed.")
 
     if args.tts == "mms":
         tts = TextToSpeechMMS(args.device)
     elif args.tts == "edge":
         tts = TextToSpeechEdge(args.device)
     elif args.tts == "coqui":
+        try:
+            from open_dubbing.coqui import Coqui
+            from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
+        except Exception:
+            raise ValueError(
+                "Make sure that Coqui-tts is installed by running 'pip install open-dubbing[coqui]'"
+            )
+
         tts = TextToSpeechCoqui(args.device)
         if not Coqui.is_espeak_ng_installed():
             raise ValueError(
                 "To use Coqui-tts you have to have espeak or espeak-ng installed"
             )
+    elif args.tts == "cli":
+        if len(args.tts_cli_cfg_file) == 0:
+            raise ValueError(
+                "When using the tts CLI you need to provide a configuration file which describes the commands and voices to use."
+            )
+
+        tts = TextToSpeechCLI(args.device, args.tts_cli_cfg_file)
     else:
         raise ValueError(f"Invalid tts value {args.tts}")
 
@@ -227,13 +171,29 @@ def main():
 
     if args.stt == "auto":
         if sys.platform == "darwin":
-            stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
+            stt = SpeechToTextWhisperTransfomers(
+                model_name=args.whisper_model,
+                device=args.device,
+                cpu_threads=args.cpu_threads,
+            )
         else:
-            stt = SpeechToTextFasterWhisper(args.device, args.cpu_threads)
+            stt = SpeechToTextFasterWhisper(
+                model_name=args.whisper_model,
+                device=args.device,
+                cpu_threads=args.cpu_threads,
+            )
     elif args.stt == "faster-whisper":
-        stt = SpeechToTextFasterWhisper(args.device, args.cpu_threads)
+        stt = SpeechToTextFasterWhisper(
+            model_name=args.whisper_model,
+            device=args.device,
+            cpu_threads=args.cpu_threads,
+        )
     else:
-        stt = SpeechToTextWhisperTransfomers(args.device, args.cpu_threads)
+        stt = SpeechToTextWhisperTransfomers(
+            model_name=args.whisper_model,
+            device=args.device,
+            cpu_threads=args.cpu_threads,
+        )
 
     stt.load_model()
     source_language = args.source_language
@@ -241,7 +201,22 @@ def main():
         source_language = stt.detect_language(args.input_file)
         logging.info(f"Detected language '{source_language}'")
 
-    check_languages(source_language, args.target_language, tts, stt)
+    if args.translator == "nllb":
+        translation = TranslationNLLB(args.device)
+        translation.load_model(args.nllb_model)
+    elif args.translator == "apertium":
+        server = args.apertium_server
+        if len(server) == 0:
+            raise ValueError(
+                "When using Apertium's API, you need to specify with --apertium-server the URL of the server"
+            )
+
+        translation = TranslationApertium(args.device)
+        translation.set_server(server)
+    else:
+        raise ValueError(f"Invalid translator value {args.translator}")
+
+    check_languages(source_language, args.target_language, tts, translation, stt)
 
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
@@ -251,15 +226,17 @@ def main():
         output_directory=args.output_directory,
         source_language=source_language,
         target_language=args.target_language,
+        target_language_region=args.target_language_region,
         hugging_face_token=hugging_face_token,
         tts=tts,
+        translation=translation,
         stt=stt,
         device=args.device,
         cpu_threads=args.cpu_threads,
         debug=args.debug,
     )
     logging.info(
-        f"Processing '{args.input_file}' file with tts '{args.tts}', sst {args.stt} and device '{args.device}'"
+        f"Processing '{args.input_file}' file with tts '{args.tts}', sst '{args.stt}' and device '{args.device}'"
     )
     dubber.dub()
 

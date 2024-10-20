@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹandez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,13 +79,12 @@ class AgeGenderModel(Wav2Vec2PreTrainedModel):
 
 class VoiceGenderClassifier:
 
-    def __init__(self):
-
+    def __init__(self, device="cpu"):
+        self.device = device
         # Load model from hub
-        self.device = "cpu"
         model_name = "audeering/wav2vec2-large-robust-24-ft-age-gender"
         self.processor = Wav2Vec2Processor.from_pretrained(model_name)
-        self.model = AgeGenderModel.from_pretrained(model_name)
+        self.model = AgeGenderModel.from_pretrained(model_name).to(self.device)
 
     # Function to load and process the MP3 file using pydub
     def load_audio_file(self, file_path, target_sampling_rate=16000):
@@ -120,9 +119,8 @@ class VoiceGenderClassifier:
         self,
         x: np.ndarray,
         sampling_rate: int,
-        embeddings: bool = False,
     ) -> np.ndarray:
-        r"""Predict age and gender or extract embeddings from raw audio signal."""
+        r"""Predict age and gender from raw audio signal."""
 
         # Run through processor to normalize signal
         y = self.processor(x, sampling_rate=sampling_rate)
@@ -133,11 +131,8 @@ class VoiceGenderClassifier:
         # Run through model
         with torch.no_grad():
             y = self.model(y)
-            if embeddings:
-                return y[0]  # Return hidden states (embeddings)
-            else:
-                logits_age, logits_gender = y[1], y[2]  # Age and gender logits
-                return logits_age, logits_gender
+            logits_age, logits_gender = y[1], y[2]  # Age and gender logits
+            return logits_age, logits_gender
 
     def _interpret_gender(self, logits_gender):
         """Convert gender logits into a male/female label."""
@@ -151,7 +146,7 @@ class VoiceGenderClassifier:
 
         # Find the index with the highest probability between female and male
         predicted_gender_idx = torch.argmax(male_female_logits, dim=1).item()
-        probabilities = F.softmax(male_female_logits, dim=1)
+        probabilities = F.softmax(male_female_logits, dim=1).cpu()
         prob_female, prob_male = probabilities[0].tolist()  # Since it's batch size of 1
 
         return gender_labels[predicted_gender_idx]
@@ -160,7 +155,7 @@ class VoiceGenderClassifier:
         signal, sampling_rate = self.load_audio_file(file_path)
 
         # Predict age and gender
-        age_logits, gender_logits = self._predict(signal, sampling_rate)
+        _, gender_logits = self._predict(signal, sampling_rate)
         predicted_gender = self._interpret_gender(gender_logits)
         logging.debug(
             f"The audio from {os.path.basename(file_path)} is predicted {predicted_gender}"

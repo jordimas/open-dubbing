@@ -1,5 +1,5 @@
 # Copyright 2024 Google LLC
-# Copyright 2024 Jordi Mas i Herǹadez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,10 +23,23 @@ import pytest
 
 from pydub import AudioSegment
 
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechUT(TextToSpeech):
+    def _convert_text_to_speech_without_end_silence(
+        self,
+        *,
+        assigned_voice: str,
+        target_language: str,
+        output_filename: str,
+        text: str,
+        pitch: float,
+        speed: float,
+        volume_gain_db: float,
+    ) -> str:
+        pass
+
     def _convert_text_to_speech(
         self,
         *,
@@ -47,7 +60,7 @@ class TextToSpeechUT(TextToSpeech):
         pass
 
 
-class TestCalculateTargetUtteranceSpeed:
+class TestTextToSpeech:
 
     def test_calculate_target_utterance_speed(self):
         with tempfile.TemporaryDirectory() as tempdir:
@@ -59,9 +72,6 @@ class TestCalculateTargetUtteranceSpeed:
             )
             expected_result = 90000 / 60000
             assert result == expected_result
-
-
-class TestCreateSpeakerToPathsMapping:
 
     @pytest.mark.parametrize(
         "input_data, expected_result",
@@ -90,9 +100,6 @@ class TestCreateSpeakerToPathsMapping:
     def test_create_speaker_to_paths_mapping(self, input_data, expected_result):
         result = TextToSpeechUT().create_speaker_to_paths_mapping(input_data)
         assert result == expected_result
-
-
-class TestTextToSpeech:
 
     @pytest.mark.parametrize(
         "calculated_speed, expect_adjust_called, expected_final_speed",
@@ -131,9 +138,15 @@ class TestTextToSpeech:
         ), patch.object(
             tts, "_convert_text_to_speech", return_value="dubbed_file_path"
         ), patch.object(
+            tts,
+            "_convert_text_to_speech_without_end_silence",
+            return_value="dubbed_file_path",
+        ), patch.object(
             tts, "_adjust_audio_speed"
         ) as mock_adjust_speed, patch.object(
             tts, "_calculate_target_utterance_speed", return_value=calculated_speed
+        ), patch.object(
+            tts, "_do_need_to_increase_speed", return_value=True
         ):
             result = tts.dub_utterances(
                 utterance_metadata=utterance_metadata,
@@ -147,3 +160,84 @@ class TestTextToSpeech:
                 mock_adjust_speed.assert_not_called()
 
             assert result[0]["speed"] == expected_final_speed
+
+    @pytest.mark.parametrize(
+        "test_name, utterance_metadata, expected_result",
+        [
+            (
+                "continuous",
+                [
+                    {
+                        "text": "Hello, world!",
+                        "start": 1.0,
+                        "stop": 2.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                    {
+                        "text": "Hello, world!",
+                        "start": 2.0,
+                        "stop": 3.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                ],
+                2.0,
+            ),
+            (
+                "uses_empty_space",
+                [
+                    {
+                        "text": "Hello, world!",
+                        "start": 1.0,
+                        "stop": 2.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                    {
+                        "text": "Hello, world!",
+                        "start": 3.0,
+                        "stop": 5.0,
+                        "speaker_id": "speaker1",
+                        "for_dubbing": "true",
+                        "ssml_gender": "male",
+                    },
+                ],
+                3.0,
+            ),
+        ],
+    )
+    def test_get_start_time_of_next_speech_utterance(
+        self, test_name, utterance_metadata, expected_result
+    ):
+        result = TextToSpeechUT().get_start_time_of_next_speech_utterance(
+            utterance_metadata=utterance_metadata, from_time=1.0
+        )
+        assert result == expected_result
+
+    def test_get_voices_with_region_filter(self):
+        voices = [
+            Voice(name="Voice1", gender="Male", region="US"),
+            Voice(name="Voice2", gender="Female", region="UK"),
+            Voice(name="Voice3", gender="Male", region="IN"),
+            Voice(name="Voice4", gender="Female", region="IN"),
+        ]
+
+        result = TextToSpeechUT().get_voices_with_region_preference(
+            voices=voices, target_language_region="UK"
+        )
+        assert result[0].region == "UK"
+
+        result = TextToSpeechUT().get_voices_with_region_preference(
+            voices=voices, target_language_region="IN"
+        )
+        assert result[0].region == "IN"
+        assert result[1].region == "IN"
+
+        result = TextToSpeechUT().get_voices_with_region_preference(
+            voices=voices, target_language_region=""
+        )
+        assert result[0].region == "US"

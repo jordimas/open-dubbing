@@ -69,7 +69,7 @@ class Demucs:
             "-m",
             "demucs.separate",
             "-o",
-            f"'{output_directory}'",
+            f'"{output_directory}"',
             "--device",
             device,
             "--shifts",
@@ -100,7 +100,7 @@ class Demucs:
             command_parts.append("--int24")
         if float32:
             command_parts.append("--float32")
-        command_parts.append(f"'{audio_file}'")
+        command_parts.append(f'"{audio_file}"')
         return " ".join(command_parts)
 
     def execute_demucs_command(self, command: str) -> None:
@@ -184,9 +184,20 @@ class Demucs:
             A tuple with a path to the file with the audio with vocals only
             and the other with the background sound only.
         """
+        MODEL_NAME = "htdemucs"
         output_directory, output_file_extension, input_file_name = (
             self._extract_command_info(command)
         )
-        audio_vocals_file = f"{output_directory}/htdemucs/{input_file_name}/vocals{output_file_extension}"
-        audio_background_file = f"{output_directory}/htdemucs/{input_file_name}/no_vocals{output_file_extension}"
+        audio_vocals_file = os.path.join(
+            output_directory,
+            MODEL_NAME,
+            input_file_name,
+            f"vocals{output_file_extension}",
+        )
+        audio_background_file = os.path.join(
+            output_directory,
+            MODEL_NAME,
+            input_file_name,
+            f"no_vocals{output_file_extension}",
+        )
         return audio_vocals_file, audio_background_file

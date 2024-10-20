@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹandez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,20 +17,22 @@ import logging
 import re
 import time
 
+from abc import ABC, abstractmethod
 from typing import Final, Mapping, Sequence
-
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 
 _BREAK_MARKER: Final[str] = "<BREAK>"
 
 
-class Translation:
+class Translation(ABC):
 
     def __init__(self, device="cpu"):
-        self.model_name = "facebook/nllb-200-1.3B"
         self.device = device
 
-    def generate_script(self, *, utterance_metadata, key: str = "text") -> str:
+    @abstractmethod
+    def load_model(self):
+        pass
+
+    def _generate_script(self, *, utterance_metadata, key: str = "text") -> str:
         """Generates a script string from a list of utterance metadata."""
         trimmed_lines = [
             item[key].strip() if item[key] else "" for item in utterance_metadata
@@ -40,49 +42,36 @@ class Translation:
         logging.debug(f"translation.generate_script. Returns: {r}")
         return r
 
-    def _get_tokenizer_nllb(self):
-        return AutoTokenizer.from_pretrained(self.model_name)
+    @abstractmethod
+    def get_language_pairs(self):
+        pass
 
-    def _get_model_nllb(self):
-        try:
-            return AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to(
-                self.device
-            )
-        except RuntimeError as e:
-            if self.device == "cuda":
-                return AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to("cpu")
-                logging.warning(
-                    f"Loading translation model {self.model_name} in CPU since cannot be load in GPU"
-                )
-            else:
-                raise e
+    @abstractmethod
+    def _translate_text(
+        self, source_language: str, target_language: str, text: str
+    ) -> str:
+        pass
 
-    def get_languages(self):
-        tokenizer = self._get_tokenizer_nllb()
-        # Returns 'cat_Latn'
-        original_list = tokenizer.lang_code_to_id.keys()
-        # Get only the language codes
-        supported_languages = [s[:3] for s in original_list]
-        return supported_languages
+    def translate_utterances(
+        self,
+        *,
+        utterance_metadata: Sequence[Mapping[str, str | float]],
+        source_language: str,
+        target_language: str,
+    ) -> str:
 
-    def _process_and_translate(self, translator, input_string):
-        # Split the input string by the <BREAK> delimiter
-        parts = input_string.split(_BREAK_MARKER)
+        script = self._generate_script(utterance_metadata=utterance_metadata)
+        translated_script = self._translate_script(
+            script=script,
+            source_language=source_language,
+            target_language=target_language,
+        )
+        return self._add_translations(
+            utterance_metadata=utterance_metadata,
+            translated_script=translated_script,
+        )
 
-        translated_parts = []
-        for part in parts:
-            if len(part.strip()) == 0:
-                translation = ""
-            else:
-                translated = translator(part)
-                translation = translated[0]["translation_text"]
-
-            translated_parts.append(translation)
-
-        result = _BREAK_MARKER.join(translated_parts)
-        return result
-
-    def translate_script(
+    def _translate_script(
         self,
         *,
         script: str,
@@ -99,26 +88,26 @@ class Translation:
 
         logging.debug(f"translation.translate_script. Input script: {script}")
         logging.debug(
-            f"translation.translate_script. Input source_language: {source_language}"
-        )
-        logging.debug(
-            f"translation.translate_script. Input target_language: {target_language}"
+            f"translation.translate_script. Input source_language: {source_language}, target_language: {target_language}"
         )
 
-        tokenizer = self._get_tokenizer_nllb()
-        model = self._get_model_nllb()
-        source_language = source_language
+        # Split the input string by the <BREAK> delimiter
+        parts = script.split(_BREAK_MARKER)
 
-        translator = pipeline(
-            "translation",
-            model=model,
-            tokenizer=tokenizer,
-            src_lang=f"{source_language}" + "_Latn",  # TODO: Fix for other langs
-            tgt_lang=f"{target_language}" + "_Latn",
-            max_length=1024,
-        )
+        translated_parts = []
+        for text in parts:
+            if len(text.strip()) == 0:
+                translation = ""
+            else:
+                translation = self._translate_text(
+                    source_language=source_language,
+                    target_language=target_language,
+                    text=text,
+                )
 
-        translation = self._process_and_translate(translator, script)
+            translated_parts.append(translation)
+
+        translation = _BREAK_MARKER.join(translated_parts)
         logging.debug(f"translation.translate_script. Translation: {translation}")
 
         pretty_data = json.dumps(translation, indent=4, ensure_ascii=False)
@@ -130,7 +119,7 @@ class Translation:
 
         return translation
 
-    def add_translations(
+    def _add_translations(
         self,
         *,
         utterance_metadata: Sequence[Mapping[str, str | float]],

@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹandez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ from open_dubbing.speech_to_text import SpeechToText
 
 class SpeechToTextFasterWhisper(SpeechToText):
 
-    def __init__(self, device="cpu", cpu_threads=0):
-        super().__init__(device, cpu_threads)
+    def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
+        super().__init__(device=device, model_name=model_name, cpu_threads=cpu_threads)
+
         logging.getLogger("faster_whisper").setLevel(logging.ERROR)
 
     def load_model(self):
         self._model = WhisperModel(
-            model_size_or_path="medium",
+            model_size_or_path=self.model_name,
             device=self.device,
             cpu_threads=self.cpu_threads,
             compute_type="float16" if self.device == "cuda" else "int8",
@@ -56,7 +57,8 @@ class SpeechToTextFasterWhisper(SpeechToText):
         return " ".join(segment.text for segment in segments)
 
     def _get_audio_language(self, audio: array.array) -> str:
-        _, info = self.model.transcribe(np.array(audio))
+        audio_input = np.array(audio).astype(np.float32) / 32768.0
+        _, info = self.model.transcribe(audio_input)
         detected_language = self._get_iso_639_3(info.language)
         logging.debug(
             f"speech_to_text_faster_whisper._get_audio_language. Detected language: {detected_language}"

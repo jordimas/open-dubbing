@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹadez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class TestTextToSpeechFasterWhisper:
         stt = SpeechToTextFasterWhisper()
         stt.load_model()
         language = stt.detect_language(filename)
-        assert language == "eng"
+        assert language == "ell"
 
     def test_get_languages(self):
         stt = SpeechToTextFasterWhisper()

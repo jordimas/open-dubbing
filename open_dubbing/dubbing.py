@@ -18,7 +18,6 @@ import json
 import logging
 import os
 import re
-import resource
 import shutil
 import sys
 import tempfile
@@ -115,8 +114,10 @@ class Dubber:
         output_directory: str,
         source_language: str,
         target_language: str,
+        target_language_region: str,
         hugging_face_token: str | None = None,
         tts: TextToSpeech,
+        translation: Translation,
         stt: SpeechToText,
         device: str,
         cpu_threads: int = 0,
@@ -128,11 +129,13 @@ class Dubber:
         self.output_directory = output_directory
         self.source_language = source_language
         self.target_language = target_language
+        self.target_language_region = target_language_region
         self.pyannote_model = pyannote_model
         self.hugging_face_token = hugging_face_token
         self.utterance_metadata = None
         self._number_of_steps = number_of_steps
         self.tts = tts
+        self.translation = translation
         self.stt = stt
         self.device = device
         self.cpu_threads = cpu_threads
@@ -155,19 +158,24 @@ class Dubber:
             )
         return renamed_input_file
 
-    def get_maxrss_memory(self):
+    def log_maxrss_memory(self):
+        if sys.platform == "win32" or sys.platform == "win64":
+            return
+
+        import resource
+
         max_rss_self = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
         if sys.platform == "darwin":
             return max_rss_self / 1024
 
-        return max_rss_self
+        logging.info(f"Maximum memory used: {max_rss_self:.0f} MB")
 
     def log_debug_task_and_getime(self, text, start_time):
         process = psutil.Process(os.getpid())
         current_rss = process.memory_info().rss / 1024**2
         _time = time.time() - start_time
         logging.info(
-            f"Task '{text}': current_rss {current_rss:.2f} MB, time {_time:.2f}s"
+            f"Completed task '{text}': current_rss {current_rss:.2f} MB, time {_time:.2f}s"
         )
         return _time
 
@@ -226,7 +234,6 @@ class Dubber:
             audio_vocals_file=audio_vocals_file,
             audio_background_file=audio_background_file,
         )
-        logging.info("Completed preprocessing.")
 
     def run_speech_to_text(self) -> None:
         """Transcribes audio, applies speaker diarization, and updates metadata with Gemini.
@@ -253,23 +260,15 @@ class Dubber:
         self.utterance_metadata = self.stt.add_speaker_info(
             utterance_metadata=utterance_metadata, speaker_info=speaker_info
         )
-        logging.info("Completed transcription.")
 
     def run_translation(self) -> None:
         """Translates transcribed text and potentially merges utterances"""
 
-        translation = Translation(self.device)
-        script = translation.generate_script(utterance_metadata=self.utterance_metadata)
-        translated_script = translation.translate_script(
-            script=script,
+        self.utterance_metadata = self.translation.translate_utterances(
+            utterance_metadata=self.utterance_metadata,
             source_language=self.source_language,
             target_language=self.target_language,
         )
-        self.utterance_metadata = translation.add_translations(
-            utterance_metadata=self.utterance_metadata,
-            translated_script=translated_script,
-        )
-        logging.info("Completed translation.")
 
     def run_configure_text_to_speech(self) -> None:
         """Configures the Text-To-Speech process.
@@ -281,7 +280,7 @@ class Dubber:
         assigned_voices = self.tts.assign_voices(
             utterance_metadata=self.utterance_metadata,
             target_language=self.target_language,
-            preferred_voices=None,
+            target_language_region=self.target_language_region,
         )
         self.utterance_metadata = self.tts.update_utterance_metadata(
             utterance_metadata=self.utterance_metadata,
@@ -296,7 +295,6 @@ class Dubber:
             target_language=self.target_language,
             adjust_speed=True,
         )
-        logging.info("Completed converting text to speech.")
 
     def run_cleaning(self) -> None:
         if self.debug:
@@ -361,7 +359,6 @@ class Dubber:
             audio_file=dubbed_audio_file,
             video_file=dubbed_video_file,
         )
-        logging.info("Completed postprocessing.")
 
     def run_save_utterance_metadata(self) -> None:
         """Saves a Python dictionary to a JSON file.
@@ -442,7 +439,6 @@ class Dubber:
             per = _time * 100 / total_time
             logging.info(f" Task '{task}' in {_time:.2f} secs ({per:.2f}%)")
 
-        max_rss = self.get_maxrss_memory()
-        logging.info(f"Maximum memory used: {max_rss:.0f} MB")
+        self.log_maxrss_memory()
         logging.info("Output files saved in: %s.", self.output_directory)
         return self.postprocessing_output

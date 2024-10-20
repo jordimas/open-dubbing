@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹadez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 import logging
 
-from typing import Mapping
+from typing import List
 
 import numpy as np
 import scipy.io.wavfile
@@ -22,7 +22,7 @@ import torch
 
 from transformers import AutoTokenizer, VitsModel
 
-from open_dubbing.text_to_speech import TextToSpeech
+from open_dubbing.text_to_speech import TextToSpeech, Voice
 
 
 class TextToSpeechMMS(TextToSpeech):
@@ -32,8 +32,8 @@ class TextToSpeechMMS(TextToSpeech):
         self.device = device
         logging.getLogger("transformers").setLevel(logging.ERROR)
 
-    def get_available_voices(self, language_code: str) -> Mapping[str, str]:
-        return {}
+    def get_available_voices(self, language_code: str) -> List[Voice]:
+        return []
 
     def _convert_text_to_speech(
         self,
@@ -48,7 +48,7 @@ class TextToSpeechMMS(TextToSpeech):
     ) -> str:
 
         logging.debug(f"TextToSpeechMMS._convert_text_to_speech: {text}")
-        local_files_only = True
+        local_files_only = False
 
         # Load pre-trained model and tokenizer
         model = VitsModel.from_pretrained(
@@ -147,8 +147,6 @@ class TextToSpeechMMS(TextToSpeech):
             "ayz",
             "azb",
             "azg",
-            "azj",
-            "azj",
             "azz",
             "bak",
             "bam",
@@ -159,8 +157,6 @@ class TextToSpeechMMS(TextToSpeech):
             "bbb",
             "bbc",
             "bbo",
-            "bcc",
-            "bcc",
             "bcl",
             "bcw",
             "bdg",
@@ -240,14 +236,6 @@ class TextToSpeechMMS(TextToSpeech):
             "bzj",
             "caa",
             "cab",
-            "cac",
-            "cac",
-            "cak",
-            "cak",
-            "cak",
-            "cak",
-            "cak",
-            "cak",
             "cap",
             "car",
             "cas",
@@ -281,8 +269,6 @@ class TextToSpeechMMS(TextToSpeech):
             "cle",
             "cly",
             "cme",
-            "cmo",
-            "cmo",
             "cmr",
             "cnh",
             "cni",
@@ -298,8 +284,6 @@ class TextToSpeechMMS(TextToSpeech):
             "cpb",
             "cpu",
             "crh",
-            "crk",
-            "crk",
             "crn",
             "crq",
             "crs",
@@ -340,8 +324,6 @@ class TextToSpeechMMS(TextToSpeech):
             "dip",
             "div",
             "djk",
-            "dnj",
-            "dnj",
             "dnt",
             "dnw",
             "dop",
@@ -381,8 +363,6 @@ class TextToSpeechMMS(TextToSpeech):
             "fra",
             "frd",
             "ful",
-            "gag",
-            "gag",
             "gai",
             "gam",
             "gau",
@@ -402,7 +382,6 @@ class TextToSpeechMMS(TextToSpeech):
             "gna",
             "gnd",
             "gng",
-            "gof",
             "gog",
             "gor",
             "gqr",
@@ -452,8 +431,6 @@ class TextToSpeechMMS(TextToSpeech):
             "hub",
             "hui",
             "hun",
-            "hus",
-            "hus",
             "huu",
             "huv",
             "hvn",
@@ -483,9 +460,6 @@ class TextToSpeechMMS(TextToSpeech):
             "isl",
             "itl",
             "itv",
-            "ixl",
-            "ixl",
-            "ixl",
             "izr",
             "izz",
             "jac",
@@ -531,7 +505,6 @@ class TextToSpeechMMS(TextToSpeech):
             "key",
             "kez",
             "kfb",
-            "kff",
             "kfw",
             "kfx",
             "khg",
@@ -555,9 +528,6 @@ class TextToSpeechMMS(TextToSpeech):
             "kma",
             "kmd",
             "kml",
-            "kmr",
-            "kmr",
-            "kmr",
             "kmu",
             "knb",
             "kne",
@@ -581,7 +551,6 @@ class TextToSpeechMMS(TextToSpeech):
             "krj",
             "krl",
             "krr",
-            "krs",
             "kru",
             "ksb",
             "ksr",
@@ -653,8 +622,6 @@ class TextToSpeechMMS(TextToSpeech):
             "lwo",
             "lww",
             "lzz",
-            "maa",
-            "maa",
             "mad",
             "mag",
             "mah",
@@ -662,10 +629,6 @@ class TextToSpeechMMS(TextToSpeech):
             "maj",
             "mak",
             "mal",
-            "mam",
-            "mam",
-            "mam",
-            "mam",
             "maq",
             "mar",
             "maw",
@@ -844,8 +807,6 @@ class TextToSpeechMMS(TextToSpeech):
             "nyy",
             "nzi",
             "obo",
-            "ojb",
-            "ojb",
             "oku",
             "old",
             "omw",
@@ -882,8 +843,6 @@ class TextToSpeechMMS(TextToSpeech):
             "plw",
             "pmf",
             "pny",
-            "poh",
-            "poh",
             "poi",
             "pol",
             "por",
@@ -901,9 +860,6 @@ class TextToSpeechMMS(TextToSpeech):
             "pww",
             "pxm",
             "qub",
-            "quc",
-            "quc",
-            "quc",
             "quf",
             "quh",
             "qul",
@@ -934,17 +890,11 @@ class TextToSpeechMMS(TextToSpeech):
             "rel",
             "rgu",
             "rhg",
-            "rif",
-            "rif",
             "ril",
             "rim",
             "rjs",
             "rkt",
-            "rmc",
-            "rmc",
             "rmo",
-            "rmy",
-            "rmy",
             "rng",
             "rnl",
             "rol",
@@ -1091,11 +1041,8 @@ class TextToSpeechMMS(TextToSpeech):
             "tsz",
             "ttc",
             "tte",
-            "ttq",
             "tue",
             "tuf",
-            "tuk",
-            "tuk",
             "tuo",
             "tur",
             "tvw",
@@ -1106,31 +1053,17 @@ class TextToSpeechMMS(TextToSpeech):
             "txq",
             "txu",
             "tye",
-            "tzh",
-            "tzh",
-            "tzj",
-            "tzj",
-            "tzo",
-            "tzo",
-            "ubl",
-            "ubu",
             "udm",
             "udu",
-            "uig",
-            "uig",
             "ukr",
             "unr",
             "upv",
             "ura",
             "urb",
-            "urd",
-            "urd",
-            "urd",
             "urk",
             "urt",
             "ury",
             "usp",
-            "uzb",
             "vag",
             "vid",
             "vie",
@@ -1139,8 +1072,6 @@ class TextToSpeechMMS(TextToSpeech):
             "vmy",
             "vun",
             "vut",
-            "wal",
-            "wal",
             "wap",
             "war",
             "waw",

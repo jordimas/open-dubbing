@@ -19,7 +19,20 @@ import pytest
 from open_dubbing.translation import Translation
 
 
-class TestGenerateScript:
+class TranslationUT(Translation):
+    def load_model(self):
+        pass
+
+    def get_language_pairs(self):
+        return []
+
+    def _translate_text(
+        self, source_language: str, target_language: str, text: str
+    ) -> str:
+        return text
+
+
+class TestTranslation:
 
     @pytest.mark.parametrize(
         "test_name, utterance_metadata, expected_script",
@@ -81,13 +94,10 @@ class TestGenerateScript:
         ],
     )
     def test_generate_script(self, test_name, utterance_metadata, expected_script):
-        result = Translation().generate_script(utterance_metadata=utterance_metadata)
+        result = TranslationUT()._generate_script(utterance_metadata=utterance_metadata)
         assert (
             result == expected_script
         ), f"Failed for {test_name}: expected {expected_script}, got {result}"
-
-
-class TestAddTranslations:
 
     @pytest.mark.parametrize(
         "utterance_metadata, translated_script, expected_translated_metadata",
@@ -134,7 +144,7 @@ class TestAddTranslations:
     def test_add_translations(
         self, utterance_metadata, translated_script, expected_translated_metadata
     ):
-        updated_metadata = Translation().add_translations(
+        updated_metadata = TranslationUT()._add_translations(
             utterance_metadata=utterance_metadata,
             translated_script=translated_script,
         )

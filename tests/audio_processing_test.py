@@ -31,7 +31,7 @@ from open_dubbing import audio_processing
 class TestCreatePyannoteTimestamps:
 
     def test_create_timestamps_with_silence(self):
-        with tempfile.NamedTemporaryFile(suffix=".wav") as temporary_file:
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temporary_file:
             silence_duration = 10
             silence = AudioArrayClip(
                 np.zeros((int(44100 * silence_duration), 2), dtype=np.int16),
@@ -52,7 +52,7 @@ class TestCreatePyannoteTimestamps:
 class TestCutAndSaveAudio:
 
     def test_cut_and_save_audio_no_clone(self):
-        with tempfile.NamedTemporaryFile(suffix=".mp3") as temporary_file:
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temporary_file:
             silence_duration = 10
             silence = AudioArrayClip(
                 np.zeros((int(44100 * silence_duration), 2), dtype=np.int16),
@@ -74,7 +74,7 @@ class TestCutAndSaveAudio:
 class TestRunCutAndSaveAudio:
 
     def test_run_cut_and_save_audio(self):
-        with tempfile.NamedTemporaryFile(suffix=".mp3") as temporary_file:
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temporary_file:
             silence_duration = 10
             silence = AudioArrayClip(
                 np.zeros((int(44100 * silence_duration), 2), dtype=np.int16),
@@ -88,7 +88,6 @@ class TestRunCutAndSaveAudio:
                     utterance_metadata=utterance_metadata,
                     audio_file=temporary_file.name,
                     output_directory=output_directory,
-                    elevenlabs_clone_voices=False,
                 )
                 expected_file = os.path.join(output_directory, "chunk_0.0_5.0.mp3")
                 _ = {

@@ -1,4 +1,4 @@
-# Copyright 2024 Jordi Mas i Herǹandez <jmas@softcatala.org>
+# Copyright 2024 Jordi Mas i Hernàndez <jmas@softcatala.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ from open_dubbing.speech_to_text import SpeechToText
 
 class SpeechToTextWhisperTransfomers(SpeechToText):
 
-    def __init__(self, device="cpu", cpu_threads=0):
-        super().__init__(device, cpu_threads)
+    def __init__(self, *, model_name="medium", device="cpu", cpu_threads=0):
+        super().__init__(device=device, model_name=model_name, cpu_threads=cpu_threads)
         self._processor = None
 
     def load_model(self):
-        model_name = "openai/whisper-medium"
-        self._processor = WhisperProcessor.from_pretrained(model_name)
-        self._model = WhisperForConditionalGeneration.from_pretrained(model_name)
+        full_model_name = f"openai/whisper-{self.model_name}"
+        self._processor = WhisperProcessor.from_pretrained(full_model_name)
+        self._model = WhisperForConditionalGeneration.from_pretrained(full_model_name)
 
     def _transcribe(
         self,
@@ -41,18 +41,10 @@ class SpeechToTextWhisperTransfomers(SpeechToText):
         vocals_filepath: str,
         source_language_iso_639_1: str,
     ) -> str:
+
         audio = AudioSegment.from_file(vocals_filepath)
         audio = audio.set_channels(1)  # Convert to mono
         audio = audio.set_frame_rate(16000)  # Set the frame rate to 16kHz
-
-        MIN_SECS = 0.5
-        # To prevent HuggingFace Whisper hallucinations with very short audios
-        if len(audio) < 1000 * MIN_SECS:
-            logging.warn(
-                f"speech_to_text_whisper_transfomers._transcribe. Audio is less than {MIN_SECS} second, skipping transcription of '{vocals_filepath}'."
-            )
-            return ""
-
         # Convert the audio to a numpy array
         audio_input = (
             np.array(audio.get_array_of_samples()).astype(np.float32) / 32768.0
