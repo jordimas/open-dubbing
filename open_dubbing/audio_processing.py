@@ -49,11 +49,10 @@ def create_pyannote_timestamps(
     if device == "cuda":
         pipeline.to(torch.device("cuda"))
     diarization = pipeline(audio_file)
-    utterances = [
+    utterance_metadata = [
         {"start": segment.start, "end": segment.end, "speaker_id": speaker}
         for segment, _, speaker in diarization.itertracks(yield_label=True)
     ]
-    utterance_metadata = {"utterances": utterances}
     return utterance_metadata
 
 
