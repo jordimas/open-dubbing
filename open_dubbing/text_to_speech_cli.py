@@ -56,6 +56,7 @@ class TextToSpeechCLI(TextToSpeech):
 
     def _get_command(self, *, assigned_voice: str, directory: str, text: str):
         command = self.configuration["command"]
+        text = text.replace('"', "")
         cmd = command.format(
             assigned_voice=assigned_voice,
             text=text,

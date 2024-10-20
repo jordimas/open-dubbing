@@ -1,5 +1,5 @@
 {
-    "command": "cd /home/jordi/sc/open-dubbing2/Matcha-TTS && python3 matcha_vocos_inference.py --output_path={directory} --speaker_id {assigned_voice} --text_input=\"{text}\"",
+    "command": "cd /home/jordi/sc/open-dubbing2/Matcha-TTS && . python3-env/bin/activate && python3 matcha_vocos_inference.py --output_path={directory} --speaker_id {assigned_voice} --text_input=\"{text}\"",
     "output_pattern": "{directory}/spk_{assigned_voice}/synth.wav",
     "voices": [
         {

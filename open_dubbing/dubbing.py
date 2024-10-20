@@ -372,9 +372,10 @@ class Dubber:
             _UTTERNACE_METADATA_FILE_NAME + target_language_suffix + ".json",
         )
         try:
-            json_data = json.dumps(
-                self.utterance_metadata, ensure_ascii=False, indent=4
-            )
+            all_data = {}
+            all_data["utterances"] = self.utterance_metadata
+            all_data["source_language"] = self.source_language
+            json_data = json.dumps(all_data, ensure_ascii=False, indent=4)
             with tempfile.NamedTemporaryFile(
                 mode="w", delete=False, encoding="utf-8"
             ) as temporary_file:
