@@ -13,12 +13,13 @@
 # limitations under the License.
 
 
+import logging
 import os
 
 from typing import Final, Mapping, Sequence
 
 import torch
-import logging
+
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
 
@@ -124,29 +125,25 @@ def insert_audio_at_timestamps(
     output_directory: str,
 ) -> str:
     """Inserts audio chunks into a background audio track at specified timestamps."""
-        background_audio = AudioSegment.from_mp3(background_audio_file)
-        total_duration = background_audio.duration_seconds
-        output_audio = AudioSegment.silent(duration=total_duration * 1000)
-        for item in utterance_metadata:
-            try:
-                _file = item["dubbed_path"]
-                logging.debug(f'insert_audio_at_timestamps. Open: {item["dubbed_path"]}')
-                audio_chunk = AudioSegment.from_mp3(_file)
-                start_time = int(item["start"] * 1000)
-                output_audio = output_audio.overlay(
-                    audio_chunk, position=start_time, loop=False
-                )
-            except Exception as e:
-                logging.error(
-                    f"insert_audio_at_timestamps. File: {_file}, error: {e}"
+    background_audio = AudioSegment.from_mp3(background_audio_file)
+    total_duration = background_audio.duration_seconds
+    output_audio = AudioSegment.silent(duration=total_duration * 1000)
+    for item in utterance_metadata:
+        try:
+            _file = item["dubbed_path"]
+            logging.debug(f'insert_audio_at_timestamps. Open: {item["dubbed_path"]}')
+            audio_chunk = AudioSegment.from_mp3(_file)
+            start_time = int(item["start"] * 1000)
+            output_audio = output_audio.overlay(
+                audio_chunk, position=start_time, loop=False
             )
-                
-        dubbed_vocals_audio_file = os.path.join(
-            output_directory, _DEFAULT_DUBBED_VOCALS_AUDIO_FILE
-        )
-        output_audio.export(dubbed_vocals_audio_file, format="mp3")
-        return background_audio
+        except Exception as e:
+            logging.error(f"insert_audio_at_timestamps. File: {_file}, error: {e}")
 
+    dubbed_vocals_audio_file = os.path.join(
+        output_directory, _DEFAULT_DUBBED_VOCALS_AUDIO_FILE
+    )
+    output_audio.export(dubbed_vocals_audio_file, format="mp3")
     return dubbed_vocals_audio_file
 
 
