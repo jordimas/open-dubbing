@@ -132,14 +132,15 @@ def insert_audio_at_timestamps(
         try:
             _file = item["dubbed_path"]
             start_time = int(item["start"] * 1000)
-            logging.debug(f'insert_audio_at_timestamps. Open: {item["dubbed_path"]}')
+            logging.debug(f"insert_audio_at_timestamps. Open: {_file}")
             audio_chunk = AudioSegment.from_mp3(_file)
             output_audio = output_audio.overlay(
                 audio_chunk, position=start_time, loop=False
             )
         except Exception as e:
+            end_time = int(item["end"] * 1000)
             logging.error(
-                f"insert_audio_at_timestamps. File: {_file} at start time {start_time}, error: {e}"
+                f"insert_audio_at_timestamps. File: {_file} at start time {start_time} and end {end_time}, error: {e}"
             )
 
     dubbed_vocals_audio_file = os.path.join(
