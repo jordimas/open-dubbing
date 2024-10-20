@@ -14,15 +14,17 @@
 
 """Tests for utility functions in dubbing.py."""
 
+import json
 import os
 import tempfile
 
 import pytest
 
 from open_dubbing import dubbing
+from open_dubbing.dubbing import Dubber
 
 
-class TestRenameInputFile:
+class TestDubbing:
 
     @pytest.mark.parametrize(
         "original_file, expected_result",
@@ -38,9 +40,6 @@ class TestRenameInputFile:
     def test_rename(self, original_file, expected_result):
         result = dubbing.rename_input_file(original_file)
         assert result == expected_result
-
-
-class TestOverwriteInputFile:
 
     @pytest.mark.parametrize(
         "original_filename, expected_filename",
@@ -63,3 +62,45 @@ class TestOverwriteInputFile:
 
             dubbing.overwrite_input_file(original_full_path, expected_full_path)
             assert os.path.exists(expected_full_path)
+
+    def testrun_save_utterance_metadata(self):
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            directory = temp_dir
+
+            dubbing = Dubber(
+                input_file="",
+                output_directory=directory,
+                source_language="spa",
+                target_language="cat",
+                target_language_region="",
+                hugging_face_token="",
+                tts=None,
+                translation=None,
+                stt=None,
+                device="cpu",
+            )
+
+            dubbing.utterance_metadata = {
+                "utterances": {
+                    "utterances": [
+                        {"start": 1.26, "end": 3.94},
+                        {"start": 5.24, "end": 6.629},
+                    ]
+                }
+            }
+
+            dubbing.run_save_utterance_metadata()
+            metadata_file = os.path.join(directory, "utterance_metadata_cat.json")
+            with open(metadata_file, encoding="utf-8") as json_data:
+                data = json.load(json_data)
+
+                assert data == {
+                    "utterances": {
+                        "utterances": [
+                            {"start": 1.26, "end": 3.94},
+                            {"start": 5.24, "end": 6.629},
+                        ]
+                    },
+                    "source_language": "spa",
+                }
