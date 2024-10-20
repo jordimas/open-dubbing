@@ -46,9 +46,7 @@ class TestCreatePyannoteTimestamps:
                 audio_file=temporary_file.name,
                 pipeline=mock_pipeline,
             )
-            assert timestamps == {
-                "utterances": [{"start": 0.0, "end": 10, "speaker_id": "SPEAKER_00"}]
-            }
+            assert timestamps == [{"start": 0.0, "end": 10, "speaker_id": "SPEAKER_00"}]
 
 
 class TestCutAndSaveAudio:
