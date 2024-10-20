@@ -218,12 +218,12 @@ class Dubber:
             demucs.assemble_split_audio_file_paths(command=demucs_command)
         )
 
-        metadata = audio_processing.create_pyannote_timestamps(
+        self.metadata = audio_processing.create_pyannote_timestamps(
             audio_file=audio_file,
             pipeline=self.pyannote_pipeline,
             device=self.device,
         )
-        utterance_metadata = metadata["utterances"]
+        utterance_metadata = self.metadata["utterances"]
         utterance_metadata = audio_processing.run_cut_and_save_audio(
             utterance_metadata=utterance_metadata,
             audio_file=audio_file,
