@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
          os: [ubuntu-latest, macos-latest, windows-latest]
-         python-version: [3.10.15, 3.11, 3.12]
+         python-version: [3.10.15, 3.11, 3.12, 3.13]
          coqui: [coqui_yes, coqui_no]
          exclude:
           - os: macos-latest
