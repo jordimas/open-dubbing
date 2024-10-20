@@ -142,7 +142,7 @@ class CommandLine:
         )
 
         parser.add_argument(
-            "--log-level",
+            "--log_level",
             default="INFO",
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             help="Set the logging level",
