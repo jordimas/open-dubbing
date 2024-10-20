@@ -133,6 +133,7 @@ class Dubber:
         self.pyannote_model = pyannote_model
         self.hugging_face_token = hugging_face_token
         self.utterance_metadata = None
+        self.metadata = None
         self._number_of_steps = number_of_steps
         self.tts = tts
         self.translation = translation
@@ -217,11 +218,14 @@ class Dubber:
             demucs.assemble_split_audio_file_paths(command=demucs_command)
         )
 
-        utterance_metadata = audio_processing.create_pyannote_timestamps(
+        self.metadata = audio_processing.create_pyannote_timestamps(
             audio_file=audio_file,
             pipeline=self.pyannote_pipeline,
             device=self.device,
         )
+
+        self.metadata["source_language"] = self.source_language
+        utterance_metadata = self.metadata["utterances"]
         utterance_metadata = audio_processing.run_cut_and_save_audio(
             utterance_metadata=utterance_metadata,
             audio_file=audio_file,
@@ -372,9 +376,7 @@ class Dubber:
             _UTTERNACE_METADATA_FILE_NAME + target_language_suffix + ".json",
         )
         try:
-            json_data = json.dumps(
-                self.utterance_metadata, ensure_ascii=False, indent=4
-            )
+            json_data = json.dumps(self.metadata, ensure_ascii=False, indent=4)
             with tempfile.NamedTemporaryFile(
                 mode="w", delete=False, encoding="utf-8"
             ) as temporary_file:
