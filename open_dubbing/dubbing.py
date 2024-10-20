@@ -223,6 +223,8 @@ class Dubber:
             pipeline=self.pyannote_pipeline,
             device=self.device,
         )
+
+        self.metadata["source_language"] = self.source_language
         utterance_metadata = self.metadata["utterances"]
         utterance_metadata = audio_processing.run_cut_and_save_audio(
             utterance_metadata=utterance_metadata,
