@@ -95,5 +95,14 @@ class TestDubbing:
                 data = json.load(json_data)
 
                 print(data)
-                assert data == {'utterances': {'utterances': {'utterances': [{'start': 1.26, 'end': 3.94}, {'start': 5.24, 'end': 6.629}]}}, 'source_language': 'spa'}
-
+                assert data == {
+                    "utterances": {
+                        "utterances": {
+                            "utterances": [
+                                {"start": 1.26, "end": 3.94},
+                                {"start": 5.24, "end": 6.629},
+                            ]
+                        }
+                    },
+                    "source_language": "spa",
+                }
