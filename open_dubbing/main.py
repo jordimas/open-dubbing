@@ -109,10 +109,9 @@ HUGGING_FACE_VARNAME = "HF_TOKEN"
 def get_token(provided_token: str) -> str:
     token = provided_token or os.getenv(HUGGING_FACE_VARNAME)
     if not token:
-        raise ValueError(
-            f"You must either provide the '--hugging_face_token' argument or"
-            f" set the '{HUGGING_FACE_VARNAME.upper()}' environment variable."
-        )
+        msg = "You must either provide the '--hugging_face_token' argument or"
+        msg += f" set the '{HUGGING_FACE_VARNAME.upper()}' environment variable."
+        print_error_and_exit(msg, ExitCode.MISSING_HF_KEY)
     return token
 
 
