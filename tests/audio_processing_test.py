@@ -20,6 +20,7 @@ import tempfile
 from unittest.mock import MagicMock
 
 import numpy as np
+import pytest
 
 from moviepy.audio.AudioClip import AudioArrayClip
 from pyannote.audio import Pipeline
@@ -100,7 +101,15 @@ class TestRunCutAndSaveAudio:
 
 class TestInsertAudioAtTimestamps:
 
-    def test_insert_audio_at_timestamps(self):
+    @pytest.mark.parametrize(
+        "for_dubbing, expected_file_size",
+        [
+            (False, 20524),
+            (True, 160749),
+        ],
+    )
+    def test_insert_audio_at_timestamps(self, for_dubbing, expected_file_size):
+
         with tempfile.TemporaryDirectory() as temporary_directory:
             background_audio_file = f"{temporary_directory}/test_background.mp3"
             silence_duration = 10
@@ -120,6 +129,7 @@ class TestInsertAudioAtTimestamps:
                 {
                     "start": 3.0,
                     "end": 5.0,
+                    "for_dubbing": for_dubbing,
                     "dubbed_path": audio_chunk_path,
                 }
             ]
@@ -128,7 +138,11 @@ class TestInsertAudioAtTimestamps:
                 background_audio_file=background_audio_file,
                 output_directory=temporary_directory,
             )
+            file_size = os.path.getsize(output_path)
             assert os.path.exists(output_path)
+
+            tolerance = 1  # Allow for a 1-byte diffence across platforms
+            assert abs(expected_file_size - file_size) <= tolerance
 
 
 class TestMixMusicAndVocals:
