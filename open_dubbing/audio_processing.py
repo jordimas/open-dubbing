@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-import logging
 import os
 
 from typing import Final, Mapping, Sequence
@@ -125,36 +124,16 @@ def insert_audio_at_timestamps(
     output_directory: str,
 ) -> str:
     """Inserts audio chunks into a background audio track at specified timestamps."""
+
     background_audio = AudioSegment.from_mp3(background_audio_file)
     total_duration = background_audio.duration_seconds
     output_audio = AudioSegment.silent(duration=total_duration * 1000)
     for item in utterance_metadata:
-        _file = ""
-        try:
-            for_dubbing = item["for_dubbing"]
-            _file = item["dubbed_path"]
-
-            if for_dubbing is False:
-                start = int(item["start"])
-                end = int(item["end"])
-                logging.debug(
-                    f"insert_audio_at_timestamps. Skipping {_file} at start time {start} and end at {end}"
-                )
-                continue
-
-            start_time = int(item["start"] * 1000)
-            logging.debug(f"insert_audio_at_timestamps. Open: {_file}")
-            audio_chunk = AudioSegment.from_mp3(_file)
-            output_audio = output_audio.overlay(
-                audio_chunk, position=start_time, loop=False
-            )
-        except Exception as e:
-            start = int(item["start"])
-            end = int(item["end"])
-            logging.error(
-                f"insert_audio_at_timestamps. Error on file: {_file} at start time {start} and end at {end}, error: {e}"
-            )
-
+        audio_chunk = AudioSegment.from_mp3(item["dubbed_path"])
+        start_time = int(item["start"] * 1000)
+        output_audio = output_audio.overlay(
+            audio_chunk, position=start_time, loop=False
+        )
     dubbed_vocals_audio_file = os.path.join(
         output_directory, _DEFAULT_DUBBED_VOCALS_AUDIO_FILE
     )
