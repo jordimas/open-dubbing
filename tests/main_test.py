@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from open_dubbing.main import _get_selected_tts
 
 
@@ -30,5 +32,7 @@ class TestMain:
         assert "TextToSpeechEdge" == type(tts).__name__
 
     def test_get_selected_tts_cli(self):
-        tts = _get_selected_tts("edge", "", "cpu")
-        assert "TextToSpeechEdge" == type(tts).__name__
+        directory = os.path.dirname(os.path.realpath(__file__))
+        data_json = os.path.join(directory, "data/tts_cli.json")
+        tts = _get_selected_tts("cli", data_json, "cpu")
+        assert "TextToSpeechCLI" == type(tts).__name__
