@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-
+import pytest
 from open_dubbing.main import _get_selected_tts
 
 
@@ -36,3 +36,10 @@ class TestMain:
         data_json = os.path.join(directory, "data/tts_cli.json")
         tts = _get_selected_tts("cli", data_json, "cpu")
         assert "TextToSpeechCLI" == type(tts).__name__
+        
+    def test_get_selected_tts_cli_no_cfg_file(self):
+        with pytest.raises(SystemExit) as excinfo:
+            tts = _get_selected_tts("cli", "", "cpu")
+        
+        assert excinfo.type == SystemExit
+        assert excinfo.value.code == 42
