@@ -217,14 +217,14 @@ def main():
     elif args.translator == "apertium":
         server = args.apertium_server
         if len(server) == 0:
-            raise ValueError(
-                "When using Apertium's API, you need to specify with --apertium-server the URL of the server"
-            )
+            msg = "When using Apertium's API, you need to specify with --apertium-server the URL of the server"
+            print_error_and_exit(msg, ExitCode.NO_APERTIUM_KEY)
 
         translation = TranslationApertium(args.device)
         translation.set_server(server)
     else:
-        raise ValueError(f"Invalid translator value {args.translator}")
+        msg = f"Invalid translator value {args.translator}"
+        print_error_and_exit(msg, ExitCode.INVALID_TRANS_ARG)
 
     check_languages(source_language, args.target_language, tts, translation, stt)
 
