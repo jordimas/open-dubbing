@@ -179,6 +179,7 @@ def _get_selected_translator(
 
     return translation
 
+
 def main():
 
     args = CommandLine.read_parameters()

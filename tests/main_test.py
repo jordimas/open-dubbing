@@ -15,15 +15,16 @@
 import os
 
 import pytest
-
+from unittest.mock import patch
 from open_dubbing.main import _get_selected_tts
 
 
 class TestMain:
 
     def test_get_selected_tts_coqui(self):
-        tts = _get_selected_tts("coqui", "", "cpu")
-        assert "TextToSpeechCoqui" == type(tts).__name__
+        with patch("open_dubbing.text_to_speech_coqui.TextToSpeechCoqui") as MockCoqui:
+            _get_selected_tts("coqui", "", "cpu")
+            MockCoqui.assert_called_once_with("cpu")
 
     def test_get_selected_tts_mss(self):
         tts = _get_selected_tts("mms", "", "cpu")
