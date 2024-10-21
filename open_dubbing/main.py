@@ -149,7 +149,6 @@ def main():
     if not VideoProcessing.is_ffmpeg_installed():
         msg = "You need to have ffmpeg (which includes ffprobe) installed."
         print_error_and_exit(msg, ExitCode.NO_FFMPEG)
-        raise ValueError()
 
     if args.tts == "mms":
         tts = TextToSpeechMMS(args.device)
@@ -160,24 +159,22 @@ def main():
             from open_dubbing.coqui import Coqui
             from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
         except Exception:
-            raise ValueError(
-                "Make sure that Coqui-tts is installed by running 'pip install open-dubbing[coqui]'"
-            )
+            msg = "Make sure that Coqui-tts is installed by running 'pip install open-dubbing[coqui]'"
+            print_error_and_exit(msg, ExitCode.NO_COQUI_TTS)
 
         tts = TextToSpeechCoqui(args.device)
         if not Coqui.is_espeak_ng_installed():
-            raise ValueError(
-                "To use Coqui-tts you have to have espeak or espeak-ng installed"
-            )
+            msg = "To use Coqui-tts you have to have espeak or espeak-ng installed"
+            print_error_and_exit(msg, ExitCode.NO_COQUI_ESPEAK)
     elif args.tts == "cli":
         if len(args.tts_cli_cfg_file) == 0:
-            raise ValueError(
-                "When using the tts CLI you need to provide a configuration file which describes the commands and voices to use."
-            )
+            msg = "When using the tts CLI you need to provide a configuration file which describes the commands and voices to use."
+            print_error_and_exit(msg, ExitCode.NO_CLI_CFG_FILE)
 
         tts = TextToSpeechCLI(args.device, args.tts_cli_cfg_file)
     else:
-        raise ValueError(f"Invalid tts value {args.tts}")
+        msg = f"Invalid tts value {args.tts}"
+        print_error_and_exit(msg, ExitCode.INVALID_TTS_ARG)
 
     if sys.platform == "darwin":
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
