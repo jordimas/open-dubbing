@@ -58,7 +58,6 @@ def _init_logging(log_level):
 
 
 class ExitCode(IntEnum):
-    SUCCESS = 0
     INVALID_LANGUAGE_SPT = 101
     INVALID_LANGUAGE_TRANS = 102
     INVALID_LANGUAGE_TTS = 103
@@ -100,7 +99,6 @@ def check_is_a_video(input_file: str):
 
     if file_extension in _ACCEPTED_VIDEO_FORMATS:
         return
-
     msg = f"Unsupported file format: {file_extension}"
     print_error_and_exit(msg, ExitCode.INVALID_FILEFORMAT)
 
