@@ -137,6 +137,36 @@ def list_supported_languages(_tts, translation, device):  # TODO: Not used
     print(f"Supported target languages: {target}")
 
 
+def _get_selected_tts(selected_tts: str, tts_cli_cfg_file: str, device: str):
+    if selected_tts == "mms":
+        tts = TextToSpeechMMS(device)
+    elif selected_tts == "edge":
+        tts = TextToSpeechEdge(device)
+    elif selected_tts == "coqui":
+        try:
+            from open_dubbing.coqui import Coqui
+            from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
+        except Exception:
+            msg = "Make sure that Coqui-tts is installed by running 'pip install open-dubbing[coqui]'"
+            print_error_and_exit(msg, ExitCode.NO_COQUI_TTS)
+
+        tts = TextToSpeechCoqui(device)
+        if not Coqui.is_espeak_ng_installed():
+            msg = "To use Coqui-tts you have to have espeak or espeak-ng installed"
+            print_error_and_exit(msg, ExitCode.NO_COQUI_ESPEAK)
+    elif selected_tts == "cli":
+        if len(tts_cli_cfg_file) == 0:
+            msg = "When using the tts CLI you need to provide a configuration file which describes the commands and voices to use."
+            print_error_and_exit(msg, ExitCode.NO_CLI_CFG_FILE)
+
+        tts = TextToSpeechCLI(device, tts_cli_cfg_file)
+    else:
+        msg = f"Invalid tts value {selected_tts}"
+        print_error_and_exit(msg, ExitCode.INVALID_TTS_ARG)
+
+    return tts
+
+
 def main():
 
     args = CommandLine.read_parameters()
@@ -150,31 +180,7 @@ def main():
         msg = "You need to have ffmpeg (which includes ffprobe) installed."
         print_error_and_exit(msg, ExitCode.NO_FFMPEG)
 
-    if args.tts == "mms":
-        tts = TextToSpeechMMS(args.device)
-    elif args.tts == "edge":
-        tts = TextToSpeechEdge(args.device)
-    elif args.tts == "coqui":
-        try:
-            from open_dubbing.coqui import Coqui
-            from open_dubbing.text_to_speech_coqui import TextToSpeechCoqui
-        except Exception:
-            msg = "Make sure that Coqui-tts is installed by running 'pip install open-dubbing[coqui]'"
-            print_error_and_exit(msg, ExitCode.NO_COQUI_TTS)
-
-        tts = TextToSpeechCoqui(args.device)
-        if not Coqui.is_espeak_ng_installed():
-            msg = "To use Coqui-tts you have to have espeak or espeak-ng installed"
-            print_error_and_exit(msg, ExitCode.NO_COQUI_ESPEAK)
-    elif args.tts == "cli":
-        if len(args.tts_cli_cfg_file) == 0:
-            msg = "When using the tts CLI you need to provide a configuration file which describes the commands and voices to use."
-            print_error_and_exit(msg, ExitCode.NO_CLI_CFG_FILE)
-
-        tts = TextToSpeechCLI(args.device, args.tts_cli_cfg_file)
-    else:
-        msg = f"Invalid tts value {args.tts}"
-        print_error_and_exit(msg, ExitCode.INVALID_TTS_ARG)
+    tts = _get_selected_tts(args.tts, args.tts_cli_cfg_file, args.device)
 
     if sys.platform == "darwin":
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
