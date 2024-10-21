@@ -16,6 +16,8 @@ import logging
 import os
 import sys
 
+from enum import Enum
+
 from iso639 import Lang
 
 from open_dubbing.command_line import CommandLine
@@ -55,6 +57,12 @@ def _init_logging(log_level):
     logging.getLogger("pydub.converter").setLevel(logging.ERROR)
 
 
+class ExitCode(Enum):
+    SUCCESS = 0
+    INVALID_LANGUAGE_SPT = 100
+    INVALID_LANGUAGE_TRANS = 101
+
+
 def check_languages(source_language, target_language, _tts, translation, _sst):
     spt = _sst.get_languages()
     translation_languages = translation.get_language_pairs()
@@ -63,15 +71,19 @@ def check_languages(source_language, target_language, _tts, translation, _sst):
     tts = _tts.get_languages()
 
     if source_language not in spt:
-        raise ValueError(
-            f"source language '{source_language}' is not supported by the speech recognition system. Supported languages: '{spt}"
+        print(
+            f"source language '{source_language}' is not supported by the speech recognition system. Supported languages: '{spt}",
+            file=sys.stderr,
         )
+        exit(ExitCode.INVALID_LANGUAGE_SPT)
 
     pair = (source_language, target_language)
     if pair not in translation_languages:
-        raise ValueError(
-            f"language pair '{pair}' is not supported by the translation system."
+        print(
+            f"language pair '{pair}' is not supported by the translation system.",
+            file=sys.stderr,
         )
+        exit(ExitCode.INVALID_LANGUAGE_TRANS)
 
     if target_language not in tts:
         raise ValueError(
