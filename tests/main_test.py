@@ -14,8 +14,12 @@
 
 import os
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
+import open_dubbing
+
 from open_dubbing.main import _get_selected_tts
 
 
@@ -27,7 +31,7 @@ class TestMain:
             MockCoqui.assert_called_once_with("cpu")
 
     def test_get_selected_tts_mss(self):
-        tts = _get_selected_tts("mms", "", "cpu")
+        tts = open_dubbing.main._get_selected_tts("mms", "", "cpu")
         assert "TextToSpeechMMS" == type(tts).__name__
 
     def test_get_selected_tts_edge(self):
