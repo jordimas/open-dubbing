@@ -16,7 +16,7 @@ import logging
 import os
 import sys
 
-from enum import Enum
+from enum import IntEnum
 
 from iso639 import Lang
 
@@ -57,9 +57,9 @@ def _init_logging(log_level):
     logging.getLogger("pydub.converter").setLevel(logging.ERROR)
 
 
-class ExitCode(Enum):
+class ExitCode(IntEnum):
     SUCCESS = 0
-    INVALID_LANGUAGE_SPT = 100
+    INVALID_LANGUAGE_SPT = 101
     INVALID_LANGUAGE_TRANS = 101
 
 
