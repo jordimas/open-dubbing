@@ -65,6 +65,14 @@ class ExitCode(IntEnum):
     INVALID_FILEFORMAT = 104
 
 
+def print_error_and_exit(msg: str, code: ExitCode):
+    print(
+        msg,
+        file=sys.stderr,
+    )
+    exit(code)
+
+
 def check_languages(source_language, target_language, _tts, translation, _sst):
     spt = _sst.get_languages()
     translation_languages = translation.get_language_pairs()
@@ -73,26 +81,17 @@ def check_languages(source_language, target_language, _tts, translation, _sst):
     tts = _tts.get_languages()
 
     if source_language not in spt:
-        print(
-            f"source language '{source_language}' is not supported by the speech recognition system. Supported languages: '{spt}",
-            file=sys.stderr,
-        )
-        exit(ExitCode.INVALID_LANGUAGE_SPT)
+        msg = f"source language '{source_language}' is not supported by the speech recognition system. Supported languages: '{spt}"
+        print_error_and_exit(msg, ExitCode.INVALID_LANGUAGE_SPT)
 
     pair = (source_language, target_language)
     if pair not in translation_languages:
-        print(
-            f"language pair '{pair}' is not supported by the translation system.",
-            file=sys.stderr,
-        )
-        exit(ExitCode.INVALID_LANGUAGE_TRANS)
+        msg = f"language pair '{pair}' is not supported by the translation system."
+        print_error_and_exit(msg, ExitCode.INVALID_LANGUAGE_TRANS)
 
     if target_language not in tts:
-        print(
-            f"target language '{target_language}' is not supported by the text to speech system. Supported languages: '{tts}",
-            file=sys.stderr,
-        )
-        exit(ExitCode.INVALID_LANGUAGE_TTS)
+        msg = f"target language '{target_language}' is not supported by the text to speech system. Supported languages: '{tts}"
+        print_error_and_exit(msg, ExitCode.INVALID_LANGUAGE_TTS)
 
 
 _ACCEPTED_VIDEO_FORMATS = ["mp4"]
@@ -105,11 +104,8 @@ def check_is_a_video(input_file: str):
     if file_extension in _ACCEPTED_VIDEO_FORMATS:
         return
 
-    print(
-        f"Unsupported file format: {file_extension}",
-        file=sys.stderr,
-    )
-    exit(ExitCode.INVALID_FILEFORMAT)
+    msg = f"Unsupported file format: {file_extension}"
+    print_error_and_exit(msg, ExitCode.INVALID_FILEFORMAT)
 
 
 HUGGING_FACE_VARNAME = "HF_TOKEN"
