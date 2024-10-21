@@ -130,7 +130,17 @@ def insert_audio_at_timestamps(
     output_audio = AudioSegment.silent(duration=total_duration * 1000)
     for item in utterance_metadata:
         try:
+            for_dubbing = item["for_dubbing"]
             _file = item["dubbed_path"]
+
+            if for_dubbing is False:
+                start = int(item["start"])
+                end = int(item["end"])
+                logging.debug(
+                    f"insert_audio_at_timestamps. Skipping {_file} at start time {start} and end at {end}"
+                )
+                continue
+
             start_time = int(item["start"] * 1000)
             logging.debug(f"insert_audio_at_timestamps. Open: {_file}")
             audio_chunk = AudioSegment.from_mp3(_file)
@@ -138,9 +148,10 @@ def insert_audio_at_timestamps(
                 audio_chunk, position=start_time, loop=False
             )
         except Exception as e:
-            end_time = int(item["end"] * 1000)
+            start = int(item["start"])
+            end = int(item["end"])
             logging.error(
-                f"insert_audio_at_timestamps. File: {_file} at start time {start_time} and end {end_time}, error: {e}"
+                f"insert_audio_at_timestamps. Error on file: {_file} at start time {start} and end at {end}, error: {e}"
             )
 
     dubbed_vocals_audio_file = os.path.join(
@@ -165,29 +176,21 @@ def merge_background_and_vocals(
       The path to the output audio file with merged dubbed vocals and original
       background audio.
     """
-    try:
-        background = AudioSegment.from_mp3(background_audio_file)
-        vocals = AudioSegment.from_mp3(dubbed_vocals_audio_file)
-        background = background.normalize()
-        vocals = vocals.normalize()
-        background = background + background_volume_adjustment
-        vocals = vocals + vocals_volume_adjustment
-        shortest_length = min(len(background), len(vocals))
-        background = background[:shortest_length]
-        vocals = vocals[:shortest_length]
-        mixed_audio = background.overlay(vocals)
-        target_language_suffix = "_" + target_language.replace("-", "_").lower()
-        dubbed_audio_file = os.path.join(
-            output_directory,
-            _DEFAULT_DUBBED_AUDIO_FILE
-            + target_language_suffix
-            + _DEFAULT_OUTPUT_FORMAT,
-        )
-        mixed_audio.export(dubbed_audio_file, format="mp3")
-    except Exception as e:
-        logging.error(
-            f"merge_background_and_vocals. background_audio_file: {background_audio_file}, dubbed_vocals_audio_file: {dubbed_vocals_audio_file}, error: {e}"
-        )
-        return background_audio_file
 
+    background = AudioSegment.from_mp3(background_audio_file)
+    vocals = AudioSegment.from_mp3(dubbed_vocals_audio_file)
+    background = background.normalize()
+    vocals = vocals.normalize()
+    background = background + background_volume_adjustment
+    vocals = vocals + vocals_volume_adjustment
+    shortest_length = min(len(background), len(vocals))
+    background = background[:shortest_length]
+    vocals = vocals[:shortest_length]
+    mixed_audio = background.overlay(vocals)
+    target_language_suffix = "_" + target_language.replace("-", "_").lower()
+    dubbed_audio_file = os.path.join(
+        output_directory,
+        _DEFAULT_DUBBED_AUDIO_FILE + target_language_suffix + _DEFAULT_OUTPUT_FORMAT,
+    )
+    mixed_audio.export(dubbed_audio_file, format="mp3")
     return dubbed_audio_file
