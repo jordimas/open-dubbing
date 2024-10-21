@@ -16,8 +16,7 @@ import logging
 import os
 import sys
 
-from enum import IntEnum
-
+from exit_code import ExitCode
 from iso639 import Lang
 
 from open_dubbing.command_line import CommandLine
@@ -55,13 +54,6 @@ def _init_logging(log_level):
     logger.addHandler(console_handler)
 
     logging.getLogger("pydub.converter").setLevel(logging.ERROR)
-
-
-class ExitCode(IntEnum):
-    INVALID_LANGUAGE_SPT = 100
-    INVALID_LANGUAGE_TRANS = 101
-    INVALID_LANGUAGE_TTS = 102
-    INVALID_FILEFORMAT = 103
 
 
 def print_error_and_exit(msg: str, code: ExitCode):
