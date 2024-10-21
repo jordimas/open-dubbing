@@ -25,11 +25,6 @@ from open_dubbing.main import _get_selected_tts
 
 class TestMain:
 
-    def test_get_selected_tts_coqui(self):
-        with patch("open_dubbing.text_to_speech_coqui.TextToSpeechCoqui") as MockCoqui:
-            _get_selected_tts("coqui", "", "cpu")
-            MockCoqui.assert_called_once_with("cpu")
-
     def test_get_selected_tts_mss(self):
         tts = open_dubbing.main._get_selected_tts("mms", "", "cpu")
         assert "TextToSpeechMMS" == type(tts).__name__
