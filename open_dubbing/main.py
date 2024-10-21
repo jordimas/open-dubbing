@@ -58,10 +58,10 @@ def _init_logging(log_level):
 
 
 class ExitCode(IntEnum):
-    INVALID_LANGUAGE_SPT = 101
-    INVALID_LANGUAGE_TRANS = 102
-    INVALID_LANGUAGE_TTS = 103
-    INVALID_FILEFORMAT = 104
+    INVALID_LANGUAGE_SPT = 100
+    INVALID_LANGUAGE_TRANS = 101
+    INVALID_LANGUAGE_TTS = 102
+    INVALID_FILEFORMAT = 103
 
 
 def print_error_and_exit(msg: str, code: ExitCode):
