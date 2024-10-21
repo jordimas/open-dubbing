@@ -66,10 +66,7 @@ class ExitCode(IntEnum):
 
 
 def print_error_and_exit(msg: str, code: ExitCode):
-    print(
-        msg,
-        file=sys.stderr,
-    )
+    print(msg, file=sys.stderr)
     exit(code)
 
 
