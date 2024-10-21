@@ -60,7 +60,9 @@ def _init_logging(log_level):
 class ExitCode(IntEnum):
     SUCCESS = 0
     INVALID_LANGUAGE_SPT = 101
-    INVALID_LANGUAGE_TRANS = 101
+    INVALID_LANGUAGE_TRANS = 102
+    INVALID_LANGUAGE_TTS = 103
+    INVALID_FILEFORMAT = 104
 
 
 def check_languages(source_language, target_language, _tts, translation, _sst):
@@ -86,9 +88,11 @@ def check_languages(source_language, target_language, _tts, translation, _sst):
         exit(ExitCode.INVALID_LANGUAGE_TRANS)
 
     if target_language not in tts:
-        raise ValueError(
-            f"target language '{target_language}' is not supported by the text to speech system. Supported languages: '{tts}"
+        print(
+            f"target language '{target_language}' is not supported by the text to speech system. Supported languages: '{tts}",
+            file=sys.stderr,
         )
+        exit(ExitCode.INVALID_LANGUAGE_TTS)
 
 
 _ACCEPTED_VIDEO_FORMATS = ["mp4"]
@@ -100,7 +104,12 @@ def check_is_a_video(input_file: str):
 
     if file_extension in _ACCEPTED_VIDEO_FORMATS:
         return
-    raise ValueError(f"Unsupported file format: {file_extension}")
+
+    print(
+        f"Unsupported file format: {file_extension}",
+        file=sys.stderr,
+    )
+    exit(ExitCode.INVALID_FILEFORMAT)
 
 
 HUGGING_FACE_VARNAME = "HF_TOKEN"
