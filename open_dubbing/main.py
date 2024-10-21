@@ -159,6 +159,26 @@ def _get_selected_tts(selected_tts: str, tts_cli_cfg_file: str, device: str):
     return tts
 
 
+def _get_selected_translator(
+    translator: str, nllb_model: str, apertium_server: str, device: str
+):
+    if translator == "nllb":
+        translation = TranslationNLLB(device)
+        translation.load_model(nllb_model)
+    elif translator == "apertium":
+        server = apertium_server
+        if len(server) == 0:
+            msg = "When using Apertium's API, you need to specify with --apertium-server the URL of the server"
+            print_error_and_exit(msg, ExitCode.NO_APERTIUM_KEY)
+
+        translation = TranslationApertium(device)
+        translation.set_server(server)
+    else:
+        msg = f"Invalid translator value {translator}"
+        print_error_and_exit(msg, ExitCode.INVALID_TRANS_ARG)
+
+    return translation
+
 def main():
 
     args = CommandLine.read_parameters()
@@ -209,20 +229,9 @@ def main():
         source_language = stt.detect_language(args.input_file)
         logging.info(f"Detected language '{source_language}'")
 
-    if args.translator == "nllb":
-        translation = TranslationNLLB(args.device)
-        translation.load_model(args.nllb_model)
-    elif args.translator == "apertium":
-        server = args.apertium_server
-        if len(server) == 0:
-            msg = "When using Apertium's API, you need to specify with --apertium-server the URL of the server"
-            print_error_and_exit(msg, ExitCode.NO_APERTIUM_KEY)
-
-        translation = TranslationApertium(args.device)
-        translation.set_server(server)
-    else:
-        msg = f"Invalid translator value {args.translator}"
-        print_error_and_exit(msg, ExitCode.INVALID_TRANS_ARG)
+    translation = _get_selected_translator(
+        args.translator, args.nllb_model, args.apertium_server, args.device
+    )
 
     check_languages(source_language, args.target_language, tts, translation, stt)
 
