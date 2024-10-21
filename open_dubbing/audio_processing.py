@@ -129,6 +129,7 @@ def insert_audio_at_timestamps(
     total_duration = background_audio.duration_seconds
     output_audio = AudioSegment.silent(duration=total_duration * 1000)
     for item in utterance_metadata:
+        _file = ""
         try:
             for_dubbing = item["for_dubbing"]
             _file = item["dubbed_path"]
