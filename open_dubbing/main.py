@@ -147,7 +147,9 @@ def main():
     hugging_face_token = get_token(args.hugging_face_token)
 
     if not VideoProcessing.is_ffmpeg_installed():
-        raise ValueError("You need to have ffmpeg (which includes ffprobe) installed.")
+        msg = "You need to have ffmpeg (which includes ffprobe) installed."
+        print_error_and_exit(msg, ExitCode.NO_FFMPEG)
+        raise ValueError()
 
     if args.tts == "mms":
         tts = TextToSpeechMMS(args.device)
